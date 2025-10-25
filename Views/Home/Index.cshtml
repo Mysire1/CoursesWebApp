@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Головна сторінка";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Система Управління Курсами</h1>
+    <p>Ласкаво просимо до системи управління мовними курсами.</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Студенти</h5>
+                <p class="card-text display-6">@ViewBag.StudentsCount</p>
+                <a asp-controller="Students" asp-action="Index" class="btn btn-primary">Переглянути</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Мови</h5>
+                <p class="card-text display-6">@ViewBag.LanguagesCount</p>
+                <a href="#" class="btn btn-success">Переглянути</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Викладачі</h5>
+                <p class="card-text display-6">@ViewBag.TeachersCount</p>
+                <a href="#" class="btn btn-info">Переглянути</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Групи</h5>
+                <p class="card-text display-6">@ViewBag.GroupsCount</p>
+                <a href="#" class="btn btn-warning">Переглянути</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Основні функції</h3>
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Управління студентами
+                <a asp-controller="Students" asp-action="Index" class="btn btn-outline-primary btn-sm">Перейти</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Аналітичні запити
+                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-success btn-sm">Перейти</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Розрахунок вартості курсів
+                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-info btn-sm">Перейти</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Управління знижками та надбавками
+                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-warning btn-sm">Перейти</a>
+            </li>
+        </ul>
+    </div>
+</div>
