@@ -1,0 +1,189 @@
+@{
+    ViewData["Title"] = "Аналітичні запити";
+}
+
+<h1>Аналітичні запити</h1>
+
+<!-- Запит 1: Пошук груп -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Запит 1: Пошук груп</h5>
+    </div>
+    <div class="card-body">
+        <form id="searchGroupsForm">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Мова:</label>
+                    <select class="form-select" name="languageId" id="languageSelect">
+                        <option value="">Всі мови</option>
+                        @foreach (var language in ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language>)
+                        {
+                            <option value="@language.LanguageId">@language.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>Викладач:</label>
+                    <select class="form-select" name="teacherId" id="teacherSelect">
+                        <option value="">Всі викладачі</option>
+                        @foreach (var teacher in ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher>)
+                        {
+                            <option value="@teacher.TeacherId">@teacher.FullName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary mt-4">Пошук</button>
+                </div>
+            </div>
+        </form>
+        <div id="groupsResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 2: Розрахунок вартості -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Запит 2: Розрахунок вартості</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Оберіть мову:</label>
+                <select class="form-select" id="costLanguageSelect">
+                    <option value="">Оберіть мову</option>
+                    @foreach (var language in ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language>)
+                    {
+                        <option value="@language.LanguageId">@language.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-info me-2" onclick="calculateCost('all')">Вартість ВСІХ мов</button>
+                <button type="button" class="btn btn-success me-2" onclick="calculateCost('language')">Повна вартість</button>
+                <button type="button" class="btn btn-warning me-2" onclick="calculateCost('byLevel')">Вартість за рівнями</button>
+                <button type="button" class="btn btn-secondary" onclick="calculateCost('monthly')">Вартість за місяць</button>
+            </div>
+        </div>
+        <div id="costResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 3: Нездані іспити -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Запит 3: Слухачі, які не склали іспит</h5>
+    </div>
+    <div class="card-body">
+        <button type="button" class="btn btn-primary" onclick="getFailedExams()">Знайти</button>
+        <div id="failedExamsResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 4: Викладачі за кількістю мов -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Запит 4: Викладачі за кількістю мов</h5>
+    </div>
+    <div class="card-body">
+        <button type="button" class="btn btn-primary" onclick="getTeachersByLanguageCount()">Знайти викладачів</button>
+        <div id="teachersResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 5: Статус оплати -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Запит 5: Статус оплати слухачів</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success me-2" onclick="getPaymentStatus('fullyPaid')">Повністю сплатили</button>
+                <button type="button" class="btn btn-warning me-2" onclick="getPaymentStatus('notFullyPaid')">Є заборгованість</button>
+                <button type="button" class="btn btn-info me-2" onclick="getPaymentStatus('debtLess50')">Борг менше 50%</button>
+                <button type="button" class="btn btn-secondary me-2" onclick="getPaymentStatus('withDeferrals')">Мають відтермінування</button>
+                <button type="button" class="btn btn-primary" onclick="getPaymentStatus('withDiscounts')">Мають пільги</button>
+            </div>
+        </div>
+        <div id="paymentStatusResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 7: Студенти за мовами -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Запит 7: Слухачі за мовами</h5>
+    </div>
+    <div class="card-body">
+        <button type="button" class="btn btn-primary" onclick="getStudentsByLanguage()">Знайти</button>
+        <div id="studentsByLanguageResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 8: Надбавка для малих груп -->
+<div class="card mb-4 border-danger">
+    <div class="card-header bg-danger text-white">
+        <h5>Запит 8: Надбавка для малих груп (менше 5)</h5>
+    </div>
+    <div class="card-body">
+        <p>Натисніть кнопку, щоб знайти групи, де менше 5 студентів, та збільшити вартість навчання на 20%.</p>
+        <button type="button" class="btn btn-danger" onclick="applySmallGroupSurcharge()">Застосувати надбавку 20%</button>
+        <div id="smallGroupResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 9: Знижка для великих груп -->
+<div class="card mb-4 border-success">
+    <div class="card-header bg-success text-white">
+        <h5>Запит 9: Знижка для великих груп (рівно 20)</h5>
+    </div>
+    <div class="card-body">
+        <p>Натисніть кнопку, щоб знайти групи, де рівно 20 студентів, та зменшити вартість навчання на 5%.</p>
+        <button type="button" class="btn btn-success" onclick="applyLargeGroupDiscount()">Застосувати знижку 5%</button>
+        <div id="largeGroupResult" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Запит 10: Розклад -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Запит 10: Отримати розклад</h5>
+    </div>
+    <div class="card-body">
+        <form id="scheduleForm">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Група:</label>
+                    <select class="form-select" name="groupId" id="scheduleGroupSelect">
+                        <option value="">Оберіть групу</option>
+                        @foreach (var group in ViewBag.Groups as IEnumerable<CoursesWebApp.Models.Group>)
+                        {
+                            <option value="@group.GroupId">@group.GroupName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>АБО Викладач:</label>
+                    <select class="form-select" name="teacherId" id="scheduleTeacherSelect">
+                        <option value="">Оберіть викладача</option>
+                        @foreach (var teacher in ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher>)
+                        {
+                            <option value="@teacher.TeacherId">@teacher.FullName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary mt-4">Показати розклад</button>
+                </div>
+            </div>
+        </form>
+        <div id="scheduleResult" class="mt-3"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/queries.js"></script>
+}
