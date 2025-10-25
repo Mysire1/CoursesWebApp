@@ -1,0 +1,45 @@
+@model IEnumerable<CoursesWebApp.Models.Group>
+
+@if (Model != null && Model.Any())
+{
+    <div class="table-responsive mt-3">
+        <h6>Знайдені групи (@Model.Count()):</h6>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Назва Групи</th>
+                    <th>Мова</th>
+                    <th>Рівень</th>
+                    <th>Викладач</th>
+                    <th>Кількість студентів</th>
+                    <th>Початок</th>
+                    <th>Макс. місць</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var group in Model)
+                {
+                    <tr>
+                        <td><strong>@group.GroupName</strong></td>
+                        <td>
+                            <span class="badge bg-primary">@group.Level.Language.Name</span>
+                        </td>
+                        <td>@group.Level.Name</td>
+                        <td>@group.Teacher.FullName</td>
+                        <td>
+                            <span class="badge bg-info">@group.Enrollments.Count</span>
+                        </td>
+                        <td>@group.StartDate.ToString("dd.MM.yyyy")</td>
+                        <td>@group.MaxStudents</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info mt-3">
+        Груп за вказаними критеріями не знайдено.
+    </div>
+}
