@@ -1,0 +1,86 @@
+@model CoursesWebApp.Models.Student
+
+@{
+    ViewData["Title"] = "Видалення студента";
+}
+
+<h1>Видалення студента</h1>
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Увага!</h4>
+    <p>Ви дійсно хочете видалити цього студента?</p>
+    <hr>
+    <p class="mb-0">Після видалення відновити дані буде неможливо.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h4>@Model.FullName</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">ID:</dt>
+                    <dd class="col-sm-9">@Model.StudentId</dd>
+                    
+                    <dt class="col-sm-3">Ім'я:</dt>
+                    <dd class="col-sm-9">@Model.FirstName</dd>
+                    
+                    <dt class="col-sm-3">Прізвище:</dt>
+                    <dd class="col-sm-9">@Model.LastName</dd>
+                    
+                    <dt class="col-sm-3">Дата народження:</dt>
+                    <dd class="col-sm-9">@Model.DateOfBirth.ToString("dd.MM.yyyy")</dd>
+                    
+                    <dt class="col-sm-3">Email:</dt>
+                    <dd class="col-sm-9">@(Model.Email ?? "Не вказано")</dd>
+                    
+                    <dt class="col-sm-3">Телефон:</dt>
+                    <dd class="col-sm-9">@(Model.Phone ?? "Не вказано")</dd>
+                    
+                    <dt class="col-sm-3">Дата реєстрації:</dt>
+                    <dd class="col-sm-9">@Model.RegistrationDate.ToString("dd.MM.yyyy")</dd>
+                    
+                    <dt class="col-sm-3">Має знижку:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.HasDiscount)
+                        {
+                            <span class="badge bg-success">Так (@Model.DiscountPercentage%)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Ні</span>
+                        }
+                    </dd>
+                </dl>
+                
+                @if (Model.Enrollments != null && Model.Enrollments.Any())
+                {
+                    <div class="mt-3">
+                        <h6 class="text-warning">Увага: Студент записаний на @Model.Enrollments.Count() курс(ів)</h6>
+                        <p class="text-muted">Видалення студента також видалить всі пов'язані записи (курси, оплати, іспити).</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <form asp-action="Delete" method="post" style="display: inline-block;">
+        <input type="hidden" asp-for="StudentId" />
+        <button type="submit" class="btn btn-danger" 
+                onclick="return confirm('Ви впевнені, що хочете назавжди видалити студента "' + '@Model.FullName' + '"? Цю дію неможливо буде скасувати.')">
+            <i class="fas fa-trash-alt"></i> Так, видалити назавжди
+        </button>
+    </form>
+    
+    <a asp-action="Details" asp-route-id="@Model.StudentId" class="btn btn-secondary ms-2">
+        <i class="fas fa-arrow-left"></i> Скасувати
+    </a>
+    
+    <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+        <i class="fas fa-list"></i> До списку студентів
+    </a>
+</div>
