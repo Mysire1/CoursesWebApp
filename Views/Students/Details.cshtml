@@ -1,0 +1,110 @@
+@model CoursesWebApp.Models.Student
+
+@{
+    ViewData["Title"] = "Деталі студента";
+}
+
+<h1>Деталі студента</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>@Model.FullName</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">ID:</dt>
+                    <dd class="col-sm-8">@Model.StudentId</dd>
+                    
+                    <dt class="col-sm-4">Ім'я:</dt>
+                    <dd class="col-sm-8">@Model.FirstName</dd>
+                    
+                    <dt class="col-sm-4">Прізвище:</dt>
+                    <dd class="col-sm-8">@Model.LastName</dd>
+                    
+                    <dt class="col-sm-4">Дата народження:</dt>
+                    <dd class="col-sm-8">@Model.DateOfBirth.ToString("dd.MM.yyyy")</dd>
+                    
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">@(Model.Email ?? "Не вказано")</dd>
+                    
+                    <dt class="col-sm-4">Телефон:</dt>
+                    <dd class="col-sm-8">@(Model.Phone ?? "Не вказано")</dd>
+                    
+                    <dt class="col-sm-4">Дата реєстрації:</dt>
+                    <dd class="col-sm-8">@Model.RegistrationDate.ToString("dd.MM.yyyy")</dd>
+                    
+                    <dt class="col-sm-4">Має знижку:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.HasDiscount)
+                        {
+                            <span class="badge bg-success">Так (@Model.DiscountPercentage%)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Ні</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        @if (Model.Enrollments != null && Model.Enrollments.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h5>Записи на курси</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Група</th>
+                                    <th>Мова</th>
+                                    <th>Рівень</th>
+                                    <th>Вартість</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var enrollment in Model.Enrollments)
+                                {
+                                    <tr>
+                                        <td>@enrollment.Group.GroupName</td>
+                                        <td>@enrollment.Group.Level.Language.Name</td>
+                                        <td>@enrollment.Group.Level.Name</td>
+                                        <td>@enrollment.Cost.ToString("C")</td>
+                                        <td>
+                                            @if (enrollment.IsCompleted)
+                                            {
+                                                <span class="badge bg-success">Завершено</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">В процесі</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                Студент ще не записаний на жоден курс.
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.StudentId" class="btn btn-warning">Редагувати</a>
+    <a asp-action="Index" class="btn btn-secondary">Повернутися до списку</a>
+}
