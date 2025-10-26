@@ -45,60 +45,41 @@ else
     app.UseDeveloperExceptionPage();
 }
 
-// Important: Add this before UseRouting
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthorization();
 
-// Map routes
+// Map routes FIRST
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Add fallback route for debugging
-app.MapFallback(async context =>
-{
-    context.Response.StatusCode = 404;
-    await context.Response.WriteAsync($"Path not found: {context.Request.Path}");
-});
+// Remove global fallback that was catching all requests and showing 404
+// If you need a spa fallback later, add it after static files to a specific path
 
-// Ensure database is created and seeded
+// Ensure database is created and reachable
 try 
 {
-    using (var scope = app.Services.CreateScope())
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    if (await context.Database.CanConnectAsync())
     {
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        
-        logger.LogInformation("Testing database connection...");
-        
-        // Test database connection
-        if (await context.Database.CanConnectAsync())
-        {
-            logger.LogInformation("Database connection successful");
-            
-            // Ensure database is created
-            await context.Database.EnsureCreatedAsync();
-            logger.LogInformation("Database schema ensured");
-            
-            // Check if we have data
-            var studentsCount = await context.Students.CountAsync();
-            var languagesCount = await context.Languages.CountAsync();
-            logger.LogInformation($"Found {studentsCount} students and {languagesCount} languages in database");
-        }
-        else
-        {
-            logger.LogError("Cannot connect to database. Please check your connection string.");
-        }
+        await context.Database.EnsureCreatedAsync();
+        logger.LogInformation("Database connected and schema ensured");
+    }
+    else
+    {
+        logger.LogError("Cannot connect to database. Check appsettings.json");
     }
 }
 catch (Exception ex)
 {
     var logger = app.Services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "An error occurred while initializing the database: {Message}", ex.Message);
-    // Don't throw here - let the app start anyway
+    logger.LogError(ex, "Error during DB initialization: {Message}", ex.Message);
 }
 
 app.Run();
