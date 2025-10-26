@@ -9,10 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Database Context
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseNpgsql(connectionString);
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.LogTo(Console.WriteLine, LogLevel.Information);
+    }
 });
 
 // Services
@@ -30,23 +40,65 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+}
 
+// Important: Add this before UseRouting
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
 
+// Map routes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Ensure database is created
-using (var scope = app.Services.CreateScope())
+// Add fallback route for debugging
+app.MapFallback(async context =>
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await context.Database.EnsureCreatedAsync();
+    context.Response.StatusCode = 404;
+    await context.Response.WriteAsync($"Path not found: {context.Request.Path}");
+});
+
+// Ensure database is created and seeded
+try 
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        
+        logger.LogInformation("Testing database connection...");
+        
+        // Test database connection
+        if (await context.Database.CanConnectAsync())
+        {
+            logger.LogInformation("Database connection successful");
+            
+            // Ensure database is created
+            await context.Database.EnsureCreatedAsync();
+            logger.LogInformation("Database schema ensured");
+            
+            // Check if we have data
+            var studentsCount = await context.Students.CountAsync();
+            var languagesCount = await context.Languages.CountAsync();
+            logger.LogInformation($"Found {studentsCount} students and {languagesCount} languages in database");
+        }
+        else
+        {
+            logger.LogError("Cannot connect to database. Please check your connection string.");
+        }
+    }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred while initializing the database: {Message}", ex.Message);
+    // Don't throw here - let the app start anyway
 }
 
 app.Run();
