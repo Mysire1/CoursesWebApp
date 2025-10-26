@@ -7,40 +7,85 @@
     <p>Ласкаво просимо до системи управління мовними курсами.</p>
 </div>
 
+@if (ViewBag.DatabaseConnected == false)
+{
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Помилка підключення до бази даних!</h4>
+        <p>@ViewBag.ErrorMessage</p>
+        <hr>
+        <div class="mb-0">
+            <h6>Перевірте:</h6>
+            <ul>
+                <li>Чи запущено PostgreSQL сервіс</li>
+                <li>Чи створено базу даних 'courseswebapp'</li>
+                <li>Налаштування підключення в appsettings.json</li>
+            </ul>
+        </div>
+    </div>
+}
+
 <div class="row mt-4">
     <div class="col-md-3">
-        <div class="card text-center">
+        <div class="card text-center @(ViewBag.DatabaseConnected == false ? "border-danger" : "")">
             <div class="card-body">
                 <h5 class="card-title">Студенти</h5>
-                <p class="card-text display-6">@ViewBag.StudentsCount</p>
-                <a asp-controller="Students" asp-action="Index" class="btn btn-primary">Переглянути</a>
+                <p class="card-text display-6">@(ViewBag.StudentsCount ?? 0)</p>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-secondary" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <a asp-controller="Students" asp-action="Index" class="btn btn-primary">Переглянути</a>
+                }
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-center">
+        <div class="card text-center @(ViewBag.DatabaseConnected == false ? "border-danger" : "")">
             <div class="card-body">
                 <h5 class="card-title">Мови</h5>
-                <p class="card-text display-6">@ViewBag.LanguagesCount</p>
-                <a href="#" class="btn btn-success">Переглянути</a>
+                <p class="card-text display-6">@(ViewBag.LanguagesCount ?? 0)</p>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-secondary" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <button class="btn btn-success" disabled>Переглянути</button>
+                }
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-center">
+        <div class="card text-center @(ViewBag.DatabaseConnected == false ? "border-danger" : "")">
             <div class="card-body">
                 <h5 class="card-title">Викладачі</h5>
-                <p class="card-text display-6">@ViewBag.TeachersCount</p>
-                <a href="#" class="btn btn-info">Переглянути</a>
+                <p class="card-text display-6">@(ViewBag.TeachersCount ?? 0)</p>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-secondary" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <button class="btn btn-info" disabled>Переглянути</button>
+                }
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-center">
+        <div class="card text-center @(ViewBag.DatabaseConnected == false ? "border-danger" : "")">
             <div class="card-body">
                 <h5 class="card-title">Групи</h5>
-                <p class="card-text display-6">@ViewBag.GroupsCount</p>
-                <a href="#" class="btn btn-warning">Переглянути</a>
+                <p class="card-text display-6">@(ViewBag.GroupsCount ?? 0)</p>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-secondary" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <button class="btn btn-warning" disabled>Переглянути</button>
+                }
             </div>
         </div>
     </div>
@@ -52,20 +97,68 @@
         <ul class="list-group">
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 Управління студентами
-                <a asp-controller="Students" asp-action="Index" class="btn btn-outline-primary btn-sm">Перейти</a>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-outline-secondary btn-sm" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <a asp-controller="Students" asp-action="Index" class="btn btn-outline-primary btn-sm">Перейти</a>
+                }
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 Аналітичні запити
-                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-success btn-sm">Перейти</a>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-outline-secondary btn-sm" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-success btn-sm">Перейти</a>
+                }
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 Розрахунок вартості курсів
-                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-info btn-sm">Перейти</a>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-outline-secondary btn-sm" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-info btn-sm">Перейти</a>
+                }
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 Управління знижками та надбавками
-                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-warning btn-sm">Перейти</a>
+                @if (ViewBag.DatabaseConnected == false)
+                {
+                    <button class="btn btn-outline-secondary btn-sm" disabled>Недоступно</button>
+                }
+                else
+                {
+                    <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-warning btn-sm">Перейти</a>
+                }
             </li>
         </ul>
     </div>
 </div>
+
+@if (ViewBag.DatabaseConnected == false)
+{
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5>Налаштування бази даних</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Крок 1:</strong> Упевніться, що PostgreSQL запущено</p>
+                    <p><strong>Крок 2:</strong> Створіть базу даних:</p>
+                    <code>CREATE DATABASE courseswebapp;</code>
+                    <p class="mt-2"><strong>Крок 3:</strong> Перевіріть налаштування в appsettings.json</p>
+                    <p><strong>Крок 4:</strong> Перезапустіть додаток</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
