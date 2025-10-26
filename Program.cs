@@ -35,14 +35,14 @@ builder.Services.AddScoped<IQueryService, QueryServiceImpl>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    //app.UseHsts();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/Home/Error");
+    //app.UseHsts();
 }
 
 //app.UseHttpsRedirection();
@@ -51,13 +51,15 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-// Map routes FIRST
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Remove global fallback that was catching all requests and showing 404
-// If you need a spa fallback later, add it after static files to a specific path
+// Explicit redirect from root to Home/Index to avoid 404 at '/'
+app.MapGet("/", async context =>
+{
+    context.Response.Redirect("/Home/Index");
+});
 
 // Ensure database is created and reachable
 try 
