@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Діагностика системи";
+}
+
+<div class="container mt-4">
+    <h1>Діагностика системи</h1>
+    
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5>Результати перевірки</h5>
+        </div>
+        <div class="card-body">
+            <pre style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace;">
+@if (ViewBag.Results != null)
+{
+    foreach (var line in ViewBag.Results as List<string>)
+    {
+        @line
+        @Html.Raw("\n")
+    }
+}
+else
+{
+    <span class="text-danger">Не вдалося отримати результати діагностики</span>
+}
+            </pre>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a href="@Url.Action("Simple", "Test")" class="btn btn-info">Простий тест</a>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Повернутися на головну</a>
+        <button onclick="location.reload()" class="btn btn-primary">Оновити</button>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Простий тест";
+}
+
+<div class="container mt-4">
+    <h1>Простий тест</h1>
+    
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Успіх!</h4>
+        <p>@ViewBag.Message</p>
+        <hr>
+        <p class="mb-0">Поточний час: @ViewBag.Time</p>
+    </div>
+    
+    <div class="mt-3">
+        <a href="@Url.Action("Index", "Test")" class="btn btn-primary">Повна діагностика</a>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Повернутися на головну</a>
+    </div>
+</div>
