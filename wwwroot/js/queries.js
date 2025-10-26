@@ -1,6 +1,4 @@
-// JavaScript для обробки запитів
 
-// Запит 1: Пошук груп
 $(document).ready(function () {
     $('#searchGroupsForm').on('submit', function (e) {
         e.preventDefault();
@@ -16,7 +14,6 @@ $(document).ready(function () {
     });
 });
 
-// Запит 2: Розрахунок вартості
 function calculateCost(calculationType) {
     const languageId = $('#costLanguageSelect').val();
     
@@ -61,7 +58,6 @@ function displayCostResult(data, type) {
     $('#costResult').html(html);
 }
 
-// Запит 3: Нездані іспити
 function getFailedExams() {
     $.post('/Queries/GetFailedExams')
         .done(function (response) {
@@ -94,7 +90,6 @@ function displayFailedExamsResult(data) {
     $('#failedExamsResult').html(html);
 }
 
-// Запит 4: Викладачі за кількістю мов
 function getTeachersByLanguageCount() {
     $.post('/Queries/GetTeachersByLanguageCount')
         .done(function (response) {
@@ -136,7 +131,6 @@ function displayTeachersResult(data) {
     $('#teachersResult').html(html);
 }
 
-// Запит 5: Статус оплати
 function getPaymentStatus(statusType) {
     $.post('/Queries/GetPaymentStatus', { statusType: statusType })
         .done(function (data) {
@@ -147,7 +141,6 @@ function getPaymentStatus(statusType) {
         });
 }
 
-// Запит 7: Студенти за мовами
 function getStudentsByLanguage() {
     $.post('/Queries/GetStudentsByLanguage')
         .done(function (response) {
@@ -163,7 +156,6 @@ function getStudentsByLanguage() {
 function displayStudentsByLanguageResult(data) {
     let html = '<div class="row">';
     
-    // Німецька
     html += '<div class="col-md-6"><div class="card"><div class="card-header bg-primary text-white"><h6>Вивчають Німецьку</h6></div><div class="card-body">';
     if (data.germanStudents && data.germanStudents.length > 0) {
         html += '<ul class="list-group list-group-flush">';
@@ -176,7 +168,6 @@ function displayStudentsByLanguageResult(data) {
     }
     html += '</div></div></div>';
     
-    // Кілька мов
     html += '<div class="col-md-6"><div class="card"><div class="card-header bg-success text-white"><h6>Вивчають > 1 мови</h6></div><div class="card-body">';
     if (data.multiLanguageStudents && data.multiLanguageStudents.length > 0) {
         html += '<ul class="list-group list-group-flush">';
@@ -193,7 +184,6 @@ function displayStudentsByLanguageResult(data) {
     $('#studentsByLanguageResult').html(html);
 }
 
-// Запит 8: Надбавка для малих груп
 function applySmallGroupSurcharge() {
     if (!confirm('Ви впевнені, що хочете застосувати надбавку 20% для малих груп?')) {
         return;
@@ -216,7 +206,6 @@ function applySmallGroupSurcharge() {
         });
 }
 
-// Запит 9: Знижка для великих груп
 function applyLargeGroupDiscount() {
     if (!confirm('Ви впевнені, що хочете застосувати знижку 5% для великих груп?')) {
         return;
@@ -239,7 +228,6 @@ function applyLargeGroupDiscount() {
         });
 }
 
-// Запит 10: Розклад
 $(document).ready(function () {
     $('#scheduleForm').on('submit', function (e) {
         e.preventDefault();
@@ -255,7 +243,6 @@ $(document).ready(function () {
     });
 });
 
-// Допоміжна функція для відображення таблиці груп
 function displayGroupsTable(groups, title) {
     let html = `<h6>${title}:</h6><div class="table-responsive"><table class="table table-striped table-sm"><thead><tr><th>Група</th><th>Рівень</th><th>Кількість студентів</th></tr></thead><tbody>`;
     

@@ -71,7 +71,7 @@
     <form asp-action="Delete" method="post" style="display: inline-block;">
         <input type="hidden" asp-for="StudentId" />
         <button type="submit" class="btn btn-danger" 
-                onclick="return confirm('Ви впевнені, що хочете назавжди видалити студента "' + '@Model.FullName' + '"? Цю дію неможливо буде скасувати.')">
+                onclick="return confirm('Ви впевнені, що хочете назавжди видалити студента ' + '@Model.FullName' + '? Цю дію неможливо буде скасувати.')">
             <i class="fas fa-trash-alt"></i> Так, видалити назавжди
         </button>
     </form>
