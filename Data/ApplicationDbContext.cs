@@ -10,6 +10,7 @@ namespace CoursesWebApp.Data
         {
         }
         
+        public DbSet<User> Users { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Group> Groups { get; set; }
@@ -27,6 +28,27 @@ namespace CoursesWebApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Configure User relationships
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Student)
+                .WithOne()
+                .HasForeignKey<User>(u => u.StudentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Teacher)
+                .WithOne()
+                .HasForeignKey<User>(u => u.TeacherId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Configure relationships
             modelBuilder.Entity<TeacherLanguage>()
@@ -97,6 +119,7 @@ namespace CoursesWebApp.Data
                 .HasColumnType("decimal(5,2)");
 
             // Configure table names explicitly
+            modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Language>().ToTable("Languages");
             modelBuilder.Entity<Teacher>().ToTable("Teachers");
             modelBuilder.Entity<Student>().ToTable("Students");

@@ -1,9 +1,11 @@
 using CoursesWebApp.Models;
 using CoursesWebApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoursesWebApp.Controllers
 {
+    [Authorize(Roles = "Teacher")]
     public class StudentsController : Controller
     {
         private readonly IStudentService _studentService;

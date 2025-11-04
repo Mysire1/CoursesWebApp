@@ -26,16 +26,90 @@
                                 <i class="fas fa-home me-1"></i>Головна
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Students" asp-action="Index">
-                                <i class="fas fa-users me-1"></i>Студенти
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Queries" asp-action="Index">
-                                <i class="fas fa-chart-bar me-1"></i>Запити
-                            </a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @if (User.IsInRole("Teacher"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Students" asp-action="Index">
+                                        <i class="fas fa-users me-1"></i>Студенти
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Queries" asp-action="Index">
+                                        <i class="fas fa-chart-bar me-1"></i>Запити
+                                    </a>
+                                </li>
+                            }
+                            else if (User.IsInRole("Student"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" title="Моя група (буде додано пізніше)">
+                                        <i class="fas fa-users me-1"></i>Моя група
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link disabled" title="Увійдіть для доступу">
+                                    <i class="fas fa-users me-1"></i>Студенти
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" title="Увійдіть для доступу">
+                                    <i class="fas fa-chart-bar me-1"></i>Запити
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-1"></i>
+                                    @User.FindFirst("FullName")?.Value ?? User.Identity.Name
+                                    @if (User.IsInRole("Teacher"))
+                                    {
+                                        <span class="badge bg-primary ms-1">Вчитель</span>
+                                    }
+                                    else if (User.IsInRole("Student"))
+                                    {
+                                        <span class="badge bg-success ms-1">Студент</span>
+                                    }
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Auth" asp-action="Profile">
+                                            <i class="fas fa-user me-2"></i>Профіль
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Вийти
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Увійти
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Register">
+                                    <i class="fas fa-user-plus me-1"></i>Реєстрація
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

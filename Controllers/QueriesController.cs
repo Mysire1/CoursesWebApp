@@ -1,8 +1,10 @@
 using CoursesWebApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoursesWebApp.Controllers
 {
+    [Authorize(Roles = "Teacher")]
     public class QueriesController : Controller
     {
         private readonly IGroupService _groupService;

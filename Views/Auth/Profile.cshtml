@@ -1,0 +1,128 @@
+@model CoursesWebApp.Models.User
+@{
+    ViewData["Title"] = "Профіль користувача";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-circle me-2"></i>Профіль користувача
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Основна інформація</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Ім'я користувача:</strong></td>
+                                <td>@Model.Username</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td>@Model.Email</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Повне ім'я:</strong></td>
+                                <td>@Model.FullName</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Роль:</strong></td>
+                                <td>
+                                    @if (Model.IsTeacher)
+                                    {
+                                        <span class="badge bg-primary">Вчитель (Адміністратор)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Студент</span>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Статистика</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Дата реєстрації:</strong></td>
+                                <td>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Останній вхід:</strong></td>
+                                <td>
+                                    @if (Model.LastLoginAt != DateTime.MinValue)
+                                    {
+                                        @Model.LastLoginAt.ToString("dd.MM.yyyy HH:mm")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Ніколи</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Статус:</strong></td>
+                                <td>
+                                    @if (Model.IsActive)
+                                    {
+                                        <span class="badge bg-success">Активний</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Неактивний</span>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                @if (Model.Student != null)
+                {
+                    <hr />
+                    <h5 class="text-primary">Інформація про студента</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Дата народження:</strong> @Model.Student.DateOfBirth.ToString("dd.MM.yyyy")</p>
+                            <p><strong>Телефон:</strong> @(string.IsNullOrEmpty(Model.Student.Phone) ? "Не вказано" : Model.Student.Phone)</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Дата реєстрації на курс:</strong> @Model.Student.RegistrationDate.ToString("dd.MM.yyyy")</p>
+                            <p><strong>Знижка лояльності:</strong> 
+                                @if (Model.Student.HasDiscount)
+                                {
+                                    <span class="badge bg-success">Активна</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Неактивна</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Teacher != null)
+                {
+                    <hr />
+                    <h5 class="text-primary">Інформація про вчителя</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Дата найму:</strong> @Model.Teacher.HireDate.ToString("dd.MM.yyyy")</p>
+                            <p><strong>Телефон:</strong> @(string.IsNullOrEmpty(Model.Teacher.Phone) ? "Не вказано" : Model.Teacher.Phone)</p>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Повернутися на головну
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
