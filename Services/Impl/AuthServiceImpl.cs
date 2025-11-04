@@ -66,13 +66,13 @@ namespace CoursesWebApp.Services.Impl
                     Phone = "", // Можна додати поле в форму реєстрації
                     DateOfBirth = DateTime.Now.AddYears(-20), // За замовчуванням
                     RegistrationDate = DateTime.UtcNow,
-                    HasLoyaltyDiscount = false
+                    HasDiscount = false
                 };
 
                 _context.Students.Add(student);
                 await _context.SaveChangesAsync();
 
-                user.StudentId = student.Id;
+                user.StudentId = student.StudentId;
                 await _context.SaveChangesAsync();
             }
             else if (model.Role == "Teacher")
@@ -89,7 +89,7 @@ namespace CoursesWebApp.Services.Impl
                 _context.Teachers.Add(teacher);
                 await _context.SaveChangesAsync();
 
-                user.TeacherId = teacher.Id;
+                user.TeacherId = teacher.TeacherId;
                 await _context.SaveChangesAsync();
             }
 

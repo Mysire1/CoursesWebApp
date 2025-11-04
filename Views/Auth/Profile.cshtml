@@ -93,7 +93,7 @@
                         <div class="col-md-6">
                             <p><strong>Дата реєстрації на курс:</strong> @Model.Student.RegistrationDate.ToString("dd.MM.yyyy")</p>
                             <p><strong>Знижка лояльності:</strong> 
-                                @if (Model.Student.HasLoyaltyDiscount)
+                                @if (Model.Student.HasDiscount)
                                 {
                                     <span class="badge bg-success">Активна</span>
                                 }
