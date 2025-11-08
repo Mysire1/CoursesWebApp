@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Оплати та фінанси";
+}
+
+<h1>Фінанси та оплати</h1>
+
+<!-- Фільтр по групі, студенту, статусу та періоду -->
+<form class="row gy-2 mb-4">
+    <div class="col-auto">
+        <input type="text" class="form-control" placeholder="ПІБ студента/група...">
+    </div>
+    <div class="col-auto">
+        <select class="form-select">
+            <option value="">Всі статуси</option>
+            <option value="fullyPaid">Повністю сплатили</option>
+            <option value="notFullyPaid">Є заборгованість</option>
+            <option value="debtLess50">Борг &lt; 50%</option>
+            <option value="withDeferrals">Відтермінування</option>
+            <option value="withDiscounts">Пільги</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="month" class="form-control">
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary">Фільтрувати</button>
+    </div>
+</form>
+
+<div class="table-responsive mb-4">
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Дата</th>
+                <th>Студент</th>
+                <th>Група</th>
+                <th>Сума</th>
+                <th>Статус</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- foreach для фінансових операцій -->
+        </tbody>
+    </table>
+</div>
+
+<h4>Операції зі знижками та надбавками</h4>
+<div class="row mb-3">
+    <div class="col-auto">
+        <button class="btn btn-info">Надати знижку</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-warning">Надбавка для малих груп</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-success">Знижка для великих груп</button>
+    </div>
+</div>
+
+<!-- Тут можна підключити частини із старої Queries -->
