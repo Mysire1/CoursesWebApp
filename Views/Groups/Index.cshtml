@@ -20,6 +20,7 @@
                 <th>Викладач</th>
                 <th>К-ть студентів</th>
                 <th>Дата старту</th>
+                <th>Дії</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +34,10 @@
                     <td>@(group.Teacher?.FullName ?? "—")</td>
                     <td>@(group.Enrollments?.Count() ?? 0)</td>
                     <td>@group.StartDate.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@group.GroupId" class="btn btn-warning btn-sm">Редагувати</a>
+                        <a asp-action="Delete" asp-route-id="@group.GroupId" class="btn btn-danger btn-sm">Видалити</a>
+                    </td>
                 </tr>
             }
         </tbody>
