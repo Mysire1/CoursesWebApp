@@ -1,6 +1,7 @@
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace CoursesWebApp.Controllers
 {
@@ -13,9 +14,13 @@ namespace CoursesWebApp.Controllers
             _languageService = languageService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? filter)
         {
-            ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
+            var languages = await _languageService.GetAllLanguagesAsync();
+            if (!string.IsNullOrEmpty(filter))
+                languages = languages.Where(l => l.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+            ViewBag.Filter = filter;
+            ViewBag.Languages = languages;
             return View();
         }
     }
