@@ -11,6 +11,8 @@ namespace CoursesWebApp.Services
         Task<IEnumerable<Group>> GetLargeGroupsAsync(int exactStudents = 20);
         Task<int> ApplySmallGroupSurchargeAsync(decimal surchargePercentage = 20);
         Task<int> ApplyLargeGroupDiscountAsync(decimal discountPercentage = 5);
-        Task CreateGroupAsync(Group group); // додано для enterprise UI
+        Task CreateGroupAsync(Group group);
+        Task UpdateGroupAsync(Group group); // новий метод
+        Task DeleteGroupAsync(int id);     // новий метод
     }
 }
