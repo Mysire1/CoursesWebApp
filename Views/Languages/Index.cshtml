@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "Мови";
+}
+
+<h1>Список мов</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Додати нову мову</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Назва мови</th>
+                <th>Груп (count)</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* foreach по мовах *@
+        </tbody>
+    </table>
+</div>
+
+@if (ViewBag.Languages == null || !(ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language>).Any())
+{
+    <div class="alert alert-info" role="alert">
+        Мов не знайдено. <a asp-action="Create" class="alert-link">Додайте першу мову</a>.
+    </div>
+}
