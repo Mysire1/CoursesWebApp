@@ -1,18 +1,52 @@
 @model IEnumerable<CoursesWebApp.Models.Student>
-
 @{
     ViewData["Title"] = "Студенти";
 }
 
-<h1>Список Студентів</h1>
+<h1>Список студентів</h1>
+
+<!-- Mini-dashboard та статистика -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Всього студентів</h5>
+                <p class="display-6">@Model.Count()</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Сьогодні зареєстровано</h5>
+                <p class="display-6">@Model.Count(s => s.RegistrationDate.Date == DateTime.Now.Date)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Пільговиків</h5>
+                <p class="display-6">@Model.Count(s => s.HasDiscount)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Боржників</h5>
+                <p class="display-6">@Model.Count(s => s.DiscountPercentage < 0)</p>
+                @* Тут можна розрахувати боржників, якщо додати логіку *@
+            </div>
+        </div>
+    </div>
+</div>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Додати нового студента</a>
-    <form asp-action="ApplyLoyaltyDiscount" method="post" style="display: inline-block;">
-        <button type="submit" class="btn btn-warning" onclick="return confirm('Ви впевнені, що хочете застосувати знижку за лояльність?')">10% знижка за лояльність</button>
-    </form>
 </p>
 
+<!-- Список студентів + кнопка для лояльності -->
 <div class="table-responsive">
     <table class="table table-striped table-hover">
         <thead class="table-dark">
