@@ -1,5 +1,6 @@
 @{
     ViewData["Title"] = "Групи";
+    var groups = ViewBag.Groups as IEnumerable<CoursesWebApp.Models.Group> ?? new List<CoursesWebApp.Models.Group>();
 }
 
 <h1>Список груп</h1>
@@ -8,7 +9,6 @@
     <a asp-action="Create" class="btn btn-primary">Додати нову групу</a>
 </p>
 
-<!-- Відображення груп, фільтр, пошук -->
 <div class="table-responsive">
     <table class="table table-striped table-hover">
         <thead class="table-dark">
@@ -19,51 +19,29 @@
                 <th>Рівень</th>
                 <th>Викладач</th>
                 <th>К-ть студентів</th>
-                <th>Дії</th>
+                <th>Дата старту</th>
             </tr>
         </thead>
         <tbody>
-            @* foreach по групах *@
+            @foreach (var group in groups)
+            {
+                <tr>
+                    <td>@group.GroupId</td>
+                    <td>@group.GroupName</td>
+                    <td>@(group.Language?.Name ?? "—")</td>
+                    <td>@group.LevelName</td>
+                    <td>@(group.Teacher?.FullName ?? "—")</td>
+                    <td>@(group.Enrollments?.Count() ?? 0)</td>
+                    <td>@group.StartDate.ToString("dd.MM.yyyy")</td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
 
-@if (ViewBag.Groups == null || !(ViewBag.Groups as IEnumerable<CoursesWebApp.Models.Group>).Any())
+@if (!groups.Any())
 {
     <div class="alert alert-info" role="alert">
         Груп не знайдено. <a asp-action="Create" class="alert-link">Додайте першу групу</a>.
     </div>
 }
-
-<!-- Запит: Пошук груп, перенесений з Queries -->
-<div class="my-4">
-    <h3>Пошук груп за мовою та викладачем</h3>
-    <form id="searchGroupsForm">
-        <div class="row">
-            <div class="col-md-4">
-                <label>Мова:</label>
-                <select class="form-select" name="languageId" id="languageSelect">
-                    <option value="">Всі мови</option>
-                    @foreach (var language in ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language>)
-                    {
-                        <option value="@language.LanguageId">@language.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label>Викладач:</label>
-                <select class="form-select" name="teacherId" id="teacherSelect">
-                    <option value="">Всі викладачі</option>
-                    @foreach (var teacher in ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher>)
-                    {
-                        <option value="@teacher.TeacherId">@teacher.FullName</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary mt-4">Пошук</button>
-            </div>
-        </div>
-    </form>
-    <div id="groupsResult" class="mt-3"></div>
-</div>
