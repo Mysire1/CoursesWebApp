@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Викладачі";
+}
+
+<h1>Список викладачів</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Додати викладача</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>ПІБ</th>
+                <th>Email</th>
+                <th>Телефон</th>
+                <th>Мов (Count)</th>
+                <th>Дата найму</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* foreach по викладачах *@
+        </tbody>
+    </table>
+</div>
+
+@if (ViewBag.Teachers == null || !(ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher>).Any())
+{
+    <div class="alert alert-info" role="alert">
+        Викладачів не знайдено. <a asp-action="Create" class="alert-link">Додайте першого викладача</a>.
+    </div>
+}
