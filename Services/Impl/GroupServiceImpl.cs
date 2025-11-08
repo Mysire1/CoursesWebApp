@@ -131,5 +131,21 @@ namespace CoursesWebApp.Services.Impl
             _context.Groups.Add(group);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateGroupAsync(Group group)
+        {
+            _context.Groups.Update(group);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteGroupAsync(int id)
+        {
+            var group = await _context.Groups.FindAsync(id);
+            if (group != null)
+            {
+                _context.Groups.Remove(group);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
