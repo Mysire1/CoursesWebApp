@@ -5,21 +5,33 @@
 <h1>Розклад занять</h1>
 
 <!-- Фільтр по групах та викладачах -->
-<form class="row gy-2 mb-4">
+<form class="row gy-2 mb-4" id="scheduleFilterForm">
     <div class="col-auto">
-        <select class="form-select">
+        <select class="form-select" id="groupSelect" name="groupId">
             <option value="">Оберіть групу</option>
-            @* foreach по групах *@
+            @if (ViewBag.Groups != null)
+            {
+                @foreach (var group in ViewBag.Groups)
+                {
+                    <option value="@group.GroupId">@group.GroupName</option>
+                }
+            }
         </select>
     </div>
     <div class="col-auto">
-        <select class="form-select">
+        <select class="form-select" id="teacherSelect" name="teacherId">
             <option value="">Оберіть викладача</option>
-            @* foreach по викладачах *@
+            @if (ViewBag.Teachers != null)
+            {
+                @foreach (var teacher in ViewBag.Teachers)
+                {
+                    <option value="@teacher.TeacherId">@teacher.FullName</option>
+                }
+            }
         </select>
     </div>
     <div class="col-auto">
-        <button class="btn btn-primary">Показати</button>
+        <button type="button" class="btn btn-primary" onclick="loadSchedule()">Показати</button>
     </div>
 </form>
 
@@ -35,8 +47,41 @@
                 <th>Дії</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- foreach для занять -->
+        <tbody id="scheduleTableBody">
+            <tr>
+                <td colspan="6" class="text-center text-muted">Оберіть групу або викладача для відображення розкладу</td>
+            </tr>
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        function loadSchedule() {
+            const groupId = document.getElementById('groupSelect').value;
+            const teacherId = document.getElementById('teacherSelect').value;
+            
+            if (!groupId && !teacherId) {
+                alert('Будь ласка, оберіть групу або викладача');
+                return;
+            }
+            
+            const formData = new FormData();
+            if (groupId) formData.append('groupId', groupId);
+            if (teacherId) formData.append('teacherId', teacherId);
+            
+            fetch('/Schedule/GetSchedule', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('scheduleTableBody').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка при завантаженні розкладу');
+            });
+        }
+    </script>
+}
