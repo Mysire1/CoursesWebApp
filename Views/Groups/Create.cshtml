@@ -1,0 +1,42 @@
+@model CoursesWebApp.Models.ViewModels.GroupCreateViewModel
+@{
+    ViewData["Title"] = "Створити групу";
+    var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
+    var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
+}
+<h1>Створити нову групу</h1>
+<form asp-action="Create" method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="GroupName" class="form-label">Назва групи</label>
+        <input asp-for="GroupName" class="form-control" />
+        <span asp-validation-for="GroupName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="TeacherId" class="form-label">Викладач</label>
+        <select asp-for="TeacherId" class="form-select" asp-items="@(new SelectList(teachers, "TeacherId", "FullName"))">
+            <option value="">Оберіть викладача</option>
+        </select>
+        <span asp-validation-for="TeacherId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="LanguageId" class="form-label">Мова</label>
+        <select asp-for="LanguageId" class="form-select" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
+            <option value="">Оберіть мову</option>
+        </select>
+        <span asp-validation-for="LanguageId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="LevelName" class="form-label">Рівень</label>
+        <input asp-for="LevelName" class="form-control" placeholder="Напр. Beginner, Intermediate" />
+        <span asp-validation-for="LevelName" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="StartDate" class="form-label">Дата старту</label>
+        <input asp-for="StartDate" type="date" class="form-control" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">Створити</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Скасувати</a>
+    </div>
+</form>
