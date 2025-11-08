@@ -1,0 +1,24 @@
+@model IEnumerable<CoursesWebApp.Models.Schedule>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.LessonDate.ToString("dd.MM.yyyy HH:mm")</td>
+            <td>@item.Group?.GroupName</td>
+            <td>@item.Teacher?.FullName</td>
+            <td>@item.StudentsCount</td>
+            <td>@item.Classroom</td>
+            <td>
+                <a href="#" class="btn btn-sm btn-info">Переглянути</a>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="6" class="text-center text-muted">Занять не знайдено</td>
+    </tr>
+}
