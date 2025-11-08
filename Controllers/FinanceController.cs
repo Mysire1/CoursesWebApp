@@ -17,9 +17,11 @@ namespace CoursesWebApp.Controllers
             _groupService = groupService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // для майбутньої аналітики можна використати ViewBag, поки фіктивно
+            // Завантажуємо всіх студентів та групи для ініціалізації
+            ViewBag.Students = await _studentService.GetAllStudentsAsync();
+            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
             return View();
         }
 
