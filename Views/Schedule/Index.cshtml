@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Розклад занять";
+}
+
+<h1>Розклад занять</h1>
+
+<!-- Фільтр по групах та викладачах -->
+<form class="row gy-2 mb-4">
+    <div class="col-auto">
+        <select class="form-select">
+            <option value="">Оберіть групу</option>
+            @* foreach по групах *@
+        </select>
+    </div>
+    <div class="col-auto">
+        <select class="form-select">
+            <option value="">Оберіть викладача</option>
+            @* foreach по викладачах *@
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary">Показати</button>
+    </div>
+</form>
+
+<div class="table-responsive mb-4">
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Дата</th>
+                <th>Група</th>
+                <th>Викладач</th>
+                <th>Студенти</th>
+                <th>Аудиторія</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- foreach для занять -->
+        </tbody>
+    </table>
+</div>
