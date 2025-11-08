@@ -1,15 +1,15 @@
 @{
     ViewData["Title"] = "Мови";
+    var filter = ViewBag.Filter as string ?? "";
     var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
 }
 
 <h1>Список мов</h1>
-
 <!-- Фільтрація за назвою мови -->
 <form method="get" class="mb-3">
     <div class="row">
         <div class="col-md-4">
-            <input type="text" name="filter" class="form-control" placeholder="Введіть назву мови..." value="@(Request.Query["filter"])">
+            <input type="text" name="filter" class="form-control" placeholder="Введіть назву мови..." value="@filter">
         </div>
         <div class="col-md-2">
             <button type="submit" class="btn btn-success">Застосувати</button>
@@ -27,14 +27,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var lang in string.IsNullOrEmpty(Request.Query["filter"]) ? languages : languages.Where(l => l.Name.Contains(Request.Query["filter"], StringComparison.OrdinalIgnoreCase)))
+            @foreach (var lang in languages)
             {
                 <tr>
                     <td>@lang.LanguageId</td>
                     <td>@lang.Name</td>
-                    <td>
-                        @(lang.Groups?.Count() ?? 0)
-                    </td>
+                    <td>@(lang.Groups?.Count() ?? 0)</td>
                 </tr>
             }
         </tbody>
@@ -44,6 +42,6 @@
 @if (!languages.Any())
 {
     <div class="alert alert-info" role="alert">
-        Мов не знайдено. 
+        Мов не знайдено.
     </div>
 }
