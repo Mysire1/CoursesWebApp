@@ -1,0 +1,40 @@
+@model IEnumerable<CoursesWebApp.Models.Schedule>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.DayOfWeek</td>
+            <td>@item.Group?.GroupName</td>
+            <td>
+                @if (item.Group?.Teacher != null)
+                {
+                    @item.Group.Teacher.FullName
+                }
+                else
+                {
+                    <span class="text-muted">Не призначено</span>
+                }
+            </td>
+            <td>
+                @if (item.Group?.Enrollments != null)
+                {
+                    @item.Group.Enrollments.Count()
+                }
+                else
+                {
+                    <span>0</span>
+                }
+            </td>
+            <td>@item.Classroom?.RoomNumber</td>
+            <td>@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="6" class="text-center text-muted">Занять не знайдено</td>
+    </tr>
+}

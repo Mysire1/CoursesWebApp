@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Групи";
+    var groups = ViewBag.Groups as IEnumerable<CoursesWebApp.Models.Group> ?? new List<CoursesWebApp.Models.Group>();
+}
+
+<h1>Список груп</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Додати нову групу</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Назва</th>
+                <th>Мова</th>
+                <th>Рівень</th>
+                <th>Викладач</th>
+                <th>К-ть студентів</th>
+                <th>Дата старту</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in groups)
+            {
+                <tr>
+                    <td>@group.GroupId</td>
+                    <td>@group.GroupName</td>
+                    <td>@(group.Language?.Name ?? "—")</td>
+                    <td>@group.LevelName</td>
+                    <td>@(group.Teacher?.FullName ?? "—")</td>
+                    <td>@(group.Enrollments?.Count() ?? 0)</td>
+                    <td>@group.StartDate.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@group.GroupId" class="btn btn-warning btn-sm">Редагувати</a>
+                        <a asp-action="Delete" asp-route-id="@group.GroupId" class="btn btn-danger btn-sm">Видалити</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!groups.Any())
+{
+    <div class="alert alert-info" role="alert">
+        Груп не знайдено. <a asp-action="Create" class="alert-link">Додайте першу групу</a>.
+    </div>
+}

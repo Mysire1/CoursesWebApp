@@ -1,0 +1,65 @@
+@model IEnumerable<CoursesWebApp.Models.Student>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var student in Model)
+    {
+        <tr>
+            <td>@student.RegistrationDate.ToString("dd.MM.yyyy")</td>
+            <td>@student.FullName</td>
+            <td>
+                @if (student.Enrollments != null && student.Enrollments.Any())
+                {
+                    @string.Join(", ", student.Enrollments.Select(e => e.Group?.GroupName ?? "Невідомо"))
+                }
+                else
+                {
+                    <span class="text-muted">Не призначено</span>
+                }
+            </td>
+            <td>
+                @if (student.Payments != null && student.Payments.Any())
+                {
+                    @student.Payments.Sum(p => p.Amount).ToString("C")
+                }
+                else
+                {
+                    <span>0,00 ₴</span>
+                }
+            </td>
+            <td>
+                @{
+                    var totalPayments = student.Payments?.Sum(p => p.Amount) ?? 0;
+                    var hasDeferrals = student.PaymentDeferrals?.Any() ?? false;
+                    
+                    if (totalPayments > 0)
+                    {
+                        <span class="badge bg-success">Сплачено</span>
+                    }
+                    else if (hasDeferrals)
+                    {
+                        <span class="badge bg-warning">Відтермінування</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Борг</span>
+                    }
+                    
+                    if (student.HasDiscount)
+                    {
+                        <span class="badge bg-info ms-1">Знижка @student.DiscountPercentage%</span>
+                    }
+                }
+            </td>
+            <td>
+                <a href="/Students/Details/@student.StudentId" class="btn btn-sm btn-info">Переглянути</a>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="6" class="text-center text-muted">Студентів не знайдено</td>
+    </tr>
+}

@@ -1,0 +1,15 @@
+@model CoursesWebApp.Models.Group
+@{
+    ViewData["Title"] = "Видалити групу";
+}
+<h1>Видалити групу</h1>
+<div class="alert alert-danger">
+    <strong>Ви впевнені, що хочете видалити групу?</strong>
+    <br/>
+    <strong>@Model.GroupName</strong> (@Model.LevelName, @(Model.Language?.Name ?? "—"), Викладач: @(Model.Teacher?.FullName ?? "—"))
+</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="GroupId" />
+    <button type="submit" class="btn btn-danger">Видалити</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Скасувати</a>
+</form>
