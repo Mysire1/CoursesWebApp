@@ -1,0 +1,33 @@
+@model IEnumerable<CoursesWebApp.Models.Student>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var student in Model)
+    {
+        <tr>
+            <td>@(student.EnrollmentDate?.ToString("dd.MM.yyyy") ?? "N/A")</td>
+            <td>@student.FullName</td>
+            <td>@(student.Group?.GroupName ?? "Не призначено")</td>
+            <td>@(student.Fee?.ToString("C") ?? "0")</td>
+            <td>
+                @if (student.IsPaid)
+                {
+                    <span class="badge bg-success">Сплачено</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Борг</span>
+                }
+            </td>
+            <td>
+                <a href="/Students/Details/@student.StudentId" class="btn btn-sm btn-info">Переглянути</a>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="6" class="text-center text-muted">Студентів не знайдено</td>
+    </tr>
+}
