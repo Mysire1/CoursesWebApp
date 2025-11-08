@@ -5,14 +5,30 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>@item.LessonDate.ToString("dd.MM.yyyy HH:mm")</td>
+            <td>@item.DayOfWeek</td>
             <td>@item.Group?.GroupName</td>
-            <td>@item.Teacher?.FullName</td>
-            <td>@item.StudentsCount</td>
-            <td>@item.Classroom</td>
             <td>
-                <a href="#" class="btn btn-sm btn-info">Переглянути</a>
+                @if (item.Group?.Teacher != null)
+                {
+                    @item.Group.Teacher.FullName
+                }
+                else
+                {
+                    <span class="text-muted">Не призначено</span>
+                }
             </td>
+            <td>
+                @if (item.Group?.Enrollments != null)
+                {
+                    @item.Group.Enrollments.Count()
+                }
+                else
+                {
+                    <span>0</span>
+                }
+            </td>
+            <td>@item.Classroom?.RoomNumber</td>
+            <td>@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
         </tr>
     }
 }
