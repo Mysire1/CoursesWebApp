@@ -49,10 +49,58 @@ namespace CoursesWebApp.Controllers
                 GroupName = vm.GroupName,
                 TeacherId = vm.TeacherId,
                 LanguageId = vm.LanguageId,
-                StartDate = vm.StartDate,
+                StartDate = DateTime.SpecifyKind(vm.StartDate, DateTimeKind.Utc),
                 LevelName = vm.LevelName
             };
             await _groupService.CreateGroupAsync(group);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var group = await _groupService.GetGroupByIdAsync(id);
+            if (group == null) return NotFound();
+            ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
+            ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+            var vm = new GroupCreateViewModel { GroupName = group.GroupName, TeacherId = group.TeacherId, LanguageId = group.LanguageId, StartDate = group.StartDate, LevelName = group.LevelName };
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, GroupCreateViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
+                ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                return View(vm);
+            }
+            var group = await _groupService.GetGroupByIdAsync(id);
+            if (group == null) return NotFound();
+            group.GroupName = vm.GroupName;
+            group.TeacherId = vm.TeacherId;
+            group.LanguageId = vm.LanguageId;
+            group.StartDate = DateTime.SpecifyKind(vm.StartDate, DateTimeKind.Utc);
+            group.LevelName = vm.LevelName;
+            await _groupService.UpdateGroupAsync(group);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var group = await _groupService.GetGroupByIdAsync(id);
+            if (group == null) return NotFound();
+            return View(group);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _groupService.DeleteGroupAsync(id);
             return RedirectToAction("Index");
         }
 
