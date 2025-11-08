@@ -1,6 +1,7 @@
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace CoursesWebApp.Controllers
 {
@@ -13,9 +14,13 @@ namespace CoursesWebApp.Controllers
             _teacherService = teacherService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? filter)
         {
-            ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+            var teachers = await _teacherService.GetAllTeachersAsync();
+            if (!string.IsNullOrEmpty(filter))
+                teachers = teachers.Where(x => (x.FullName ?? "").Contains(filter, StringComparison.OrdinalIgnoreCase) || (x.Email ?? "").Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+            ViewBag.Filter = filter;
+            ViewBag.Teachers = teachers;
             return View();
         }
     }
