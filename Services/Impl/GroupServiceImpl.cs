@@ -47,7 +47,7 @@ namespace CoursesWebApp.Services.Impl
 
             if (languageId.HasValue)
             {
-                query = query.Where(g => g.Level.LanguageId == languageId.Value);
+                query = query.Where(g => g.LanguageId == languageId.Value);
             }
 
             if (teacherId.HasValue)
@@ -124,6 +124,12 @@ namespace CoursesWebApp.Services.Impl
 
             await _context.SaveChangesAsync();
             return count;
+        }
+
+        public async Task CreateGroupAsync(Group group)
+        {
+            _context.Groups.Add(group);
+            await _context.SaveChangesAsync();
         }
     }
 }
