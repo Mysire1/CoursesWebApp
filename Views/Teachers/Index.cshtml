@@ -1,12 +1,20 @@
 @{
     ViewData["Title"] = "Викладачі";
+    var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
 }
 
 <h1>Список викладачів</h1>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Додати викладача</a>
-</p>
+<!-- Фільтрація за ПІБ викладача, email або мовами -->
+<form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" name="filter" class="form-control" placeholder="ПІБ або email..." value="@(Request.Query["filter"])">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-info">Застосувати</button>
+        </div>
+    </div>
+</form>
 
 <div class="table-responsive">
     <table class="table table-striped table-hover">
@@ -18,18 +26,27 @@
                 <th>Телефон</th>
                 <th>Мов (Count)</th>
                 <th>Дата найму</th>
-                <th>Дії</th>
             </tr>
         </thead>
         <tbody>
-            @* foreach по викладачах *@
+            @foreach (var t in string.IsNullOrEmpty(Request.Query["filter"]) ? teachers : teachers.Where(x => (x.FullName ?? "").Contains(Request.Query["filter"], StringComparison.OrdinalIgnoreCase) || (x.Email ?? "").Contains(Request.Query["filter"], StringComparison.OrdinalIgnoreCase)))
+            {
+                <tr>
+                    <td>@t.TeacherId</td>
+                    <td>@t.FullName</td>
+                    <td>@t.Email</td>
+                    <td>@t.Phone</td>
+                    <td>@(t.TeacherLanguages?.Count() ?? 0)</td>
+                    <td>@t.HireDate.ToString("dd.MM.yyyy")</td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
 
-@if (ViewBag.Teachers == null || !(ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher>).Any())
+@if (!teachers.Any())
 {
     <div class="alert alert-info" role="alert">
-        Викладачів не знайдено. <a asp-action="Create" class="alert-link">Додайте першого викладача</a>.
+        Викладачів не знайдено.
     </div>
 }
