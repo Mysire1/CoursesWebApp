@@ -20,6 +20,13 @@ namespace CoursesWebApp.Models
         public int TeacherId { get; set; }
         
         [Required]
+        public int LanguageId { get; set; } // Додано поле для мови
+
+        [Required]
+        [StringLength(100)]
+        public string LevelName { get; set; } = string.Empty; // Додане поле для рівня як назви
+        
+        [Required]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
         
@@ -35,6 +42,9 @@ namespace CoursesWebApp.Models
         
         [ForeignKey("TeacherId")]
         public virtual Teacher Teacher { get; set; } = null!;
+
+        [ForeignKey("LanguageId")]
+        public virtual Language Language { get; set; } = null!; // Language навігація
         
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
