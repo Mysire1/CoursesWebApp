@@ -1,3 +1,5 @@
+using CoursesWebApp.Models;
+using CoursesWebApp.Models.ViewModels;
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +25,35 @@ namespace CoursesWebApp.Controllers
             ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
             ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
+            ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(GroupCreateViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
+                ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                return View(vm);
+            }
+            var group = new Group {
+                GroupName = vm.GroupName,
+                TeacherId = vm.TeacherId,
+                LanguageId = vm.LanguageId,
+                StartDate = vm.StartDate,
+                LevelName = vm.LevelName
+            };
+            await _groupService.CreateGroupAsync(group);
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
