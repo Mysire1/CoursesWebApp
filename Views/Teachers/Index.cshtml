@@ -1,14 +1,15 @@
 @{
     ViewData["Title"] = "Викладачі";
+    var filter = ViewBag.Filter as string ?? "";
     var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
 }
 
 <h1>Список викладачів</h1>
-<!-- Фільтрація за ПІБ викладача, email або мовами -->
+<!-- Фільтрація за ПІБ викладача, email -->
 <form method="get" class="mb-3">
     <div class="row">
         <div class="col-md-4">
-            <input type="text" name="filter" class="form-control" placeholder="ПІБ або email..." value="@(Request.Query["filter"])">
+            <input type="text" name="filter" class="form-control" placeholder="ПІБ або email..." value="@filter">
         </div>
         <div class="col-md-2">
             <button type="submit" class="btn btn-info">Застосувати</button>
@@ -29,7 +30,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var t in string.IsNullOrEmpty(Request.Query["filter"]) ? teachers : teachers.Where(x => (x.FullName ?? "").Contains(Request.Query["filter"], StringComparison.OrdinalIgnoreCase) || (x.Email ?? "").Contains(Request.Query["filter"], StringComparison.OrdinalIgnoreCase)))
+            @foreach (var t in teachers)
             {
                 <tr>
                     <td>@t.TeacherId</td>
