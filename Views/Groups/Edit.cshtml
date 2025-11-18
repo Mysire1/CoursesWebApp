@@ -3,40 +3,199 @@
     ViewData["Title"] = "Редагувати групу";
     var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
     var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
+    var allStudents = ViewBag.AllStudents as IEnumerable<CoursesWebApp.Models.Student> ?? new List<CoursesWebApp.Models.Student>();
+    var groupId = ViewBag.GroupId;
 }
+
 <h1>Редагувати групу</h1>
-<form asp-action="Edit" method="post" class="row g-3">
+
+<div class="row">
+    <!-- Ліва колонка - форма редагування -->
     <div class="col-md-6">
-        <label asp-for="GroupName" class="form-label">Назва групи</label>
-        <input asp-for="GroupName" class="form-control" />
-        <span asp-validation-for="GroupName" class="text-danger"></span>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Основні дані</h5>
+                <form asp-action="Edit" method="post" class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="GroupName" class="form-label">Назва групи</label>
+                        <input asp-for="GroupName" class="form-control" />
+                        <span asp-validation-for="GroupName" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="TeacherId" class="form-label">Викладач</label>
+                        <select asp-for="TeacherId" class="form-select" asp-items="@(new SelectList(teachers, "TeacherId", "FullName"))">
+                            <option value="">Оберіть викладача</option>
+                        </select>
+                        <span asp-validation-for="TeacherId" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="LanguageId" class="form-label">Мова</label>
+                        <select asp-for="LanguageId" class="form-select" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
+                            <option value="">Оберіть мову</option>
+                        </select>
+                        <span asp-validation-for="LanguageId" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="LevelName" class="form-label">Рівень</label>
+                        <input asp-for="LevelName" class="form-control" placeholder="Напр. Beginner, Intermediate" />
+                        <span asp-validation-for="LevelName" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="StartDate" class="form-label">Дата старту</label>
+                        <input asp-for="StartDate" type="date" class="form-control" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Зберегти</button>
+                        <a asp-action="Index" class="btn btn-secondary ms-2">Скасувати</a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
+    <!-- Права колонка - управління студентами -->
     <div class="col-md-6">
-        <label asp-for="TeacherId" class="form-label">Викладач</label>
-        <select asp-for="TeacherId" class="form-select" asp-items="@(new SelectList(teachers, "TeacherId", "FullName"))">
-            <option value="">Оберіть викладача</option>
-        </select>
-        <span asp-validation-for="TeacherId" class="text-danger"></span>
+        <!-- Студенти в групі -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Студенти в групі</h5>
+                <div id="groupStudentsList">
+                    <div class="text-center text-muted py-3">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Завантаження...</span>
+                        </div>
+                        <p class="mt-2">Завантаження студентів...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Додати студента -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Додати студента</h5>
+                <div class="mb-3">
+                    <label for="studentSelect" class="form-label">Оберіть студента</label>
+                    <select id="studentSelect" class="form-select">
+                        <option value="">Оберіть студента</option>
+                        @foreach (var student in allStudents)
+                        {
+                            <option value="@student.StudentId">@student.FullName (@student.Phone)</option>
+                        }
+                    </select>
+                </div>
+                <button id="addStudentBtn" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Додати до групи
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6">
-        <label asp-for="LanguageId" class="form-label">Мова</label>
-        <select asp-for="LanguageId" class="form-select" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
-            <option value="">Оберіть мову</option>
-        </select>
-        <span asp-validation-for="LanguageId" class="text-danger"></span>
-    </div>
-    <div class="col-md-6">
-        <label asp-for="LevelName" class="form-label">Рівень</label>
-        <input asp-for="LevelName" class="form-control" placeholder="Напр. Beginner, Intermediate" />
-        <span asp-validation-for="LevelName" class="text-danger"></span>
-    </div>
-    <div class="col-12">
-        <label asp-for="StartDate" class="form-label">Дата старту</label>
-        <input asp-for="StartDate" type="date" class="form-control" />
-        <span asp-validation-for="StartDate" class="text-danger"></span>
-    </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-success">Зберегти</button>
-        <a asp-action="Index" class="btn btn-secondary ms-2">Скасувати</a>
-    </div>
-</form>
+</div>
+
+@section Scripts {
+    <script>
+        const groupId = @groupId;
+
+        // Завантажити студентів групи
+        async function loadGroupStudents() {
+            try {
+                const response = await fetch(`/Groups/GetGroupStudents?groupId=${groupId}`);
+                const students = await response.json();
+
+                const container = document.getElementById('groupStudentsList');
+                
+                if (students.length === 0) {
+                    container.innerHTML = '<p class="text-muted text-center py-3">У групі немає студентів</p>';
+                    return;
+                }
+
+                let html = '<div class="list-group">';
+                students.forEach(student => {
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${student.fullName}</strong><br>
+                                <small class="text-muted">${student.phone}</small>
+                            </div>
+                            <button class="btn btn-sm btn-danger" onclick="removeStudent(${student.studentId})">
+                                <i class="bi bi-x-circle"></i> Видалити
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Помилка завантаження студентів:', error);
+                document.getElementById('groupStudentsList').innerHTML = 
+                    '<p class="text-danger text-center py-3">Помилка завантаження</p>';
+            }
+        }
+
+        // Додати студента
+        document.getElementById('addStudentBtn').addEventListener('click', async () => {
+            const studentId = document.getElementById('studentSelect').value;
+            
+            if (!studentId) {
+                alert('Будь ласка, оберіть студента');
+                return;
+            }
+
+            try {
+                const response = await fetch('/Groups/AddStudentToGroup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ groupId, studentId: parseInt(studentId) })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    document.getElementById('studentSelect').value = '';
+                    loadGroupStudents();
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Помилка:', error);
+                alert('Помилка додавання студента');
+            }
+        });
+
+        // Видалити студента
+        async function removeStudent(studentId) {
+            if (!confirm('Ви впевнені, що хочете видалити студента з групи?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/Groups/RemoveStudentFromGroup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ studentId })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    loadGroupStudents();
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Помилка:', error);
+                alert('Помилка видалення студента');
+            }
+        }
+
+        // Завантажити студентів при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', loadGroupStudents);
+    </script>
+}
