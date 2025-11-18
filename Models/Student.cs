@@ -37,7 +37,13 @@ namespace CoursesWebApp.Models
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         
+        // Foreign Key to Groups
+        public int? GroupId { get; set; }
+        
         // Navigation properties
+        [ForeignKey("GroupId")]
+        public virtual Group? Group { get; set; }
+        
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<ExamResult> ExamResults { get; set; } = new List<ExamResult>();
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
