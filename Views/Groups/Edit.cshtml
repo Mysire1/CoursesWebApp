@@ -76,16 +76,17 @@
             <div class="card-body">
                 <h5 class="card-title">Додати студента</h5>
                 <div class="mb-3">
-                    <label for="studentSelect" class="form-label">Оберіть студента</label>
+                    <label for="studentSelect" class="form-label">Оберіть студента (без групи)</label>
                     <select id="studentSelect" class="form-select">
                         <option value="">Оберіть студента</option>
-                        @foreach (var student in allStudents)
+                        @foreach (var student in allStudents.Where(s => s.GroupId == null))
                         {
-                            <option value="@student.StudentId">@student.FullName (@student.Phone)</option>
+                            <option value="@student.StudentId">@student.FirstName @student.LastName (@student.Phone)</option>
                         }
                     </select>
+                    <small class="text-muted">Показані тільки студенти, які ще не в групі</small>
                 </div>
-                <button id="addStudentBtn" class="btn btn-primary">
+                <button id="addStudentBtn" class="btn btn-primary w-100">
                     <i class="bi bi-plus-circle"></i> Додати до групи
                 </button>
             </div>
@@ -106,7 +107,7 @@
                 const container = document.getElementById('groupStudentsList');
                 
                 if (students.length === 0) {
-                    container.innerHTML = '<p class="text-muted text-center py-3">У групі немає студентів</p>';
+                    container.innerHTML = '<p class="text-muted text-center py-3">📚 У групі немає студентів</p>';
                     return;
                 }
 
@@ -115,8 +116,8 @@
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>${student.fullName}</strong><br>
-                                <small class="text-muted">${student.phone}</small>
+                                <strong>${student.firstName} ${student.lastName}</strong><br>
+                                <small class="text-muted">📱 ${student.phone || 'Не вказано'}</small>
                             </div>
                             <button class="btn btn-sm btn-danger" onclick="removeStudent(${student.studentId})">
                                 <i class="bi bi-x-circle"></i> Видалити
@@ -125,11 +126,12 @@
                     `;
                 });
                 html += '</div>';
+                html += `<p class="text-muted mt-2 mb-0"><small>Всього студентів у групі: ${students.length}</small></p>`;
                 container.innerHTML = html;
             } catch (error) {
                 console.error('Помилка завантаження студентів:', error);
                 document.getElementById('groupStudentsList').innerHTML = 
-                    '<p class="text-danger text-center py-3">Помилка завантаження</p>';
+                    '<p class="text-danger text-center py-3">❌ Помилка завантаження</p>';
             }
         }
 
@@ -148,21 +150,21 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ groupId, studentId: parseInt(studentId) })
+                    body: JSON.stringify({ groupId: groupId, studentId: parseInt(studentId) })
                 });
 
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert(result.message);
-                    document.getElementById('studentSelect').value = '';
-                    loadGroupStudents();
+                    // Перезавантажити сторінку щоб оновити список доступних студентів
+                    alert('✅ ' + result.message);
+                    window.location.reload();
                 } else {
-                    alert(result.message);
+                    alert('❌ ' + result.message);
                 }
             } catch (error) {
                 console.error('Помилка:', error);
-                alert('Помилка додавання студента');
+                alert('❌ Помилка додавання студента');
             }
         });
 
@@ -178,20 +180,20 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ studentId })
+                    body: JSON.stringify({ studentId: studentId })
                 });
 
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert(result.message);
-                    loadGroupStudents();
+                    alert('✅ ' + result.message);
+                    window.location.reload();
                 } else {
-                    alert(result.message);
+                    alert('❌ ' + result.message);
                 }
             } catch (error) {
                 console.error('Помилка:', error);
-                alert('Помилка видалення студента');
+                alert('❌ Помилка видалення студента');
             }
         }
 
