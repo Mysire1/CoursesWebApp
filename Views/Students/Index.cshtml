@@ -34,9 +34,8 @@
     <div class="col-md-3">
         <div class="card text-center shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Боржників</h5>
-                <p class="display-6">@Model.Count(s => s.DiscountPercentage < 0)</p>
-                @* Тут можна розрахувати боржників, якщо додати логіку *@
+                <h5 class="card-title">У групах</h5>
+                <p class="display-6">@Model.Count(s => s.GroupId != null)</p>
             </div>
         </div>
     </div>
@@ -56,7 +55,7 @@
                 <th>Прізвище</th>
                 <th>Email</th>
                 <th>Телефон</th>
-                <th>Дата народження</th>
+                <th>Група</th>
                 <th>Дата реєстрації</th>
                 <th>Знижка</th>
                 <th>% Знижки</th>
@@ -72,7 +71,16 @@
                     <td>@student.LastName</td>
                     <td>@student.Email</td>
                     <td>@student.Phone</td>
-                    <td>@student.DateOfBirth.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        @if (student.Group != null)
+                        {
+                            <span class="badge bg-primary">@student.Group.GroupName</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Без групи</span>
+                        }
+                    </td>
                     <td>@student.RegistrationDate.ToString("dd.MM.yyyy")</td>
                     <td>
                         @if (student.HasDiscount)
