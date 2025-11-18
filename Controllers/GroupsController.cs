@@ -12,11 +12,14 @@ namespace CoursesWebApp.Controllers
         private readonly IGroupService _groupService;
         private readonly ILanguageService _languageService;
         private readonly ITeacherService _teacherService;
-        public GroupsController(IGroupService groupService, ILanguageService languageService, ITeacherService teacherService)
+        private readonly IStudentService _studentService;
+
+        public GroupsController(IGroupService groupService, ILanguageService languageService, ITeacherService teacherService, IStudentService studentService)
         {
             _groupService = groupService;
             _languageService = languageService;
             _teacherService = teacherService;
+            _studentService = studentService;
         }
 
         public async Task<IActionResult> Index()
@@ -61,9 +64,19 @@ namespace CoursesWebApp.Controllers
         {
             var group = await _groupService.GetGroupByIdAsync(id);
             if (group == null) return NotFound();
+            
             ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
             ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
-            var vm = new GroupCreateViewModel { GroupName = group.GroupName, TeacherId = group.TeacherId, LanguageId = group.LanguageId, StartDate = group.StartDate, LevelName = group.LevelName };
+            ViewBag.AllStudents = await _studentService.GetAllStudentsAsync();
+            ViewBag.GroupId = id;
+            
+            var vm = new GroupCreateViewModel { 
+                GroupName = group.GroupName, 
+                TeacherId = group.TeacherId, 
+                LanguageId = group.LanguageId, 
+                StartDate = group.StartDate, 
+                LevelName = group.LevelName 
+            };
             return View(vm);
         }
 
@@ -75,6 +88,8 @@ namespace CoursesWebApp.Controllers
             {
                 ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
                 ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                ViewBag.AllStudents = await _studentService.GetAllStudentsAsync();
+                ViewBag.GroupId = id;
                 return View(vm);
             }
             var group = await _groupService.GetGroupByIdAsync(id);
@@ -109,6 +124,54 @@ namespace CoursesWebApp.Controllers
         {
             var groups = await _groupService.SearchGroupsAsync(languageId, teacherId);
             return PartialView("_GroupsPartial", groups);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGroupStudents(int groupId)
+        {
+            var students = await _studentService.GetAllStudentsAsync();
+            var groupStudents = students.Where(s => s.GroupId == groupId).ToList();
+            return Json(groupStudents);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddStudentToGroup(int groupId, int studentId)
+        {
+            try
+            {
+                var student = await _studentService.GetStudentByIdAsync(studentId);
+                if (student == null)
+                    return Json(new { success = false, message = "Студента не знайдено" });
+
+                student.GroupId = groupId;
+                await _studentService.UpdateStudentAsync(student);
+
+                return Json(new { success = true, message = "Студента додано до групи" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Помилка: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveStudentFromGroup(int studentId)
+        {
+            try
+            {
+                var student = await _studentService.GetStudentByIdAsync(studentId);
+                if (student == null)
+                    return Json(new { success = false, message = "Студента не знайдено" });
+
+                student.GroupId = null;
+                await _studentService.UpdateStudentAsync(student);
+
+                return Json(new { success = true, message = "Студента видалено з групи" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Помилка: {ex.Message}" });
+            }
         }
     }
 }
