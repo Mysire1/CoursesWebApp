@@ -17,6 +17,7 @@ namespace CoursesWebApp.Services.Impl
         public async Task<IEnumerable<Student>> GetAllStudentsAsync()
         {
             return await _context.Students
+                .Include(s => s.Group)
                 .OrderBy(s => s.LastName)
                 .ThenBy(s => s.FirstName)
                 .ToListAsync();
@@ -25,6 +26,7 @@ namespace CoursesWebApp.Services.Impl
         public async Task<Student?> GetStudentByIdAsync(int id)
         {
             return await _context.Students
+                .Include(s => s.Group)
                 .Include(s => s.Enrollments)
                 .ThenInclude(e => e.Group)
                 .ThenInclude(g => g.Level)
@@ -62,6 +64,7 @@ namespace CoursesWebApp.Services.Impl
         public async Task<IEnumerable<Student>> GetStudentsWithDiscountAsync()
         {
             return await _context.Students
+                .Include(s => s.Group)
                 .Where(s => s.HasDiscount)
                 .OrderBy(s => s.LastName)
                 .ToListAsync();
@@ -70,6 +73,7 @@ namespace CoursesWebApp.Services.Impl
         public async Task<IEnumerable<Student>> GetStudentsWithoutDiscountAsync()
         {
             return await _context.Students
+                .Include(s => s.Group)
                 .Where(s => !s.HasDiscount)
                 .OrderBy(s => s.LastName)
                 .ToListAsync();
@@ -78,6 +82,7 @@ namespace CoursesWebApp.Services.Impl
         public async Task<IEnumerable<Student>> GetStudentsLearningLanguageAsync(string languageName)
         {
             return await _context.Students
+                .Include(s => s.Group)
                 .Include(s => s.Enrollments)
                 .ThenInclude(e => e.Group)
                 .ThenInclude(g => g.Level)
@@ -91,6 +96,7 @@ namespace CoursesWebApp.Services.Impl
         public async Task<IEnumerable<Student>> GetStudentsLearningMultipleLanguagesAsync()
         {
             return await _context.Students
+                .Include(s => s.Group)
                 .Include(s => s.Enrollments)
                 .ThenInclude(e => e.Group)
                 .ThenInclude(g => g.Level)
