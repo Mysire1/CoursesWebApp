@@ -9,10 +9,12 @@ namespace CoursesWebApp.Controllers
     public class StudentsController : Controller
     {
         private readonly IStudentService _studentService;
+        private readonly IGroupService _groupService;
 
-        public StudentsController(IStudentService studentService)
+        public StudentsController(IStudentService studentService, IGroupService groupService)
         {
             _studentService = studentService;
+            _groupService = groupService;
         }
 
         public async Task<IActionResult> Index()
@@ -31,8 +33,9 @@ namespace CoursesWebApp.Controllers
             return View(student);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
             return View();
         }
 
@@ -53,6 +56,7 @@ namespace CoursesWebApp.Controllers
                     ModelState.AddModelError("", $"Помилка при додаванні: {ex.Message}");
                 }
             }
+            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
             return View(student);
         }
 
@@ -63,6 +67,7 @@ namespace CoursesWebApp.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
             return View(student);
         }
 
@@ -88,6 +93,7 @@ namespace CoursesWebApp.Controllers
                     ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message}");
                 }
             }
+            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
             return View(student);
         }
 
