@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "SQL Console";
 }
 
@@ -8,6 +8,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        body {
+            overflow-x: hidden;
+        }
+
         .console-wrapper {
             background: #ffffff;
             border-radius: 8px;
@@ -15,6 +19,7 @@
             border: 1px solid #dee2e6;
             overflow: hidden;
             margin-top: 20px;
+            max-width: 100%;
         }
 
         .toolbar {
@@ -60,7 +65,8 @@
 
         #sqlEditor {
             width: 100%;
-            min-height: 300px;
+            min-height: 250px;
+            max-height: 400px;
             padding: 16px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
@@ -70,6 +76,7 @@
             resize: vertical;
             outline: none;
             border-bottom: 1px solid #dee2e6;
+            box-sizing: border-box;
         }
 
         .query-templates {
@@ -111,7 +118,7 @@
 
         .results-container {
             padding: 16px;
-            max-height: 500px;
+            max-height: 400px;
             overflow: auto;
         }
 
@@ -120,6 +127,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .status-badge {
@@ -145,6 +154,15 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .results-table thead,
+        .results-table tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
         }
 
         .results-table th,
@@ -152,6 +170,7 @@
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
+            word-wrap: break-word;
         }
 
         .results-table th {
@@ -212,10 +231,26 @@
         .loading .btn-text {
             display: none;
         }
+
+        @@media (max-width: 768px) {
+            .console-wrapper {
+                margin-left: -15px;
+                margin-right: -15px;
+                border-radius: 0;
+            }
+
+            #sqlEditor {
+                min-height: 200px;
+            }
+
+            .results-container {
+                max-height: 300px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid px-3 px-md-4">
         <h1 class="mb-4">🗄️ SQL Console</h1>
         
         <div class="console-wrapper">
