@@ -156,8 +156,6 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Перезавантажити сторінку щоб оновити список доступних студентів
-                    alert('✅ ' + result.message);
                     window.location.reload();
                 } else {
                     alert('❌ ' + result.message);
@@ -168,12 +166,8 @@
             }
         });
 
-        // Видалити студента
+        // Видалити студента (БЕЗ ПІДТВЕРДЖЕННЯ)
         async function removeStudent(studentId) {
-            if (!confirm('Ви впевнені, що хочете видалити студента з групи?')) {
-                return;
-            }
-
             try {
                 const response = await fetch('/Groups/RemoveStudentFromGroup', {
                     method: 'POST',
@@ -186,7 +180,6 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert('✅ ' + result.message);
                     window.location.reload();
                 } else {
                     alert('❌ ' + result.message);
