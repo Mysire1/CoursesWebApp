@@ -107,23 +107,45 @@ namespace CoursesWebApp.Controllers
         public async Task<IActionResult> Edit(int id, Student student)
         {
             if (id != student.StudentId)
-            {
                 return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _studentService.UpdateStudentAsync(student);
+                    var dbStudent = await _studentService.GetStudentByIdAsync(id);
+                    if (dbStudent == null) return NotFound();
+
+                    // Email не змінювати на порожній і не робити дублікатів
+                    if (string.IsNullOrWhiteSpace(student.Email))
+                    {
+                        ModelState.AddModelError("Email", "Email не може бути порожнім!");
+                        goto ErrorResult;
+                    }
+                    var another = await _studentService.FindByEmailAsync(student.Email);
+                    if (another != null && another.StudentId != student.StudentId)
+                    {
+                        ModelState.AddModelError("Email", "Email вже використовується іншим студентом!");
+                        goto ErrorResult;
+                    }
+                    dbStudent.FirstName = student.FirstName;
+                    dbStudent.LastName = student.LastName;
+                    dbStudent.DateOfBirth = student.DateOfBirth;
+                    dbStudent.Email = student.Email;
+                    dbStudent.Phone = student.Phone;
+                    dbStudent.HasDiscount = student.HasDiscount;
+                    dbStudent.DiscountPercentage = dbStudent.HasDiscount ? Math.Clamp(student.DiscountPercentage, 0, 100) : 0;
+                    dbStudent.GroupId = student.GroupId;
+
+                    await _studentService.UpdateStudentAsync(dbStudent);
                     TempData["SuccessMessage"] = "Студента оновлено!";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message}");
+                    ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message} {(ex.InnerException?.Message ?? "")} ");
                 }
             }
+ErrorResult:
             ViewBag.Groups = await _groupService.GetAllGroupsAsync();
             return View(student);
         }
