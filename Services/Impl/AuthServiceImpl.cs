@@ -16,142 +16,146 @@ namespace CoursesWebApp.Services.Impl
             _context = context;
         }
 
-        public async Task<User?> ValidateUserAsync(string username, string password)
+        public async Task<(object user, string role)?> ValidateUserAsync(string email, string password)
         {
-            var user = await _context.Users
-                .Include(u => u.Student)
-                .Include(u => u.Teacher)
-                .FirstOrDefaultAsync(u => (u.Username == username || u.Email == username) && u.IsActive);
+            // Спочатку шукаємо в Students
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.Email == email && s.IsActive);
 
-            if (user != null && VerifyPassword(password, user.PasswordHash))
+            if (student != null && VerifyPassword(password, student.PasswordHash))
             {
-                user.LastLoginAt = DateTime.UtcNow;
+                student.LastLoginAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
-                return user;
+                return (student, "Student");
+            }
+
+            // Якщо не знайшли студента, шукаємо в Teachers
+            var teacher = await _context.Teachers
+                .FirstOrDefaultAsync(t => t.Email == email && t.IsActive);
+
+            if (teacher != null && VerifyPassword(password, teacher.PasswordHash))
+            {
+                teacher.LastLoginAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                return (teacher, "Teacher");
             }
 
             return null;
         }
 
-        public async Task<User?> RegisterUserAsync(RegisterViewModel model)
+        public async Task<(object user, string role)?> RegisterUserAsync(RegisterViewModel model)
         {
-            if (!await IsUsernameAvailableAsync(model.Username) || !await IsEmailAvailableAsync(model.Email))
+            if (!await IsEmailAvailableAsync(model.Email))
             {
                 return null;
             }
 
-            var user = new User
-            {
-                Username = model.Username,
-                Email = model.Email,
-                PasswordHash = HashPassword(model.Password),
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Role = model.Role,
-                CreatedAt = DateTime.UtcNow,
-                IsActive = true
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            // Якщо реєструється студент, створюємо запис в таблиці Students
             if (model.Role == "Student")
             {
-                try
+                var student = new Student
                 {
-                    var student = new Student
-                    {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.Email,
-                        Phone = "",
-                        DateOfBirth = DateTime.SpecifyKind(DateTime.Now.AddYears(-20), DateTimeKind.Utc), // За замовчуванням
-                        RegistrationDate = DateTime.UtcNow,
-                        HasDiscount = false,
-                        DiscountPercentage = 0,
-                        CreatedAt = DateTime.UtcNow,
-                        Status = "Активний"
-                    };
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    PasswordHash = HashPassword(model.Password),
+                    Phone = "",
+                    DateOfBirth = DateTime.SpecifyKind(DateTime.Now.AddYears(-20), DateTimeKind.Utc),
+                    RegistrationDate = DateTime.UtcNow,
+                    HasDiscount = false,
+                    DiscountPercentage = 0,
+                    CreatedAt = DateTime.UtcNow,
+                    Status = "Активний",
+                    IsActive = true
+                };
 
-                    _context.Students.Add(student);
-                    await _context.SaveChangesAsync();
-
-                    user.StudentId = student.StudentId;
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    // Логуємо помилку, але не падаємо — користувач уже створений в Identity
-                    Console.WriteLine($"Помилка створення студента: {ex.Message}");
-                }
+                _context.Students.Add(student);
+                await _context.SaveChangesAsync();
+                return (student, "Student");
             }
             else if (model.Role == "Teacher")
             {
-                try
+                var teacher = new Teacher
                 {
-                    var teacher = new Teacher
-                    {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.Email,
-                        Phone = "",
-                        HireDate = DateTime.UtcNow
-                    };
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    PasswordHash = HashPassword(model.Password),
+                    Phone = "",
+                    HireDate = DateTime.UtcNow,
+                    IsActive = true
+                };
 
-                    _context.Teachers.Add(teacher);
-                    await _context.SaveChangesAsync();
-
-                    user.TeacherId = teacher.TeacherId;
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Помилка створення викладача: {ex.Message}");
-                }
+                _context.Teachers.Add(teacher);
+                await _context.SaveChangesAsync();
+                return (teacher, "Teacher");
             }
 
-            return user;
+            return null;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<object?> GetUserByIdAsync(int id, string role)
         {
-            return await _context.Users
-                .Include(u => u.Student)
-                .Include(u => u.Teacher)
-                .FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
+            if (role == "Student")
+            {
+                return await _context.Students
+                    .Include(s => s.Group)
+                    .Include(s => s.Enrollments)
+                    .FirstOrDefaultAsync(s => s.StudentId == id && s.IsActive);
+            }
+            else if (role == "Teacher")
+            {
+                return await _context.Teachers
+                    .Include(t => t.Groups)
+                    .Include(t => t.TeacherLanguages)
+                    .FirstOrDefaultAsync(t => t.TeacherId == id && t.IsActive);
+            }
+
+            return null;
         }
 
-        public async Task<User?> GetUserByUsernameAsync(string username)
+        public async Task<object?> GetUserByEmailAsync(string email)
         {
-            return await _context.Users
-                .Include(u => u.Student)
-                .Include(u => u.Teacher)
-                .FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
-        }
+            // Спочатку шукаємо в Students
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.Email == email && s.IsActive);
 
-        public async Task<User?> GetUserByEmailAsync(string email)
-        {
-            return await _context.Users
-                .Include(u => u.Student)
-                .Include(u => u.Teacher)
-                .FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
-        }
+            if (student != null)
+            {
+                return student;
+            }
 
-        public async Task<bool> IsUsernameAvailableAsync(string username)
-        {
-            return !await _context.Users.AnyAsync(u => u.Username == username);
+            // Якщо не знайшли, шукаємо в Teachers
+            var teacher = await _context.Teachers
+                .FirstOrDefaultAsync(t => t.Email == email && t.IsActive);
+
+            return teacher;
         }
 
         public async Task<bool> IsEmailAvailableAsync(string email)
         {
-            return !await _context.Users.AnyAsync(u => u.Email == email);
+            var studentExists = await _context.Students.AnyAsync(s => s.Email == email);
+            if (studentExists) return false;
+
+            var teacherExists = await _context.Teachers.AnyAsync(t => t.Email == email);
+            return !teacherExists;
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateStudentAsync(object student)
         {
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            if (student is Student s)
+            {
+                _context.Students.Update(s);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateTeacherAsync(object teacher)
+        {
+            if (teacher is Teacher t)
+            {
+                _context.Teachers.Update(t);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<bool> VerifyPasswordAsync(string password, string hash)
