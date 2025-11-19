@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoursesWebApp.Attributes;
 
 namespace CoursesWebApp.Models
 {
@@ -19,6 +20,7 @@ namespace CoursesWebApp.Models
         
         [Required]
         [DataType(DataType.Date)]
+        [MinimumAge(10)]
         public DateTime DateOfBirth { get; set; }
         
         [StringLength(20)]
