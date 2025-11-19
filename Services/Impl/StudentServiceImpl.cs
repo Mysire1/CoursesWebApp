@@ -53,6 +53,17 @@ namespace CoursesWebApp.Services.Impl
             await _context.SaveChangesAsync();
             return student;
         }
+        
+        public async Task UpdateStudentGroupAsync(int studentId, int? groupId)
+        {
+            // Завантажуємо тільки студента без зв'язків для уникнення tracking проблем
+            var student = await _context.Students.FindAsync(studentId);
+            if (student == null)
+                throw new Exception($"Студент з ID {studentId} не знайдено");
+            
+            student.GroupId = groupId;
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<bool> DeleteStudentAsync(int id)
         {
