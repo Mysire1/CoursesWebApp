@@ -33,6 +33,13 @@ namespace CoursesWebApp.Services.Impl
                 .ThenInclude(l => l.Language)
                 .FirstOrDefaultAsync(s => s.StudentId == id);
         }
+        
+        public async Task<Student?> FindByEmailAsync(string email)
+        {
+            return await _context.Students
+                .Include(s => s.Group)
+                .FirstOrDefaultAsync(s => s.Email == email);
+        }
 
         public async Task<Student> CreateStudentAsync(Student student)
         {
