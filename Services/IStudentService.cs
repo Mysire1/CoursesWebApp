@@ -6,6 +6,7 @@ namespace CoursesWebApp.Services
     {
         Task<IEnumerable<Student>> GetAllStudentsAsync();
         Task<Student?> GetStudentByIdAsync(int id);
+        Task<Student?> FindByEmailAsync(string email);
         Task<Student> CreateStudentAsync(Student student);
         Task<Student> UpdateStudentAsync(Student student);
         Task<bool> DeleteStudentAsync(int id);
