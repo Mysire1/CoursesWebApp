@@ -46,6 +46,12 @@ namespace CoursesWebApp.Models.ViewModels
         [Display(Name = "Прізвище")]
         public string LastName { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Введіть номер телефону")]
+        [Phone(ErrorMessage = "Некоректний номер телефону")]
+        [StringLength(20, ErrorMessage = "Номер телефону не може бути довшим 20 символів")]
+        [Display(Name = "Номер телефону")]
+        public string Phone { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Оберіть роль")]
         [Display(Name = "Роль")]
         public string Role { get; set; } = "Student";
