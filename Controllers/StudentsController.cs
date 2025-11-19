@@ -88,8 +88,7 @@ namespace CoursesWebApp.Controllers
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
         {
-            // Мінімум навігації для уникнення Kind=Unspecified!
-            var student = await _studentService.GetStudentByIdForEditAsync(id);
+            var student = await _studentService.GetStudentByIdAsync(id);
             if (student == null)
             {
                 return NotFound();
@@ -109,8 +108,7 @@ namespace CoursesWebApp.Controllers
             {
                 try
                 {
-                    // Мінімум навігації для уникнення Kind=Unspecified!
-                    var dbStudent = await _studentService.GetStudentByIdForEditAsync(id);
+                    var dbStudent = await _studentService.GetStudentByIdAsync(id);
                     if (dbStudent == null) return NotFound();
                     if (string.IsNullOrWhiteSpace(student.Email))
                     {
@@ -130,14 +128,18 @@ namespace CoursesWebApp.Controllers
                     dbStudent.HasDiscount = student.HasDiscount;
                     dbStudent.DiscountPercentage = student.HasDiscount ? Math.Clamp(student.DiscountPercentage, 0, 100) : 0;
                     dbStudent.GroupId = student.GroupId;
-                    // ГАРАНТУЙ UTC для всіх дат
                     dbStudent.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
                     dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
                     dbStudent.CreatedAt = DateTime.SpecifyKind(dbStudent.CreatedAt, DateTimeKind.Utc);
                     if (dbStudent.LastLoginAt.HasValue)
-                    {
                         dbStudent.LastLoginAt = DateTime.SpecifyKind(dbStudent.LastLoginAt.Value, DateTimeKind.Utc);
-                    }
+                    // ОЧИСТИТИ навігації для безпеки EF
+                    dbStudent.Group = null;
+                    dbStudent.Enrollments = null;
+                    dbStudent.ExamResults = null;
+                    dbStudent.Payments = null;
+                    dbStudent.PaymentDeferrals = null;
+
                     await _studentService.UpdateStudentAsync(dbStudent);
                     TempData["SuccessMessage"] = "Студента оновлено!";
                     return RedirectToAction(nameof(Index));
