@@ -38,11 +38,10 @@ namespace CoursesWebApp.Models
         public decimal DiscountPercentage { get; set; } = 0;
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public string? Status { get; set; }
         
-        // Foreign Key to Groups
         public int? GroupId { get; set; }
         
-        // Navigation properties
         [ForeignKey("GroupId")]
         public virtual Group? Group { get; set; }
         
