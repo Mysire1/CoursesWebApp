@@ -8,43 +8,42 @@
 <h1>Редагування студента</h1>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6" style="max-height:85vh; overflow-y:auto; padding-bottom:120px;">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <!-- Hidden fields -->
             <input type="hidden" asp-for="StudentId" />
             <input type="hidden" asp-for="RegistrationDate" />
             <input type="hidden" asp-for="CreatedAt" />
-            
+            <input type="hidden" asp-for="PasswordHash" />
+            <input type="hidden" asp-for="IsActive" />
+            <input type="hidden" asp-for="Status" />
+
             <div class="form-group mb-3">
                 <label asp-for="FirstName" class="control-label">Ім'я *</label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
-            
             <div class="form-group mb-3">
                 <label asp-for="LastName" class="control-label">Прізвище *</label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
-            
             <div class="form-group mb-3">
                 <label asp-for="DateOfBirth" class="control-label">Дата народження *</label>
                 <input asp-for="DateOfBirth" class="form-control" type="date" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
-            
             <div class="form-group mb-3">
                 <label asp-for="Email" class="control-label">Email</label>
                 <input asp-for="Email" class="form-control" type="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            
             <div class="form-group mb-3">
                 <label asp-for="Phone" class="control-label">Телефон</label>
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
-            
             <div class="form-group mb-3">
                 <label asp-for="GroupId" class="control-label">Група</label>
                 <select asp-for="GroupId" class="form-select" asp-items="@(new SelectList(groups, "GroupId", "GroupName"))">
@@ -52,21 +51,18 @@
                 </select>
                 <small class="text-muted">Оберіть групу або залиште "Без групи" щоб прибрати</small>
             </div>
-            
             <div class="form-group mb-3">
                 <div class="form-check">
-                    <input asp-for="HasDiscount" class="form-check-input" />
+                    <input asp-for="HasDiscount" class="form-check-input" id="HasDiscount" />
                     <label asp-for="HasDiscount" class="form-check-label">Має знижку</label>
                 </div>
             </div>
-            
             <div class="form-group mb-3" id="discountPercentageGroup" style="display: @(Model.HasDiscount ? "block" : "none")">
                 <label asp-for="DiscountPercentage" class="control-label">Відсоток знижки (%)</label>
                 <input asp-for="DiscountPercentage" class="form-control" type="number" min="0" max="100" step="0.01" />
                 <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
             </div>
-            
-            <div class="form-group mt-4">
+            <div class="form-group mt-4" style="position:sticky;bottom:0;z-index:10;background-color:#fff;padding-bottom:12px;">
                 <input type="submit" value="Зберегти" class="btn btn-primary" />
                 <a asp-action="Details" asp-route-id="@Model.StudentId" class="btn btn-secondary">Повернутися</a>
                 <a asp-action="Index" class="btn btn-outline-secondary">До списку</a>
@@ -82,7 +78,6 @@
                 <p><strong>ID:</strong> @Model.StudentId</p>
                 <p><strong>Дата реєстрації:</strong> @Model.RegistrationDate.ToString("dd.MM.yyyy")</p>
                 <p><strong>Створено:</strong> @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
-                
                 <div class="alert alert-info mt-3">
                     <h6>Поради:</h6>
                     <ul class="mb-0">
@@ -99,7 +94,6 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
     <script>
         $(document).ready(function() {
             function toggleDiscount() {
@@ -110,10 +104,7 @@
                     $('#DiscountPercentage').val('0');
                 }
             }
-            
-            // Ініціалізація при завантаженні
             toggleDiscount();
-            
             $('#HasDiscount').change(toggleDiscount);
         });
     </script>
