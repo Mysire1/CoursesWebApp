@@ -135,17 +135,11 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddStudentToGroup(int groupId, int studentId)
+        public async Task<IActionResult> AddStudentToGroup([FromBody] AddStudentToGroupRequest request)
         {
             try
             {
-                var student = await _studentService.GetStudentByIdAsync(studentId);
-                if (student == null)
-                    return Json(new { success = false, message = "Студента не знайдено" });
-
-                student.GroupId = groupId;
-                await _studentService.UpdateStudentAsync(student);
-
+                await _studentService.UpdateStudentGroupAsync(request.StudentId, request.GroupId);
                 return Json(new { success = true, message = "Студента додано до групи" });
             }
             catch (Exception ex)
@@ -155,23 +149,28 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveStudentFromGroup(int studentId)
+        public async Task<IActionResult> RemoveStudentFromGroup([FromBody] RemoveStudentFromGroupRequest request)
         {
             try
             {
-                var student = await _studentService.GetStudentByIdAsync(studentId);
-                if (student == null)
-                    return Json(new { success = false, message = "Студента не знайдено" });
-
-                student.GroupId = null;
-                await _studentService.UpdateStudentAsync(student);
-
+                await _studentService.UpdateStudentGroupAsync(request.StudentId, null);
                 return Json(new { success = true, message = "Студента видалено з групи" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Помилка: {ex.Message}" });
+            return Json(new { success = false, message = $"Помилка: {ex.Message}" });
             }
         }
+    }
+    
+    public class AddStudentToGroupRequest
+    {
+        public int GroupId { get; set; }
+        public int StudentId { get; set; }
+    }
+    
+    public class RemoveStudentFromGroupRequest
+    {
+        public int StudentId { get; set; }
     }
 }
