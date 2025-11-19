@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoursesWebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Teacher,Student")]
     public class GroupsController : Controller
     {
         private readonly IGroupService _groupService;
@@ -31,6 +31,7 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create()
         {
             ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
@@ -40,6 +41,7 @@ namespace CoursesWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(GroupCreateViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -60,6 +62,7 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
         {
             var group = await _groupService.GetGroupByIdAsync(id);
@@ -82,6 +85,7 @@ namespace CoursesWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, GroupCreateViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -104,6 +108,7 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete(int id)
         {
             var group = await _groupService.GetGroupByIdAsync(id);
@@ -113,6 +118,7 @@ namespace CoursesWebApp.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _groupService.DeleteGroupAsync(id);
@@ -135,6 +141,7 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> AddStudentToGroup([FromBody] AddStudentToGroupRequest request)
         {
             try
@@ -149,6 +156,7 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> RemoveStudentFromGroup([FromBody] RemoveStudentFromGroupRequest request)
         {
             try
