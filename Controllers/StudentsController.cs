@@ -22,6 +22,11 @@ namespace CoursesWebApp.Controllers
             if (User.IsInRole("Student"))
             {
                 var student = await _studentService.FindByEmailAsync(User.Identity.Name);
+                if (student == null)
+                {
+                    TempData["ErrorMessage"] = "Профіль студента не знайдено. Зверніться до адміністратора.";
+                    return View(new List<Student>());
+                }
                 return View(new List<Student> { student });
             }
             else
