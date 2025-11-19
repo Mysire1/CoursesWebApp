@@ -58,7 +58,7 @@ namespace CoursesWebApp.Services.Impl
                     LastName = model.LastName,
                     Email = model.Email,
                     PasswordHash = HashPassword(model.Password),
-                    Phone = "",
+                    Phone = model.Phone,
                     DateOfBirth = DateTime.SpecifyKind(DateTime.Now.AddYears(-20), DateTimeKind.Utc),
                     RegistrationDate = DateTime.UtcNow,
                     HasDiscount = false,
@@ -80,7 +80,7 @@ namespace CoursesWebApp.Services.Impl
                     LastName = model.LastName,
                     Email = model.Email,
                     PasswordHash = HashPassword(model.Password),
-                    Phone = "",
+                    Phone = model.Phone,
                     HireDate = DateTime.UtcNow,
                     IsActive = true
                 };
