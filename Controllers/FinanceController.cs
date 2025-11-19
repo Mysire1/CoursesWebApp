@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoursesWebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Teacher")]
     public class FinanceController : Controller
     {
         private readonly IQueryService _queryService;
