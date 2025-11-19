@@ -1,18 +1,16 @@
-using CoursesWebApp.Models;
 using CoursesWebApp.Models.ViewModels;
 
 namespace CoursesWebApp.Services
 {
     public interface IAuthService
     {
-        Task<User?> ValidateUserAsync(string username, string password);
-        Task<User?> RegisterUserAsync(RegisterViewModel model);
-        Task<User?> GetUserByIdAsync(int id);
-        Task<User?> GetUserByUsernameAsync(string username);
-        Task<User?> GetUserByEmailAsync(string email);
-        Task<bool> IsUsernameAvailableAsync(string username);
+        Task<(object user, string role)?> ValidateUserAsync(string email, string password);
+        Task<(object user, string role)?> RegisterUserAsync(RegisterViewModel model);
+        Task<object?> GetUserByIdAsync(int id, string role);
+        Task<object?> GetUserByEmailAsync(string email);
         Task<bool> IsEmailAvailableAsync(string email);
-        Task UpdateUserAsync(User user);
+        Task UpdateStudentAsync(object student);
+        Task UpdateTeacherAsync(object teacher);
         Task<bool> VerifyPasswordAsync(string password, string hash);
         string HashPassword(string password);
     }

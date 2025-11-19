@@ -26,9 +26,14 @@ namespace CoursesWebApp.Models
         [StringLength(20)]
         public string? Phone { get; set; }
         
+        [Required]
         [StringLength(255)]
         [EmailAddress]
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
+        
+        [Required]
+        [MaxLength(255)]
+        public string PasswordHash { get; set; } = string.Empty;
         
         public DateTime RegistrationDate { get; set; } = DateTime.Now;
         
@@ -38,6 +43,11 @@ namespace CoursesWebApp.Models
         public decimal DiscountPercentage { get; set; } = 0;
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        
+        public DateTime LastLoginAt { get; set; }
+        
+        public bool IsActive { get; set; } = true;
+        
         public string? Status { get; set; }
         
         public int? GroupId { get; set; }
@@ -52,5 +62,8 @@ namespace CoursesWebApp.Models
         
         [NotMapped]
         public string FullName => $"{FirstName} {LastName}";
+        
+        [NotMapped]
+        public string Role => "Student";
     }
 }

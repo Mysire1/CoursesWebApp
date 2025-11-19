@@ -1,3 +1,4 @@
+using CoursesWebApp.Models;
 using CoursesWebApp.Models.ViewModels;
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -40,20 +41,42 @@ namespace CoursesWebApp.Controllers
                 return View(model);
             }
 
-            var user = await _authService.ValidateUserAsync(model.Username, model.Password);
-            if (user == null)
+            var result = await _authService.ValidateUserAsync(model.Username, model.Password);
+            if (result == null)
             {
-                ModelState.AddModelError("", "Некоректне ім'я користувача або пароль");
+                ModelState.AddModelError("", "Некоректний email або пароль");
+                return View(model);
+            }
+
+            var (user, role) = result.Value;
+            int userId;
+            string fullName;
+            string email;
+
+            if (role == "Student" && user is Student student)
+            {
+                userId = student.StudentId;
+                fullName = student.FullName;
+                email = student.Email;
+            }
+            else if (role == "Teacher" && user is Teacher teacher)
+            {
+                userId = teacher.TeacherId;
+                fullName = teacher.FullName;
+                email = teacher.Email;
+            }
+            else
+            {
+                ModelState.AddModelError("", "Помилка авторизації");
                 return View(model);
             }
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim("FullName", user.FullName)
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, role),
+                new Claim("FullName", fullName)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -66,7 +89,7 @@ namespace CoursesWebApp.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity), authProperties);
 
-            _logger.LogInformation("Користувач {Username} успішно авторизувався", user.Username);
+            _logger.LogInformation("Користувач {Email} ({Role}) успішно авторизувався", email, role);
 
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
             {
@@ -96,26 +119,21 @@ namespace CoursesWebApp.Controllers
                 return View(model);
             }
 
-            if (!await _authService.IsUsernameAvailableAsync(model.Username))
-            {
-                ModelState.AddModelError("Username", "Це ім'я користувача вже зайнято");
-                return View(model);
-            }
-
             if (!await _authService.IsEmailAvailableAsync(model.Email))
             {
                 ModelState.AddModelError("Email", "Цей email вже зареєстровано");
                 return View(model);
             }
 
-            var user = await _authService.RegisterUserAsync(model);
-            if (user == null)
+            var result = await _authService.RegisterUserAsync(model);
+            if (result == null)
             {
                 ModelState.AddModelError("", "Помилка при реєстрації. Спробуйте пізніше");
                 return View(model);
             }
 
-            _logger.LogInformation("Новий користувач зареєстрован: {Username} ({Role})", user.Username, user.Role);
+            var (user, role) = result.Value;
+            _logger.LogInformation("Новий користувач зареєстрован: {Email} ({Role})", model.Email, role);
 
             TempData["SuccessMessage"] = $"Реєстрація успішна! Тепер ви можете увійти в систему";
             return RedirectToAction("Login");
@@ -126,10 +144,10 @@ namespace CoursesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            var username = User.Identity?.Name;
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             
-            _logger.LogInformation("Користувач {Username} вийшов з системи", username);
+            _logger.LogInformation("Користувач {Email} вийшов з системи", email);
             
             TempData["SuccessMessage"] = "Ви успішно вийшли з системи";
             return RedirectToAction("Index", "Home");
@@ -140,13 +158,21 @@ namespace CoursesWebApp.Controllers
         public async Task<IActionResult> Profile()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            var user = await _authService.GetUserByIdAsync(userId);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            
+            if (string.IsNullOrEmpty(role))
+            {
+                return NotFound();
+            }
+
+            var user = await _authService.GetUserByIdAsync(userId, role);
             
             if (user == null)
             {
                 return NotFound();
             }
 
+            ViewData["Role"] = role;
             return View(user);
         }
 
