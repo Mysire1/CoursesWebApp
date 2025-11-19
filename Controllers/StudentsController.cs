@@ -28,7 +28,6 @@ namespace CoursesWebApp.Controllers
                     TempData["ErrorMessage"] = "Профіль студента не знайдено. Зверніться до адміністратора.";
                     return View(new List<Student>());
                 }
-                
                 var student = await _studentService.FindByEmailAsync(email);
                 if (student == null)
                 {
@@ -129,7 +128,9 @@ namespace CoursesWebApp.Controllers
                     }
                     dbStudent.FirstName = student.FirstName;
                     dbStudent.LastName = student.LastName;
-                    dbStudent.DateOfBirth = student.DateOfBirth;
+                    dbStudent.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
+                    dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
+                    dbStudent.CreatedAt = DateTime.SpecifyKind(dbStudent.CreatedAt, DateTimeKind.Utc);
                     dbStudent.Email = student.Email;
                     dbStudent.Phone = student.Phone;
                     dbStudent.HasDiscount = student.HasDiscount;
