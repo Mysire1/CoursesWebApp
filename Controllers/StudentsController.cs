@@ -2,6 +2,7 @@ using CoursesWebApp.Models;
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CoursesWebApp.Controllers
 {
@@ -21,7 +22,14 @@ namespace CoursesWebApp.Controllers
         {
             if (User.IsInRole("Student"))
             {
-                var student = await _studentService.FindByEmailAsync(User.Identity.Name);
+                var email = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(email))
+                {
+                    TempData["ErrorMessage"] = "Профіль студента не знайдено. Зверніться до адміністратора.";
+                    return View(new List<Student>());
+                }
+                
+                var student = await _studentService.FindByEmailAsync(email);
                 if (student == null)
                 {
                     TempData["ErrorMessage"] = "Профіль студента не знайдено. Зверніться до адміністратора.";
@@ -42,8 +50,12 @@ namespace CoursesWebApp.Controllers
             if (student == null) return NotFound();
 
             // Студент бачить тільки свій профіль
-            if (User.IsInRole("Student") && User.Identity.Name != student.Email)
-                return Forbid();
+            if (User.IsInRole("Student"))
+            {
+                var email = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (email != student.Email)
+                    return Forbid();
+            }
 
             return View(student);
         }
