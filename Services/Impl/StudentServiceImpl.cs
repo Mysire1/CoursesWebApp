@@ -36,9 +36,12 @@ namespace CoursesWebApp.Services.Impl
 
         public async Task<Student> CreateStudentAsync(Student student)
         {
-            student.RegistrationDate = DateTime.Now;
-            student.CreatedAt = DateTime.Now;
-            
+            student.RegistrationDate = DateTime.UtcNow;
+            student.CreatedAt = DateTime.UtcNow;
+            if (student.DateOfBirth.Kind == DateTimeKind.Local)
+                student.DateOfBirth = student.DateOfBirth.ToUniversalTime();
+            else if(student.DateOfBirth.Kind == DateTimeKind.Unspecified)
+                student.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
             _context.Students.Add(student);
             await _context.SaveChangesAsync();
             return student;
