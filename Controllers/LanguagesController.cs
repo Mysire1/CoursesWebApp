@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CoursesWebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Teacher")]
     public class LanguagesController : Controller
     {
         private readonly ILanguageService _languageService;
