@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using CoursesWebApp.Data;
 using Npgsql;
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoursesWebApp.Controllers
 {
+    [Authorize(Roles = "Teacher")]
     public class DatabaseConsoleController : Controller
     {
         private readonly ApplicationDbContext _context;
