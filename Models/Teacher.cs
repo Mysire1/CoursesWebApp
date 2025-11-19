@@ -33,7 +33,7 @@ namespace CoursesWebApp.Models
         [DataType(DataType.Date)]
         public DateTime HireDate { get; set; }
         
-        public DateTime LastLoginAt { get; set; }
+        public DateTime? LastLoginAt { get; set; }
         
         public bool IsActive { get; set; } = true;
         
