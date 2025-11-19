@@ -73,9 +73,9 @@
                                 @foreach (var enrollment in Model.Enrollments)
                                 {
                                     <tr>
-                                        <td>@enrollment.Group.GroupName</td>
-                                        <td>@enrollment.Group.Level.Language.Name</td>
-                                        <td>@enrollment.Group.Level.Name</td>
+                                        <td>@(enrollment.Group?.GroupName ?? "Невідомо")</td>
+                                        <td>@(enrollment.Group?.Level?.Language?.Name ?? "Невідомо")</td>
+                                        <td>@(enrollment.Group?.Level?.Name ?? "Невідомо")</td>
                                         <td>@enrollment.Cost.ToString("C")</td>
                                         <td>
                                             @if (enrollment.IsCompleted)
@@ -99,6 +99,31 @@
         {
             <div class="alert alert-info">
                 Студент ще не записаний на жоден курс.
+            </div>
+        }
+        
+        @* Додаткова інформація про групу *@
+        @if (Model.Group != null)
+        {
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Поточна група</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Назва:</strong> @Model.Group.GroupName</p>
+                    @if (Model.Group.Level != null)
+                    {
+                        <p><strong>Рівень:</strong> @Model.Group.Level.Name</p>
+                        @if (Model.Group.Level.Language != null)
+                        {
+                            <p><strong>Мова:</strong> @Model.Group.Level.Language.Name</p>
+                        }
+                    }
+                    @if (Model.Group.Teacher != null)
+                    {
+                        <p><strong>Викладач:</strong> @Model.Group.Teacher.FullName</p>
+                    }
+                </div>
             </div>
         }
     </div>
