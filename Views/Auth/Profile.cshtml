@@ -7,7 +7,7 @@
     string fullName = "";
     string email = "";
     DateTime createdAt = DateTime.MinValue;
-    DateTime lastLoginAt = DateTime.MinValue;
+    DateTime? lastLoginAt = null;
     bool isActive = false;
     
     CoursesWebApp.Models.Student? student = null;
@@ -79,9 +79,9 @@
                             <tr>
                                 <td><strong>Останній вхід:</strong></td>
                                 <td>
-                                    @if (lastLoginAt != DateTime.MinValue)
+                                    @if (lastLoginAt.HasValue)
                                     {
-                                        @lastLoginAt.ToString("dd.MM.yyyy HH:mm")
+                                        @lastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")
                                     }
                                     else
                                     {
@@ -129,7 +129,7 @@
                             </p>
                             @if (student.Group != null)
                             {
-                                <p><strong>Група:</strong> @student.Group.GroupId</p>
+                                <p><strong>Група:</strong> @student.Group.Name</p>
                             }
                         </div>
                     </div>
