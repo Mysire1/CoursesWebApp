@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoursesWebApp.Controllers
 {
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Student")]
     public class StudentsController : Controller
     {
         private readonly IStudentService _studentService;
@@ -19,20 +19,31 @@ namespace CoursesWebApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var students = await _studentService.GetAllStudentsAsync();
-            return View(students);
+            if (User.IsInRole("Student"))
+            {
+                var student = await _studentService.FindByEmailAsync(User.Identity.Name);
+                return View(new List<Student> { student });
+            }
+            else
+            {
+                var students = await _studentService.GetAllStudentsAsync();
+                return View(students);
+            }
         }
 
         public async Task<IActionResult> Details(int id)
         {
             var student = await _studentService.GetStudentByIdAsync(id);
-            if (student == null)
-            {
-                return NotFound();
-            }
+            if (student == null) return NotFound();
+
+            // Студент бачить тільки свій профіль
+            if (User.IsInRole("Student") && User.Identity.Name != student.Email)
+                return Forbid();
+
             return View(student);
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create()
         {
             ViewBag.Groups = await _groupService.GetAllGroupsAsync();
@@ -41,6 +52,7 @@ namespace CoursesWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(Student student)
         {
             if (ModelState.IsValid)
@@ -60,6 +72,7 @@ namespace CoursesWebApp.Controllers
             return View(student);
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
         {
             var student = await _studentService.GetStudentByIdAsync(id);
@@ -73,6 +86,7 @@ namespace CoursesWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, Student student)
         {
             if (id != student.StudentId)
@@ -97,6 +111,7 @@ namespace CoursesWebApp.Controllers
             return View(student);
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete(int id)
         {
             var student = await _studentService.GetStudentByIdAsync(id);
@@ -109,6 +124,7 @@ namespace CoursesWebApp.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var result = await _studentService.DeleteStudentAsync(id);
@@ -124,6 +140,7 @@ namespace CoursesWebApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> ApplyLoyaltyDiscount()
         {
             try
