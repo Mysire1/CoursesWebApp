@@ -30,28 +30,20 @@
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Username" class="form-label"></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <input asp-for="Username" class="form-control" placeholder="Введіть ім'я користувача" />
-                        </div>
-                        <span asp-validation-for="Username" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
                         <label asp-for="Email" class="form-label"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                             <input asp-for="Email" class="form-control" placeholder="Введіть email" />
                         </div>
                         <span asp-validation-for="Email" class="text-danger"></span>
+                        <small class="form-text text-muted">Email буде використано для входу в систему</small>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Role" class="form-label"></label>
                         <select asp-for="Role" class="form-select">
                             <option value="Student">Студент</option>
-                            <option value="Teacher">Вчитель (Адміністратор)</option>
+                            <option value="Teacher">Викладач</option>
                         </select>
                         <span asp-validation-for="Role" class="text-danger"></span>
                     </div>
