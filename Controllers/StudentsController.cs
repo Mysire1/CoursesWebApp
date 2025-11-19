@@ -53,7 +53,9 @@ namespace CoursesWebApp.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", $"Помилка при додаванні: {ex.Message}");
+                    var root = ex;
+                    while (root.InnerException != null) root = root.InnerException;
+                    ModelState.AddModelError("", $"Помилка при додаванні: {root.Message}");
                 }
             }
             ViewBag.Groups = await _groupService.GetAllGroupsAsync();
