@@ -47,15 +47,12 @@ namespace CoursesWebApp.Controllers
         {
             var student = await _studentService.GetStudentByIdAsync(id);
             if (student == null) return NotFound();
-
-            // Студент бачить тільки свій профіль
             if (User.IsInRole("Student"))
             {
                 var email = User.FindFirst(ClaimTypes.Email)?.Value;
                 if (email != student.Email)
                     return Forbid();
             }
-
             return View(student);
         }
 
@@ -91,7 +88,8 @@ namespace CoursesWebApp.Controllers
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
         {
-            var student = await _studentService.GetStudentByIdAsync(id);
+            // Мінімум навігації для уникнення Kind=Unspecified!
+            var student = await _studentService.GetStudentByIdForEditAsync(id);
             if (student == null)
             {
                 return NotFound();
@@ -111,10 +109,9 @@ namespace CoursesWebApp.Controllers
             {
                 try
                 {
-                    var dbStudent = await _studentService.GetStudentByIdAsync(id);
+                    // Мінімум навігації для уникнення Kind=Unspecified!
+                    var dbStudent = await _studentService.GetStudentByIdForEditAsync(id);
                     if (dbStudent == null) return NotFound();
-
-                    // Email не змінювати на порожній і не робити дублікатів
                     if (string.IsNullOrWhiteSpace(student.Email))
                     {
                         ModelState.AddModelError("Email", "Email не може бути порожнім!");
@@ -128,22 +125,26 @@ namespace CoursesWebApp.Controllers
                     }
                     dbStudent.FirstName = student.FirstName;
                     dbStudent.LastName = student.LastName;
-                    dbStudent.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
-                    dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
-                    dbStudent.CreatedAt = DateTime.SpecifyKind(dbStudent.CreatedAt, DateTimeKind.Utc);
                     dbStudent.Email = student.Email;
                     dbStudent.Phone = student.Phone;
                     dbStudent.HasDiscount = student.HasDiscount;
-                    dbStudent.DiscountPercentage = dbStudent.HasDiscount ? Math.Clamp(student.DiscountPercentage, 0, 100) : 0;
+                    dbStudent.DiscountPercentage = student.HasDiscount ? Math.Clamp(student.DiscountPercentage, 0, 100) : 0;
                     dbStudent.GroupId = student.GroupId;
-
+                    // ГАРАНТУЙ UTC для всіх дат
+                    dbStudent.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
+                    dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
+                    dbStudent.CreatedAt = DateTime.SpecifyKind(dbStudent.CreatedAt, DateTimeKind.Utc);
+                    if (dbStudent.LastLoginAt.HasValue)
+                    {
+                        dbStudent.LastLoginAt = DateTime.SpecifyKind(dbStudent.LastLoginAt.Value, DateTimeKind.Utc);
+                    }
                     await _studentService.UpdateStudentAsync(dbStudent);
                     TempData["SuccessMessage"] = "Студента оновлено!";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message} {(ex.InnerException?.Message ?? "")} ");
+                    ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message} | Inner: {(ex.InnerException?.Message ?? "немає")}");
                 }
             }
 ErrorResult:
