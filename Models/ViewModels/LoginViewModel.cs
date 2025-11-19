@@ -4,9 +4,10 @@ namespace CoursesWebApp.Models.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Введіть ім'я користувача або email")]
-        [Display(Name = "Ім'я користувача або Email")]
-        public string Username { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Введіть email")]
+        [EmailAddress(ErrorMessage = "Некоректний email")]
+        [Display(Name = "Email")]
+        public string Username { get; set; } = string.Empty; // Залишаємо Username для сумісності з контролером
 
         [Required(ErrorMessage = "Введіть пароль")]
         [DataType(DataType.Password)]
@@ -21,11 +22,6 @@ namespace CoursesWebApp.Models.ViewModels
 
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Введіть ім'я користувача")]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "Ім'я користувача має бути від 3 до 50 символів")]
-        [Display(Name = "Ім'я користувача")]
-        public string Username { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "Введіть email")]
         [EmailAddress(ErrorMessage = "Некоректний email")]
         [Display(Name = "Email")]
