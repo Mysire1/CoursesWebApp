@@ -55,42 +55,60 @@ namespace CoursesWebApp.Services.Impl
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // Якщо реєструється студент, можемо створити запис в таблиці Students
+            // Якщо реєструється студент, створюємо запис в таблиці Students
             if (model.Role == "Student")
             {
-                var student = new Student
+                try
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    Phone = "", // Можна додати поле в форму реєстрації
-                    DateOfBirth = DateTime.Now.AddYears(-20), // За замовчуванням
-                    RegistrationDate = DateTime.UtcNow,
-                    HasDiscount = false
-                };
+                    var student = new Student
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Email = model.Email,
+                        Phone = "",
+                        DateOfBirth = DateTime.SpecifyKind(DateTime.Now.AddYears(-20), DateTimeKind.Utc), // За замовчуванням
+                        RegistrationDate = DateTime.UtcNow,
+                        HasDiscount = false,
+                        DiscountPercentage = 0,
+                        CreatedAt = DateTime.UtcNow,
+                        Status = "Активний"
+                    };
 
-                _context.Students.Add(student);
-                await _context.SaveChangesAsync();
+                    _context.Students.Add(student);
+                    await _context.SaveChangesAsync();
 
-                user.StudentId = student.StudentId;
-                await _context.SaveChangesAsync();
+                    user.StudentId = student.StudentId;
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Логуємо помилку, але не падаємо — користувач уже створений в Identity
+                    Console.WriteLine($"Помилка створення студента: {ex.Message}");
+                }
             }
             else if (model.Role == "Teacher")
             {
-                var teacher = new Teacher
+                try
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    Phone = "", // Можна додати поле в форму реєстрації
-                    HireDate = DateTime.UtcNow
-                };
+                    var teacher = new Teacher
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Email = model.Email,
+                        Phone = "",
+                        HireDate = DateTime.UtcNow
+                    };
 
-                _context.Teachers.Add(teacher);
-                await _context.SaveChangesAsync();
+                    _context.Teachers.Add(teacher);
+                    await _context.SaveChangesAsync();
 
-                user.TeacherId = teacher.TeacherId;
-                await _context.SaveChangesAsync();
+                    user.TeacherId = teacher.TeacherId;
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Помилка створення викладача: {ex.Message}");
+                }
             }
 
             return user;
