@@ -17,16 +17,7 @@
                     <span class="text-muted">Не призначено</span>
                 }
             </td>
-            <td>
-                @if (item.Group?.Enrollments != null)
-                {
-                    @item.Group.Enrollments.Count()
-                }
-                else
-                {
-                    <span>0</span>
-                }
-            </td>
+            <td>@(item.Group?.StudentCount ?? 0)</td>
             <td>@item.Classroom?.RoomNumber</td>
             <td>@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
         </tr>
