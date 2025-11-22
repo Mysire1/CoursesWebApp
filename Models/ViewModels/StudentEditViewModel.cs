@@ -30,8 +30,7 @@ namespace CoursesWebApp.Models.ViewModels
         public bool HasDiscount { get; set; } = false;
         [Range(0, 100)]
         public decimal DiscountPercentage { get; set; } = 0;
-        
         [StringLength(50)]
-        public string? Status { get; set; }
+        public string? PaymentStatus { get; set; } // тепер статус оплати
     }
 }
