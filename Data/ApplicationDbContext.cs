@@ -79,6 +79,13 @@ namespace CoursesWebApp.Data
                 .HasForeignKey(g => g.LanguageId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Configure Student -> Group relationship
+            modelBuilder.Entity<Student>()
+                .HasOne(s => s.Group)
+                .WithMany(g => g.Students)
+                .HasForeignKey(s => s.GroupId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<Enrollment>()
                 .HasOne(e => e.Student)
                 .WithMany(s => s.Enrollments)
