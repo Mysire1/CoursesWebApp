@@ -109,7 +109,8 @@ namespace CoursesWebApp.Controllers
                 Email = student.Email,
                 GroupId = student.GroupId,
                 HasDiscount = student.HasDiscount,
-                DiscountPercentage = student.DiscountPercentage
+                DiscountPercentage = student.DiscountPercentage,
+                Status = student.Status
             };
             return View(model);
         }
@@ -144,6 +145,7 @@ namespace CoursesWebApp.Controllers
                     dbStudent.HasDiscount = model.HasDiscount;
                     dbStudent.DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0;
                     dbStudent.GroupId = model.GroupId;
+                    dbStudent.Status = model.Status;
                     dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc);
                     // ГАРАНТІЯ ДЛЯ ВСІХ ін. дат
                     dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
