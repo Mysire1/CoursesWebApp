@@ -24,7 +24,7 @@ namespace CoursesWebApp.Models
         public DateTime DateOfBirth { get; set; }
         
         [StringLength(20)]
-        public string? Phone { get; set; };
+        public string? Phone { get; set; }
         
         [Required]
         [StringLength(255)]
@@ -43,16 +43,16 @@ namespace CoursesWebApp.Models
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         
-        public DateTime? LastLoginAt { get; set; };
+        public DateTime? LastLoginAt { get; set; }
         
         public bool IsActive { get; set; } = true;
         
-        public string? Status { get; set; };
+        public string? Status { get; set; }
         
-        public int? GroupId { get; set; };
+        public int? GroupId { get; set; }
         
         [ForeignKey("GroupId")]
-        public virtual Group? Group { get; set; };
+        public virtual Group? Group { get; set; }
         
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<ExamResult> ExamResults { get; set; } = new List<ExamResult>();
