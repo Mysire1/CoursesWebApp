@@ -22,19 +22,9 @@
                 }
             </td>
             <td>
-                @if (student.Payments != null && student.Payments.Any())
-                {
-                    @student.Payments.Sum(p => p.Amount).ToString("C")
-                }
-                else
-                {
-                    <span>0,00 ₴</span>
-                }
-            </td>
-            <td>
                 @{
-                    var totalPayments = student.Payments?.Sum(p => p.Amount) ?? 0;
                     var hasDeferrals = student.PaymentDeferrals?.Any() ?? false;
+                    var totalPayments = student.Payments?.Sum(p => p.Amount) ?? 0;
                     if (totalPayments > 0)
                     {
                         <span class="badge bg-success">Сплачено</span>
@@ -62,6 +52,6 @@
 else
 {
     <tr>
-        <td colspan="6" class="text-center text-muted">Студентів не знайдено</td>
+        <td colspan="5" class="text-center text-muted">Студентів не знайдено</td>
     </tr>
 }
