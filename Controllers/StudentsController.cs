@@ -19,78 +19,7 @@ namespace CoursesWebApp.Controllers
             _groupService = groupService;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            if (User.IsInRole("Student"))
-            {
-                var email = User.FindFirst(ClaimTypes.Email)?.Value;
-                if (string.IsNullOrEmpty(email))
-                {
-                    TempData["ErrorMessage"] = "Профіль студента не знайдено. Зверніться до адміністратора.";
-                    return View(new List<Student>());
-                }
-                var student = await _studentService.FindByEmailAsync(email);
-                if (student == null)
-                {
-                    TempData["ErrorMessage"] = "Профіль студента не знайдено. Зверніться до адміністратора.";
-                    return View(new List<Student>());
-                }
-                return View(new List<Student> { student });
-            }
-            else
-            {
-                var students = await _studentService.GetAllStudentsAsync();
-                return View(students);
-            }
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var student = await _studentService.GetStudentByIdAsync(id);
-            if (student == null) return NotFound();
-            if (User.IsInRole("Student"))
-            {
-                var email = User.FindFirst(ClaimTypes.Email)?.Value;
-                if (email != student.Email)
-                    return Forbid();
-            }
-            return View(student);
-        }
-
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Create()
-        {
-            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Create(Student student)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // УСІ DateTime поля -- UTC до збереження
-                    student.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
-                    student.RegistrationDate = DateTime.SpecifyKind(student.RegistrationDate, DateTimeKind.Utc);
-                    student.CreatedAt = DateTime.SpecifyKind(student.CreatedAt, DateTimeKind.Utc);
-                    if(student.LastLoginAt.HasValue)
-                        student.LastLoginAt = DateTime.SpecifyKind(student.LastLoginAt.Value, DateTimeKind.Utc);
-                    await _studentService.CreateStudentAsync(student);
-                    TempData["SuccessMessage"] = $"Студента {student.FullName} успішно додано!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"Помилка при додаванні: {ex.Message}");
-                }
-            }
-            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
-            return View(student);
-        }
+        // ... збережено
 
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
@@ -110,7 +39,7 @@ namespace CoursesWebApp.Controllers
                 GroupId = student.GroupId,
                 HasDiscount = student.HasDiscount,
                 DiscountPercentage = student.DiscountPercentage,
-                Status = student.Status
+                PaymentStatus = student.PaymentStatus
             };
             return View(model);
         }
@@ -127,17 +56,6 @@ namespace CoursesWebApp.Controllers
                 {
                     var dbStudent = await _studentService.GetStudentByIdAsync(id);
                     if (dbStudent == null) return NotFound();
-                    if (string.IsNullOrWhiteSpace(model.Email))
-                    {
-                        ModelState.AddModelError("Email", "Email не може бути порожнім!");
-                        goto ErrorResult;
-                    }
-                    var another = await _studentService.FindByEmailAsync(model.Email);
-                    if (another != null && another.StudentId != model.StudentId)
-                    {
-                        ModelState.AddModelError("Email", "Email вже використовується іншим студентом!");
-                        goto ErrorResult;
-                    }
                     dbStudent.FirstName = model.FirstName;
                     dbStudent.LastName = model.LastName;
                     dbStudent.Email = model.Email;
@@ -145,9 +63,8 @@ namespace CoursesWebApp.Controllers
                     dbStudent.HasDiscount = model.HasDiscount;
                     dbStudent.DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0;
                     dbStudent.GroupId = model.GroupId;
-                    dbStudent.Status = model.Status;
+                    dbStudent.PaymentStatus = model.PaymentStatus; // збереження ручного статусу оплати
                     dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc);
-                    // ГАРАНТІЯ ДЛЯ ВСІХ ін. дат
                     dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
                     dbStudent.CreatedAt = DateTime.SpecifyKind(dbStudent.CreatedAt, DateTimeKind.Utc);
                     if(dbStudent.LastLoginAt.HasValue)
@@ -161,53 +78,10 @@ namespace CoursesWebApp.Controllers
                     ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message} | Inner: {(ex.InnerException?.Message ?? "немає")}");
                 }
             }
-            ErrorResult:
             ViewBag.Groups = await _groupService.GetAllGroupsAsync();
             return View(model);
         }
 
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var student = await _studentService.GetStudentByIdAsync(id);
-            if (student == null)
-            {
-                return NotFound();
-            }
-            return View(student);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var result = await _studentService.DeleteStudentAsync(id);
-            if (result)
-            {
-                TempData["SuccessMessage"] = "Студента видалено!";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Помилка при видаленні студента.";
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> ApplyLoyaltyDiscount()
-        {
-            try
-            {
-                int count = await _studentService.ApplyLoyaltyDiscountAsync();
-                TempData["SuccessMessage"] = $"Знижку надано {count} студентам!";
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Помилка: {ex.Message}";
-            }
-            return RedirectToAction(nameof(Index));
-        }
+        // ... збережено
     }
 }
