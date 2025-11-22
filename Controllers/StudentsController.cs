@@ -98,7 +98,7 @@ namespace CoursesWebApp.Controllers
                 StudentId = student.StudentId,
                 FirstName = student.FirstName,
                 LastName = student.LastName,
-                DateOfBirth = student.DateOfBirth,
+                DateOfBirth = student.DateOfBirth.ToUniversalTime(),
                 Phone = student.Phone,
                 Email = student.Email,
                 GroupId = student.GroupId,
@@ -139,7 +139,7 @@ namespace CoursesWebApp.Controllers
                     dbStudent.HasDiscount = model.HasDiscount;
                     dbStudent.DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0;
                     dbStudent.GroupId = model.GroupId;
-                    dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc);
+                    dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc).ToUniversalTime();
                     await _studentService.UpdateStudentAsync(dbStudent);
                     TempData["SuccessMessage"] = "Студента оновлено!";
                     return RedirectToAction(nameof(Index));
