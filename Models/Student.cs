@@ -46,6 +46,8 @@ namespace CoursesWebApp.Models
         public DateTime? LastLoginAt { get; set; }
         
         public bool IsActive { get; set; } = true;
+
+        public string? PaymentStatus { get; set; } // status оплати повернуто
         
         public int? GroupId { get; set; }
         
