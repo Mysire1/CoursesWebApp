@@ -28,6 +28,25 @@
                     <dd class="col-sm-8">@(Model.Phone ?? "Не вказано")</dd>
                     <dt class="col-sm-4">Дата реєстрації:</dt>
                     <dd class="col-sm-8">@Model.RegistrationDate.ToString("dd.MM.yyyy")</dd>
+                    <dt class="col-sm-4">Статус оплати:</dt>
+                    <dd class="col-sm-8">
+                        @{
+                            var hasDeferrals = Model.PaymentDeferrals?.Any() ?? false;
+                            var totalPayments = Model.Payments?.Sum(p => p.Amount) ?? 0;
+                            if (totalPayments > 0)
+                            {
+                                <span class="badge bg-success">Сплачено</span>
+                            }
+                            else if (hasDeferrals)
+                            {
+                                <span class="badge bg-warning">Відтермінування</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Борг</span>
+                            }
+                        }
+                    </dd>
                     <dt class="col-sm-4">Має знижку:</dt>
                     <dd class="col-sm-8">
                         @if (Model.HasDiscount)
@@ -39,6 +58,13 @@
                             <span class="badge bg-secondary">Ні</span>
                         }
                     </dd>
+                    @if (!string.IsNullOrEmpty(Model.Status))
+                    {
+                        <dt class="col-sm-4">Статус:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-info">@Model.Status</span>
+                        </dd>
+                    }
                 </dl>
             </div>
         </div>
