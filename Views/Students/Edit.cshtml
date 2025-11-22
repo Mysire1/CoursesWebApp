@@ -1,4 +1,4 @@
-@model CoursesWebApp.Models.Student
+@model CoursesWebApp.Models.ViewModels.StudentEditViewModel
 
 @{
     ViewData["Title"] = "Редагування студента";
@@ -11,14 +11,7 @@
     <div class="col-md-6" style="max-height:85vh; overflow-y:auto; padding-bottom:120px;">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <!-- Hidden fields -->
             <input type="hidden" asp-for="StudentId" />
-            <input type="hidden" asp-for="RegistrationDate" />
-            <input type="hidden" asp-for="CreatedAt" />
-            <input type="hidden" asp-for="PasswordHash" />
-            <input type="hidden" asp-for="IsActive" />
-            <input type="hidden" asp-for="Status" />
-
             <div class="form-group mb-3">
                 <label asp-for="FirstName" class="control-label">Ім'я *</label>
                 <input asp-for="FirstName" class="form-control" />
@@ -49,7 +42,7 @@
                 <select asp-for="GroupId" class="form-select" asp-items="@(new SelectList(groups, "GroupId", "GroupName"))">
                     <option value="">Без групи</option>
                 </select>
-                <small class="text-muted">Оберіть групу або залиште "Без групи" щоб прибрати</small>
+                <small class="text-muted">Оберіть групу або залиште "Без групи", щоб прибрати</small>
             </div>
             <div class="form-group mb-3">
                 <div class="form-check">
@@ -76,8 +69,6 @@
             </div>
             <div class="card-body">
                 <p><strong>ID:</strong> @Model.StudentId</p>
-                <p><strong>Дата реєстрації:</strong> @Model.RegistrationDate.ToString("dd.MM.yyyy")</p>
-                <p><strong>Створено:</strong> @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
                 <div class="alert alert-info mt-3">
                     <h6>Поради:</h6>
                     <ul class="mb-0">
