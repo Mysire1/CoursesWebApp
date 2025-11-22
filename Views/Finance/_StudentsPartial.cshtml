@@ -8,9 +8,13 @@
             <td>@student.RegistrationDate.ToString("dd.MM.yyyy")</td>
             <td>@student.FullName</td>
             <td>
-                @if (student.Enrollments != null && student.Enrollments.Any())
+                @if (student.Group != null)
                 {
-                    @string.Join(", ", student.Enrollments.Select(e => e.Group?.GroupName ?? "Невідомо"))
+                    @student.Group.GroupName
+                }
+                else if (student.GroupId != null)
+                {
+                    @student.GroupId
                 }
                 else
                 {
@@ -31,7 +35,6 @@
                 @{
                     var totalPayments = student.Payments?.Sum(p => p.Amount) ?? 0;
                     var hasDeferrals = student.PaymentDeferrals?.Any() ?? false;
-                    
                     if (totalPayments > 0)
                     {
                         <span class="badge bg-success">Сплачено</span>
@@ -44,7 +47,6 @@
                     {
                         <span class="badge bg-danger">Борг</span>
                     }
-                    
                     if (student.HasDiscount)
                     {
                         <span class="badge bg-info ms-1">Знижка @student.DiscountPercentage%</span>
