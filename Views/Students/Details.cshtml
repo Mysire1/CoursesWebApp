@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Деталі студента";
+    var totalPaid = Model.Payments?.Sum(p => p.Amount) ?? 0m;
 }
 
 <h1>Деталі студента</h1>
@@ -16,25 +17,18 @@
                 <dl class="row">
                     <dt class="col-sm-4">ID:</dt>
                     <dd class="col-sm-8">@Model.StudentId</dd>
-                    
                     <dt class="col-sm-4">Ім'я:</dt>
                     <dd class="col-sm-8">@Model.FirstName</dd>
-                    
                     <dt class="col-sm-4">Прізвище:</dt>
                     <dd class="col-sm-8">@Model.LastName</dd>
-                    
                     <dt class="col-sm-4">Дата народження:</dt>
                     <dd class="col-sm-8">@Model.DateOfBirth.ToString("dd.MM.yyyy")</dd>
-                    
                     <dt class="col-sm-4">Email:</dt>
                     <dd class="col-sm-8">@(Model.Email ?? "Не вказано")</dd>
-                    
                     <dt class="col-sm-4">Телефон:</dt>
                     <dd class="col-sm-8">@(Model.Phone ?? "Не вказано")</dd>
-                    
                     <dt class="col-sm-4">Дата реєстрації:</dt>
                     <dd class="col-sm-8">@Model.RegistrationDate.ToString("dd.MM.yyyy")</dd>
-                    
                     <dt class="col-sm-4">Має знижку:</dt>
                     <dd class="col-sm-8">
                         @if (Model.HasDiscount)
@@ -46,7 +40,17 @@
                             <span class="badge bg-secondary">Ні</span>
                         }
                     </dd>
+                    <dt class="col-sm-4">Сума сплачено:</dt>
+                    <dd class="col-sm-8"><strong>@totalPaid.ToString("C")</strong></dd>
                 </dl>
+                <form class="row gy-2 mt-4" method="post" asp-action="Pay" asp-route-id="@Model.StudentId">
+                    <div class="col-7">
+                        <input type="number" required step="0.01" min="0.01" class="form-control" name="amount" placeholder="Сума оплати, ₴" />
+                    </div>
+                    <div class="col-5">
+                        <button type="submit" class="btn btn-success">Оплата</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -101,8 +105,6 @@
                 Студент ще не записаний на жоден курс.
             </div>
         }
-        
-        @* Додаткова інформація про групу *@
         @if (Model.Group != null)
         {
             <div class="card mt-3">
