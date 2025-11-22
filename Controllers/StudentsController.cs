@@ -73,6 +73,12 @@ namespace CoursesWebApp.Controllers
             {
                 try
                 {
+                    // УСІ DateTime поля -- UTC до збереження
+                    student.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
+                    student.RegistrationDate = DateTime.SpecifyKind(student.RegistrationDate, DateTimeKind.Utc);
+                    student.CreatedAt = DateTime.SpecifyKind(student.CreatedAt, DateTimeKind.Utc);
+                    if(student.LastLoginAt.HasValue)
+                        student.LastLoginAt = DateTime.SpecifyKind(student.LastLoginAt.Value, DateTimeKind.Utc);
                     await _studentService.CreateStudentAsync(student);
                     TempData["SuccessMessage"] = $"Студента {student.FullName} успішно додано!";
                     return RedirectToAction(nameof(Index));
@@ -98,7 +104,7 @@ namespace CoursesWebApp.Controllers
                 StudentId = student.StudentId,
                 FirstName = student.FirstName,
                 LastName = student.LastName,
-                DateOfBirth = student.DateOfBirth.ToUniversalTime(),
+                DateOfBirth = student.DateOfBirth.Kind == DateTimeKind.Utc ? student.DateOfBirth : DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc),
                 Phone = student.Phone,
                 Email = student.Email,
                 GroupId = student.GroupId,
@@ -113,8 +119,7 @@ namespace CoursesWebApp.Controllers
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, StudentEditViewModel model)
         {
-            if (id != model.StudentId)
-                return NotFound();
+            if (id != model.StudentId) return NotFound();
             if (ModelState.IsValid)
             {
                 try
@@ -139,7 +144,12 @@ namespace CoursesWebApp.Controllers
                     dbStudent.HasDiscount = model.HasDiscount;
                     dbStudent.DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0;
                     dbStudent.GroupId = model.GroupId;
-                    dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc).ToUniversalTime();
+                    dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc);
+                    // ГАРАНТІЯ ДЛЯ ВСІХ ін. дат
+                    dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
+                    dbStudent.CreatedAt = DateTime.SpecifyKind(dbStudent.CreatedAt, DateTimeKind.Utc);
+                    if(dbStudent.LastLoginAt.HasValue)
+                        dbStudent.LastLoginAt = DateTime.SpecifyKind(dbStudent.LastLoginAt.Value, DateTimeKind.Utc);
                     await _studentService.UpdateStudentAsync(dbStudent);
                     TempData["SuccessMessage"] = "Студента оновлено!";
                     return RedirectToAction(nameof(Index));
