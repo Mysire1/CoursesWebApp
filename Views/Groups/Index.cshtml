@@ -32,7 +32,7 @@
                     <td>@(group.Language?.Name ?? "—")</td>
                     <td>@group.LevelName</td>
                     <td>@(group.Teacher?.FullName ?? "—")</td>
-                    <td>@(group.Enrollments?.Count() ?? 0)</td>
+                    <td>@group.StudentCount</td>
                     <td>@group.StartDate.ToString("dd.MM.yyyy")</td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@group.GroupId" class="btn btn-warning btn-sm">Редагувати</a>
