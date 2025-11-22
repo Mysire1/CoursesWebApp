@@ -19,7 +19,12 @@ namespace CoursesWebApp.Controllers
             _groupService = groupService;
         }
 
-        // ... збережено
+        [Authorize(Roles = "Teacher,Student")]
+        public async Task<IActionResult> Index()
+        {
+            var students = await _studentService.GetAllStudentsAsync();
+            return View(students);
+        }
 
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
