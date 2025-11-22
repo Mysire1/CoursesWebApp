@@ -22,25 +22,32 @@
                 }
             </td>
             <td>
-                @{
-                    var hasDeferrals = student.PaymentDeferrals?.Any() ?? false;
-                    var totalPayments = student.Payments?.Sum(p => p.Amount) ?? 0;
-                    if (totalPayments > 0)
+                @if (!string.IsNullOrEmpty(student.PaymentStatus))
+                {
+                    if (student.PaymentStatus == "Сплачено")
                     {
                         <span class="badge bg-success">Сплачено</span>
                     }
-                    else if (hasDeferrals)
+                    else if (student.PaymentStatus == "Відтермінування")
                     {
                         <span class="badge bg-warning">Відтермінування</span>
                     }
-                    else
+                    else if (student.PaymentStatus == "Борг")
                     {
                         <span class="badge bg-danger">Борг</span>
                     }
-                    if (student.HasDiscount)
+                    else
                     {
-                        <span class="badge bg-info ms-1">Знижка @student.DiscountPercentage%</span>
+                        <span class="badge bg-secondary">@student.PaymentStatus</span>
                     }
+                }
+                else
+                {
+                    <span class="text-muted">Не вказано</span>
+                }
+                @if (student.HasDiscount)
+                {
+                    <span class="badge bg-info ms-1">Знижка @student.DiscountPercentage%</span>
                 }
             </td>
             <td>
