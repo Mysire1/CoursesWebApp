@@ -46,11 +46,14 @@ namespace CoursesWebApp.Models
         [ForeignKey("LanguageId")]
         public virtual Language Language { get; set; } = null!; // Language навігація
         
+        // Зв'язок з студентами через GroupId в таблиці Students
+        public virtual ICollection<Student> Students { get; set; } = new List<Student>();
+        
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
         
-        // Computed property for student count
+        // Computed property for student count - рахуємо через Students, а не Enrollments
         [NotMapped]
-        public int StudentCount => Enrollments?.Count ?? 0;
+        public int StudentCount => Students?.Count ?? 0;
     }
 }
