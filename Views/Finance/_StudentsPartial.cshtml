@@ -22,32 +22,13 @@
                 }
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(student.PaymentStatus))
+                @if (student.HasDiscount)
                 {
-                    if (student.PaymentStatus == "Сплачено")
-                    {
-                        <span class="badge bg-success">Сплачено</span>
-                    }
-                    else if (student.PaymentStatus == "Відтермінування")
-                    {
-                        <span class="badge bg-warning">Відтермінування</span>
-                    }
-                    else if (student.PaymentStatus == "Борг")
-                    {
-                        <span class="badge bg-danger">Борг</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">@student.PaymentStatus</span>
-                    }
+                    <span class="badge bg-info">Знижка @student.DiscountPercentage%</span>
                 }
                 else
                 {
-                    <span class="text-muted">Не вказано</span>
-                }
-                @if (student.HasDiscount)
-                {
-                    <span class="badge bg-info ms-1">Знижка @student.DiscountPercentage%</span>
+                    <span class="text-muted">Немає</span>
                 }
             </td>
             <td>
