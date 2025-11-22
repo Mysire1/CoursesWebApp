@@ -64,7 +64,7 @@ namespace CoursesWebApp.Services.Impl
                     HasDiscount = false,
                     DiscountPercentage = 0,
                     CreatedAt = DateTime.UtcNow,
-                    Status = "Активний",
+                    PaymentStatus = "Активний",
                     IsActive = true
                 };
 
