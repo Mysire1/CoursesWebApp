@@ -30,21 +30,28 @@
                     <dd class="col-sm-8">@Model.RegistrationDate.ToString("dd.MM.yyyy")</dd>
                     <dt class="col-sm-4">Статус оплати:</dt>
                     <dd class="col-sm-8">
-                        @{
-                            var hasDeferrals = Model.PaymentDeferrals?.Any() ?? false;
-                            var totalPayments = Model.Payments?.Sum(p => p.Amount) ?? 0;
-                            if (totalPayments > 0)
+                        @if (!string.IsNullOrEmpty(Model.PaymentStatus))
+                        {
+                            if (Model.PaymentStatus == "Сплачено")
                             {
                                 <span class="badge bg-success">Сплачено</span>
                             }
-                            else if (hasDeferrals)
+                            else if (Model.PaymentStatus == "Відтермінування")
                             {
                                 <span class="badge bg-warning">Відтермінування</span>
                             }
-                            else
+                            else if (Model.PaymentStatus == "Борг")
                             {
                                 <span class="badge bg-danger">Борг</span>
                             }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Model.PaymentStatus</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Не вказано</span>
                         }
                     </dd>
                     <dt class="col-sm-4">Має знижку:</dt>
@@ -58,13 +65,6 @@
                             <span class="badge bg-secondary">Ні</span>
                         }
                     </dd>
-                    @if (!string.IsNullOrEmpty(Model.Status))
-                    {
-                        <dt class="col-sm-4">Статус:</dt>
-                        <dd class="col-sm-8">
-                            <span class="badge bg-info">@Model.Status</span>
-                        </dd>
-                    }
                 </dl>
             </div>
         </div>
