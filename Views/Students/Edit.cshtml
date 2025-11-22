@@ -45,14 +45,14 @@
                 <small class="text-muted">Оберіть групу або залиште "Без групи", щоб прибрати</small>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Status" class="control-label">Статус</label>
-                <select asp-for="Status" class="form-select">
-                    <option value="">Не встановлено</option>
+                <label asp-for="PaymentStatus" class="control-label">Статус оплати</label>
+                <select asp-for="PaymentStatus" class="form-select">
+                    <option value="">Не вказано</option>
                     <option value="Сплачено">Сплачено</option>
                     <option value="Відтермінування">Відтермінування</option>
                     <option value="Борг">Борг</option>
                 </select>
-                <small class="text-muted">Статус оплати студента</small>
+                <small class="text-muted">Виберіть статус, він буде показаний і у фінансах</small>
             </div>
             <div class="form-group mb-3">
                 <div class="form-check">
@@ -86,7 +86,7 @@
                         <li>Дата реєстрації не змінюється</li>
                         <li>Знижка від 0% до 100%</li>
                         <li>Email має бути в правильному форматі</li>
-                        <li>Статус відображає поточний стан оплати</li>
+                        <li>Статус оплати показується у фінансах та деталях</li>
                     </ul>
                 </div>
             </div>
