@@ -21,7 +21,7 @@ namespace CoursesWebApp.Services.Impl
                 .ThenInclude(l => l.Language)
                 .Include(g => g.Teacher)
                 .Include(g => g.Language)
-                .Include(g => g.Enrollments)
+                .Include(g => g.Students)
                 .OrderBy(g => g.GroupName)
                 .ToListAsync();
         }
@@ -33,8 +33,7 @@ namespace CoursesWebApp.Services.Impl
                 .ThenInclude(l => l.Language)
                 .Include(g => g.Teacher)
                 .Include(g => g.Language)
-                .Include(g => g.Enrollments)
-                .ThenInclude(e => e.Student)
+                .Include(g => g.Students)
                 .FirstOrDefaultAsync(g => g.GroupId == id);
         }
 
@@ -45,32 +44,29 @@ namespace CoursesWebApp.Services.Impl
                 .ThenInclude(l => l.Language)
                 .Include(g => g.Teacher)
                 .Include(g => g.Language)
-                .Include(g => g.Enrollments)
+                .Include(g => g.Students)
                 .AsQueryable();
 
             if (languageId.HasValue)
             {
                 query = query.Where(g => g.LanguageId == languageId.Value);
             }
-
             if (teacherId.HasValue)
             {
                 query = query.Where(g => g.TeacherId == teacherId.Value);
             }
 
-            return await query
-                .OrderBy(g => g.GroupName)
-                .ToListAsync();
+            return await query.OrderBy(g => g.GroupName).ToListAsync();
         }
-    
+
         public async Task<IEnumerable<Group>> GetSmallGroupsAsync(int maxStudents = 5)
         {
             return await _context.Groups
                 .Include(g => g.Level)
                 .Include(g => g.Teacher)
-                .Include(g => g.Enrollments)
-                .Where(g => g.Enrollments.Count < maxStudents)
-                .OrderBy(g => g.Enrollments.Count)
+                .Include(g => g.Students)
+                .Where(g => g.Students.Count < maxStudents)
+                .OrderBy(g => g.Students.Count)
                 .ToListAsync();
         }
 
@@ -79,8 +75,8 @@ namespace CoursesWebApp.Services.Impl
             return await _context.Groups
                 .Include(g => g.Level)
                 .Include(g => g.Teacher)
-                .Include(g => g.Enrollments)
-                .Where(g => g.Enrollments.Count == exactStudents)
+                .Include(g => g.Students)
+                .Where(g => g.Students.Count == exactStudents)
                 .OrderBy(g => g.GroupName)
                 .ToListAsync();
         }
