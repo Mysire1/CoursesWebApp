@@ -26,6 +26,15 @@ namespace CoursesWebApp.Controllers
             return View(students);
         }
 
+        [Authorize(Roles = "Teacher,Student")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var student = await _studentService.GetStudentByIdAsync(id);
+            if (student == null)
+                return NotFound();
+            return View(student);
+        }
+
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
         {
