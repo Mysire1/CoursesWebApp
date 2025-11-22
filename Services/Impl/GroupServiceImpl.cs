@@ -21,7 +21,6 @@ namespace CoursesWebApp.Services.Impl
                 .ThenInclude(l => l.Language)
                 .Include(g => g.Teacher)
                 .Include(g => g.Language)
-                .Include(g => g.Students)
                 .Include(g => g.Enrollments)
                 .OrderBy(g => g.GroupName)
                 .ToListAsync();
@@ -34,7 +33,6 @@ namespace CoursesWebApp.Services.Impl
                 .ThenInclude(l => l.Language)
                 .Include(g => g.Teacher)
                 .Include(g => g.Language)
-                .Include(g => g.Students)
                 .Include(g => g.Enrollments)
                 .ThenInclude(e => e.Student)
                 .FirstOrDefaultAsync(g => g.GroupId == id);
@@ -47,7 +45,6 @@ namespace CoursesWebApp.Services.Impl
                 .ThenInclude(l => l.Language)
                 .Include(g => g.Teacher)
                 .Include(g => g.Language)
-                .Include(g => g.Students)
                 .Include(g => g.Enrollments)
                 .AsQueryable();
 
@@ -65,16 +62,15 @@ namespace CoursesWebApp.Services.Impl
                 .OrderBy(g => g.GroupName)
                 .ToListAsync();
         }
-
+    
         public async Task<IEnumerable<Group>> GetSmallGroupsAsync(int maxStudents = 5)
         {
             return await _context.Groups
                 .Include(g => g.Level)
                 .Include(g => g.Teacher)
-                .Include(g => g.Students)
                 .Include(g => g.Enrollments)
-                .Where(g => g.Students.Count < maxStudents)
-                .OrderBy(g => g.Students.Count)
+                .Where(g => g.Enrollments.Count < maxStudents)
+                .OrderBy(g => g.Enrollments.Count)
                 .ToListAsync();
         }
 
@@ -83,9 +79,8 @@ namespace CoursesWebApp.Services.Impl
             return await _context.Groups
                 .Include(g => g.Level)
                 .Include(g => g.Teacher)
-                .Include(g => g.Students)
                 .Include(g => g.Enrollments)
-                .Where(g => g.Students.Count == exactStudents)
+                .Where(g => g.Enrollments.Count == exactStudents)
                 .OrderBy(g => g.GroupName)
                 .ToListAsync();
         }
