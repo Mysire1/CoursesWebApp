@@ -72,6 +72,13 @@ namespace CoursesWebApp.Data
                 .HasForeignKey(g => g.TeacherId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Add Language relationship for Group
+            modelBuilder.Entity<Group>()
+                .HasOne(g => g.Language)
+                .WithMany()
+                .HasForeignKey(g => g.LanguageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Enrollment>()
                 .HasOne(e => e.Student)
                 .WithMany(s => s.Enrollments)
