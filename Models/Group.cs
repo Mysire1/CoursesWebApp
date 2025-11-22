@@ -48,5 +48,9 @@ namespace CoursesWebApp.Models
         
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
+        
+        // Computed property for student count
+        [NotMapped]
+        public int StudentCount => Enrollments?.Count ?? 0;
     }
 }
