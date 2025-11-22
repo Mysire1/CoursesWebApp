@@ -23,11 +23,11 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-home me-1"></i>Головна</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Students" asp-action="Index"><i class="fas fa-users me-1"></i>Студенти</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Teachers" asp-action="Index"><i class="fas fa-chalkboard-teacher me-1"></i>Викладачі</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Groups" asp-action="Index"><i class="fas fa-object-group me-1"></i>Групи</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Finance" asp-action="Index"><i class="fas fa-wallet me-1"></i>Фінанси</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Schedule" asp-action="Index"><i class="fas fa-calendar-alt me-1"></i>Розклад</a></li>
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="DatabaseConsole" asp-action="Index">SQL Console</a></li>
-
                     </ul>
                     <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)
