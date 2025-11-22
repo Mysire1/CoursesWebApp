@@ -1,4 +1,5 @@
 using CoursesWebApp.Models;
+using CoursesWebApp.Models.ViewModels;
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -90,48 +91,55 @@ namespace CoursesWebApp.Controllers
         {
             var student = await _studentService.GetStudentByIdAsync(id);
             if (student == null)
-            {
                 return NotFound();
-            }
             ViewBag.Groups = await _groupService.GetAllGroupsAsync();
-            return View(student);
+            var model = new StudentEditViewModel
+            {
+                StudentId = student.StudentId,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                DateOfBirth = student.DateOfBirth,
+                Phone = student.Phone,
+                Email = student.Email,
+                GroupId = student.GroupId,
+                HasDiscount = student.HasDiscount,
+                DiscountPercentage = student.DiscountPercentage
+            };
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Edit(int id, Student student)
+        public async Task<IActionResult> Edit(int id, StudentEditViewModel model)
         {
-            if (id != student.StudentId)
+            if (id != model.StudentId)
                 return NotFound();
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     var dbStudent = await _studentService.GetStudentByIdAsync(id);
                     if (dbStudent == null) return NotFound();
-
-                    if (string.IsNullOrWhiteSpace(student.Email))
+                    if (string.IsNullOrWhiteSpace(model.Email))
                     {
                         ModelState.AddModelError("Email", "Email не може бути порожнім!");
                         goto ErrorResult;
                     }
-                    var another = await _studentService.FindByEmailAsync(student.Email);
-                    if (another != null && another.StudentId != student.StudentId)
+                    var another = await _studentService.FindByEmailAsync(model.Email);
+                    if (another != null && another.StudentId != model.StudentId)
                     {
                         ModelState.AddModelError("Email", "Email вже використовується іншим студентом!");
                         goto ErrorResult;
                     }
-
-                    dbStudent.FirstName = student.FirstName;
-                    dbStudent.LastName = student.LastName;
-                    dbStudent.Email = student.Email;
-                    dbStudent.Phone = student.Phone;
-                    dbStudent.HasDiscount = student.HasDiscount;
-                    dbStudent.DiscountPercentage = student.HasDiscount ? Math.Clamp(student.DiscountPercentage, 0, 100) : 0;
-                    dbStudent.GroupId = student.GroupId;
-                    dbStudent.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
+                    dbStudent.FirstName = model.FirstName;
+                    dbStudent.LastName = model.LastName;
+                    dbStudent.Email = model.Email;
+                    dbStudent.Phone = model.Phone;
+                    dbStudent.HasDiscount = model.HasDiscount;
+                    dbStudent.DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0;
+                    dbStudent.GroupId = model.GroupId;
+                    dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc);
                     await _studentService.UpdateStudentAsync(dbStudent);
                     TempData["SuccessMessage"] = "Студента оновлено!";
                     return RedirectToAction(nameof(Index));
@@ -143,7 +151,7 @@ namespace CoursesWebApp.Controllers
             }
             ErrorResult:
             ViewBag.Groups = await _groupService.GetAllGroupsAsync();
-            return View(student);
+            return View(model);
         }
 
         [Authorize(Roles = "Teacher")]
