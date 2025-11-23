@@ -1,17 +1,21 @@
 @model CoursesWebApp.Models.ViewModels.GroupCreateViewModel
 @{
-    ViewData["Title"] = "Створити групу";
-    var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
-    var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
-    var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new List<CoursesWebApp.Models.Level>();
+ViewData["Title"] = "Створити групу";
+// Перевірки на null, щоб уникнути помилок, якщо ViewBag порожній
+var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
+var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
+var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new List<CoursesWebApp.Models.Level>();
 }
+
 <h1>Створити нову групу</h1>
+
 <form asp-action="Create" method="post" class="row g-3">
     <div class="col-md-6">
         <label asp-for="GroupName" class="form-label">Назва групи</label>
         <input asp-for="GroupName" class="form-control" />
         <span asp-validation-for="GroupName" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
         <label asp-for="TeacherId" class="form-label">Викладач</label>
         <select asp-for="TeacherId" class="form-select" asp-items="@(new SelectList(teachers, "TeacherId", "FullName"))">
@@ -19,6 +23,7 @@
         </select>
         <span asp-validation-for="TeacherId" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
         <label asp-for="LanguageId" class="form-label">Мова</label>
         <select asp-for="LanguageId" class="form-select" id="LanguageSelect" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
@@ -26,6 +31,7 @@
         </select>
         <span asp-validation-for="LanguageId" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
         <label asp-for="LevelName" class="form-label">Рівень</label>
         <select asp-for="LevelName" class="form-select" id="LevelNameSelect">
@@ -33,11 +39,13 @@
         </select>
         <span asp-validation-for="LevelName" class="text-danger"></span>
     </div>
+
     <div class="col-12">
         <label asp-for="StartDate" class="form-label">Дата старту</label>
         <input asp-for="StartDate" type="date" class="form-control" />
         <span asp-validation-for="StartDate" class="text-danger"></span>
     </div>
+
     <div class="col-12">
         <button type="submit" class="btn btn-success">Створити</button>
         <a asp-action="Index" class="btn btn-secondary ms-2">Скасувати</a>
@@ -46,24 +54,48 @@
 
 @section Scripts {
     <script>
-    // Мапа рівнів з ViewBag.Levels
-    const levelsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(levels));
-    const LEVELS_BY_LANG_ID = {};
-    levelsData.forEach(lvl => {
-        if(!LEVELS_BY_LANG_ID[lvl.languageId]) LEVELS_BY_LANG_ID[lvl.languageId] = [];
-        LEVELS_BY_LANG_ID[lvl.languageId].push(lvl.name);
-    });
-    function updateLevels() {
-      const langId = $('#LanguageSelect').val();
-      const levels = LEVELS_BY_LANG_ID[langId] || [];
-      const $level = $('#LevelNameSelect');
-      $level.empty();
-      $level.append('<option value="">Оберіть рівень</option>');
-      levels.forEach(lvl => $level.append('<option value="'+lvl+'">'+lvl+'</option>'))
-    }
-    $(function(){
-      $('#LanguageSelect').change(updateLevels);
-      updateLevels();
-    });
-  </script>
+        // 1. !!! ВАЖЛИВО: Ми робимо .Select(), щоб взяти тільки прості дані
+        // Це обрізає всі "важкі" зв'язки (Language, Groups), які ламають JSON
+        @{
+            var safeLevelsData = levels.Select(l => new { 
+                LanguageId = l.LanguageId, 
+                Name = l.Name 
+            }).ToList();
+        }
+
+        // Тепер серіалізуємо безпечний список
+        const levelsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(safeLevelsData));
+
+        const LEVELS_BY_LANG_ID = {};
+
+        // Заповнюємо мапу
+        if (levelsData) {
+            levelsData.forEach(lvl => {
+                // Тут властивості будуть точно як у C# (PascalCase)
+                if (!LEVELS_BY_LANG_ID[lvl.LanguageId]) {
+                    LEVELS_BY_LANG_ID[lvl.LanguageId] = [];
+                }
+                LEVELS_BY_LANG_ID[lvl.LanguageId].push(lvl.Name);
+            });
+        }
+
+        function updateLevels() {
+            const langId = $('#LanguageSelect').val();
+            const $levelSelect = $('#LevelNameSelect');
+            
+            $levelSelect.empty();
+            $levelSelect.append('<option value="">Оберіть рівень</option>');
+
+            const availableLevels = LEVELS_BY_LANG_ID[langId] || [];
+            
+            availableLevels.forEach(lvlName => {
+                $levelSelect.append('<option value="' + lvlName + '">' + lvlName + '</option>');
+            });
+        }
+
+        $(function () {
+            $('#LanguageSelect').change(updateLevels);
+            updateLevels();
+        });
+    </script>
 }
