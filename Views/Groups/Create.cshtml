@@ -20,14 +20,16 @@
     </div>
     <div class="col-md-6">
         <label asp-for="LanguageId" class="form-label">Мова</label>
-        <select asp-for="LanguageId" class="form-select" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
+        <select asp-for="LanguageId" class="form-select" id="LanguageSelect" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
             <option value="">Оберіть мову</option>
         </select>
         <span asp-validation-for="LanguageId" class="text-danger"></span>
     </div>
     <div class="col-md-6">
         <label asp-for="LevelName" class="form-label">Рівень</label>
-        <input asp-for="LevelName" class="form-control" placeholder="Напр. Beginner, Intermediate" />
+        <select asp-for="LevelName" class="form-select" id="LevelNameSelect">
+            <option value="">Оберіть рівень</option>
+        </select>
         <span asp-validation-for="LevelName" class="text-danger"></span>
     </div>
     <div class="col-12">
@@ -40,3 +42,47 @@
         <a asp-action="Index" class="btn btn-secondary ms-2">Скасувати</a>
     </div>
 </form>
+
+@section Scripts {
+  <script>
+    // Мапа валідних рівнів для кожної мови
+    const LEVELS_BY_LANG = {
+      'English': [
+        'Beginner (A1)','Elementary (A2)','Intermediate (B1)','Upper-Intermediate (B2)','Advanced (C1)'
+      ],
+      'German': [
+        'Anfänger (A1)','Grundstufe (A2)','Mittelstufe (B1)'
+      ],
+      'French': [
+        'Débutant (A1)','Élémentaire (A2)'
+      ],
+      'Spanish': [
+        'Principiante (A1)','Elemental (A2)'
+      ],
+      'Italian': [
+        'Principiante (A1)'
+      ]
+    };
+
+    // Витягуємо співставлення id->назва мови
+    const langIdToName = {};
+    $('#LanguageSelect option').each(function(){
+        if(this.value) langIdToName[this.value] = $(this).text();
+    });
+
+    function updateLevels() {
+      const langId = $('#LanguageSelect').val();
+      const langName = langIdToName[langId] || '';
+      const levels = LEVELS_BY_LANG[langName] || [];
+      const $level = $('#LevelNameSelect');
+      $level.empty();
+      $level.append('<option value="">Оберіть рівень</option>');
+      levels.forEach(lvl => $level.append('<option value="'+lvl+'">'+lvl+'</option>'));
+    }
+
+    $(function(){
+      $('#LanguageSelect').change(updateLevels);
+      updateLevels();
+    });
+  </script>
+}
