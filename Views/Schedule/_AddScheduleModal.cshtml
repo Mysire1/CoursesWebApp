@@ -1,4 +1,5 @@
 @model CoursesWebApp.Models.ViewModels.AddScheduleViewModel
+
 <div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -6,77 +7,80 @@
         <h5 class="modal-title" id="addScheduleModalLabel">Додати розклад</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form id="addScheduleForm" method="post">
+      
+      <form asp-action="AddSchedule" asp-controller="Schedule" method="post">
+        
         <div asp-validation-summary="All" class="text-danger"></div>
+        
         <div class="modal-body">
             <div class="mb-3">
-                <label for="GroupId" class="form-label">Група</label>
-                <select asp-for="GroupId" class="form-select" required>
+                <label asp-for="GroupId" class="form-label">Група</label>
+                <select asp-for="GroupId" class="form-select">
                     <option value="">Оберіть групу</option>
-                    @foreach (var group in ViewBag.Groups) {
-                        <option value="@group.GroupId">@group.GroupName</option>
+                    @if (ViewBag.Groups != null)
+                    {
+                        @foreach (var group in ViewBag.Groups) {
+                            <option value="@group.GroupId">@group.GroupName</option>
+                        }
                     }
                 </select>
+                <span asp-validation-for="GroupId" class="text-danger"></span>
             </div>
+            
             <div class="mb-3">
                 <label class="form-label">Дні тижня</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Понеділок" id="dayMonday">
-                    <label class="form-check-label" for="dayMonday">
-                        Понеділок
-                    </label>
+                <div class="d-flex flex-wrap">
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Понеділок" id="dayMonday">
+                        <label class="form-check-label" for="dayMonday">Понеділок</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Вівторок" id="dayTuesday">
+                        <label class="form-check-label" for="dayTuesday">Вівторок</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Середа" id="dayWednesday">
+                        <label class="form-check-label" for="dayWednesday">Середа</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Четвер" id="dayThursday">
+                        <label class="form-check-label" for="dayThursday">Четвер</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="П'ятниця" id="dayFriday">
+                        <label class="form-check-label" for="dayFriday">П'ятниця</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Субота" id="daySaturday">
+                        <label class="form-check-label" for="daySaturday">Субота</label>
+                    </div>
+                     <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Неділя" id="daySunday">
+                        <label class="form-check-label" for="daySunday">Неділя</label>
+                    </div>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Вівторок" id="dayTuesday">
-                    <label class="form-check-label" for="dayTuesday">
-                        Вівторок
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Середа" id="dayWednesday">
-                    <label class="form-check-label" for="dayWednesday">
-                        Середа
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Четвер" id="dayThursday">
-                    <label class="form-check-label" for="dayThursday">
-                        Четвер
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="П'ятниця" id="dayFriday">
-                    <label class="form-check-label" for="dayFriday">
-                        П'ятниця
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Субота" id="daySaturday">
-                    <label class="form-check-label" for="daySaturday">
-                        Субота
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Неділя" id="daySunday">
-                    <label class="form-check-label" for="daySunday">
-                        Неділя
-                    </label>
-                </div>
-                <small class="text-muted">Можна обрати декілька днів</small>
+                <span asp-validation-for="DaysOfWeek" class="text-danger"></span>
+                <small class="text-muted d-block mt-1">Можна обрати декілька днів</small>
             </div>
+
             <div class="mb-3">
-                <label for="ClassroomId" class="form-label">Аудиторія</label>
-                <select asp-for="ClassroomId" class="form-select" required>
+                <label asp-for="ClassroomId" class="form-label">Аудиторія</label>
+                <select asp-for="ClassroomId" class="form-select">
                     <option value="">Оберіть аудиторію</option>
-                    @foreach (var classroom in ViewBag.Classrooms) {
-                        <option value="@classroom.ClassroomId">@classroom.RoomNumber</option>
+                    @if (ViewBag.Classrooms != null)
+                    {
+                        @foreach (var classroom in ViewBag.Classrooms) {
+                            <option value="@classroom.ClassroomId">@classroom.RoomNumber</option>
+                        }
                     }
                 </select>
+                <span asp-validation-for="ClassroomId" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label for="TimeRange" class="form-label">Час (наприклад 17:00 - 18:00)</label>
-                <input asp-for="TimeRange" type="text" class="form-control" placeholder="17:00 - 18:00" required />
-                <small class="text-muted">Укажіть проміжок у форматі 09:00 - 10:30</small>
+                <label asp-for="TimeRange" class="form-label">Час</label>
+                <input asp-for="TimeRange" class="form-control" placeholder="17:00 - 18:00" />
+                <small class="text-muted">Формат: 17:00 - 18:00</small>
                 <span asp-validation-for="TimeRange" class="text-danger"></span>
             </div>
         </div>
