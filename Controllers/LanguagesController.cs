@@ -16,11 +16,11 @@ namespace CoursesWebApp.Controllers
 
         public async Task<IActionResult> Index(string? filter)
         {
-            var languages = await _languageService.GetAllLanguagesAsync();
+            var allWithCount = await ((dynamic)_languageService).GetAllLanguagesWithGroupCountAsync();
             if (!string.IsNullOrEmpty(filter))
-                languages = languages.Where(l => l.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                allWithCount = allWithCount.Where(l => l.Language.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
             ViewBag.Filter = filter;
-            ViewBag.Languages = languages;
+            ViewBag.LanguagesWithCount = allWithCount;
             return View();
         }
     }
