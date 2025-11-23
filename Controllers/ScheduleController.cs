@@ -55,13 +55,26 @@ namespace CoursesWebApp.Controllers
                 return PartialView("_AddScheduleModal", model);
             }
 
-            var group = await _db.Groups.Include(g=>g.Teacher).FirstOrDefaultAsync(g=>g.GroupId == model.GroupId);
+            // Завантажуємо групу з усіма потрібними даними
+            var group = await _db.Groups
+                .Include(g => g.Teacher)
+                .FirstOrDefaultAsync(g => g.GroupId == model.GroupId);
+            
+            // Завантажуємо аудиторію
             var classroom = await _db.Classrooms.FindAsync(model.ClassroomId);
+            
             if (group == null || classroom == null)
             {
                 return BadRequest("Не знайдено групу або аудиторію.");
             }
-            // Parse time
+
+            // Перевіряємо, чи є TeacherId у групи
+            if (group.TeacherId == 0)
+            {
+                return BadRequest("У групи не призначено викладача.");
+            }
+
+            // Парсимо час
             var times = model.TimeRange.Split('-');
             if (times.Length != 2 || !TimeSpan.TryParse(times[0].Trim(), out var start) || !TimeSpan.TryParse(times[1].Trim(), out var end))
             {
@@ -70,19 +83,23 @@ namespace CoursesWebApp.Controllers
                 ViewBag.Classrooms = await _db.Classrooms.OrderBy(c => c.RoomNumber).ToListAsync();
                 return PartialView("_AddScheduleModal", model);
             }
-            // Save to database
-            // створюємо запис окремо для кожного вибраного дня
+
+            // Зберігаємо в базу даних
+            // Створюємо запис окремо для кожного вибраного дня
             foreach (var day in model.DaysOfWeek)
             {
                 var sched = new Schedule
                 {
                     GroupId = group.GroupId,
                     ClassroomId = classroom.ClassroomId,
-                    DayOfWeek = day,                 // <- тепер беремо день з циклу
+                    DayOfWeek = day,
                     StartTime = start,
                     EndTime = end,
+                    // TeacherId беремо з групи
                     TeacherId = group.TeacherId,
-                    Date = group.StartDate.Date,     // дата з дати початку курсу
+                    // Date беремо з StartDate групи
+                    Date = group.StartDate.Date,
+                    // Room беремо з RoomNumber аудиторії
                     Room = classroom.RoomNumber
                 };
 
