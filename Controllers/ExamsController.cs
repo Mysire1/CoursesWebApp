@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoursesWebApp.Data;
 using CoursesWebApp.Models;
-using System.Diagnostics;
 
 namespace CoursesWebApp.Controllers
 {
@@ -36,7 +35,6 @@ namespace CoursesWebApp.Controllers
             }
             catch (Exception ex)
             {
-                // Для діагностики: показати exception у ViewBag або як окрему View
                 ViewBag.ExamError = ex.ToString();
                 return View("ErrorInExams");
             }
