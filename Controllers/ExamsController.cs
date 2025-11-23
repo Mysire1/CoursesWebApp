@@ -31,7 +31,7 @@ namespace CoursesWebApp.Controllers
             ViewBag.Levels = await _context.Levels
                 .Include(l => l.Language)
                 .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.LevelName)
+                .ThenBy(l => l.Name)
                 .ToListAsync();
             
             ViewBag.Students = await _context.Students
@@ -86,7 +86,7 @@ namespace CoursesWebApp.Controllers
             ViewBag.Levels = await _context.Levels
                 .Include(l => l.Language)
                 .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.LevelName)
+                .ThenBy(l => l.Name)
                 .ToListAsync();
             
             ViewBag.Students = await _context.Students
@@ -138,7 +138,7 @@ namespace CoursesWebApp.Controllers
             ViewBag.Levels = await _context.Levels
                 .Include(l => l.Language)
                 .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.LevelName)
+                .ThenBy(l => l.Name)
                 .ToListAsync();
 
             return View(exam);
@@ -183,7 +183,7 @@ namespace CoursesWebApp.Controllers
             ViewBag.Levels = await _context.Levels
                 .Include(l => l.Language)
                 .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.LevelName)
+                .ThenBy(l => l.Name)
                 .ToListAsync();
 
             return View(exam);
