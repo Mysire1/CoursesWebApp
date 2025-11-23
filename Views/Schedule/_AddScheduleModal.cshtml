@@ -18,9 +18,8 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="DayOfWeek" class="form-label">День тижня</label>
-                <select asp-for="DayOfWeek" class="form-select" required>
-                    <option value="">Оберіть день</option>
+                <label for="DaysOfWeek" class="form-label">Дні тижня</label>
+                <select asp-for="DaysOfWeek" class="form-select" multiple required>
                     <option value="Понеділок">Понеділок</option>
                     <option value="Вівторок">Вівторок</option>
                     <option value="Середа">Середа</option>
@@ -29,6 +28,7 @@
                     <option value="Субота">Субота</option>
                     <option value="Неділя">Неділя</option>
                 </select>
+                <small class="text-muted">Можна обрати декілька днів</small>
             </div>
             <div class="mb-3">
                 <label for="ClassroomId" class="form-label">Аудиторія</label>
