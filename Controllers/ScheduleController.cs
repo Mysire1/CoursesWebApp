@@ -71,19 +71,26 @@ namespace CoursesWebApp.Controllers
                 return PartialView("_AddScheduleModal", model);
             }
             // Save to database
-            var sched = new Schedule
+            // створюємо запис окремо для кожного вибраного дня
+            foreach (var day in model.DaysOfWeek)
             {
-                GroupId = group.GroupId,
-                ClassroomId = classroom.ClassroomId,
-                DayOfWeek = model.DayOfWeek,
-                StartTime = start,
-                EndTime = end,
-                TeacherId = group.TeacherId,
-                Date = group.StartDate.Date,
-                Room = classroom.RoomNumber
-            };
-            _db.Schedules.Add(sched);
+                var sched = new Schedule
+                {
+                    GroupId = group.GroupId,
+                    ClassroomId = classroom.ClassroomId,
+                    DayOfWeek = day,                 // <- тепер беремо день з циклу
+                    StartTime = start,
+                    EndTime = end,
+                    TeacherId = group.TeacherId,
+                    Date = group.StartDate.Date,     // дата з дати початку курсу
+                    Room = classroom.RoomNumber
+                };
+
+                _db.Schedules.Add(sched);
+            }
+
             await _db.SaveChangesAsync();
+
             return RedirectToAction("Index");
         }
     }
