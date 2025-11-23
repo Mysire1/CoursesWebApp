@@ -1,11 +1,10 @@
 @{
     ViewData["Title"] = "Мови";
     var filter = ViewBag.Filter as string ?? "";
-    var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
+    var languagesWithCount = ViewBag.LanguagesWithCount as IEnumerable<dynamic> ?? new List<dynamic>();
 }
 
 <h1>Список мов</h1>
-<!-- Фільтрація за назвою мови -->
 <form method="get" class="mb-3">
     <div class="row">
         <div class="col-md-4">
@@ -27,20 +26,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var lang in languages)
-            {
+            @foreach (var item in languagesWithCount) {
                 <tr>
-                    <td>@lang.LanguageId</td>
-                    <td>@lang.Name</td>
-                    <td>0</td>
+                    <td>@item.Language.LanguageId</td>
+                    <td>@item.Language.Name</td>
+                    <td>@item.GroupCount</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
-
-@if (!languages.Any())
-{
+@if (!languagesWithCount.Any()) {
     <div class="alert alert-info" role="alert">
         Мов не знайдено.
     </div>
