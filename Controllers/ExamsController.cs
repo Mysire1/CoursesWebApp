@@ -215,7 +215,7 @@ namespace CoursesWebApp.Controllers
             return View(examResult);
         }
 
-        public async Task<IActionTask> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
