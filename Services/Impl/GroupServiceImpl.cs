@@ -81,7 +81,7 @@ namespace CoursesWebApp.Services.Impl
                 .ToListAsync();
         }
 
-        // Запит 8: Позначити студентів малих груп (<5) надбавкою
+        // Надбавка для малих груп (<5) - тільки після кліку
         public async Task<int> ApplySmallGroupSurchargeAsync(decimal surchargePercentage = 20)
         {
             var smallGroups = await GetSmallGroupsAsync();
@@ -95,7 +95,8 @@ namespace CoursesWebApp.Services.Impl
 
                 foreach (var student in students)
                 {
-                    student.PaymentStatus = "НАДБАВКА";
+                    student.PaymentStatus = "Надбавка";
+                    student.DiscountPercentage = -20; // +20% надбавка
                 }
                 count += students.Count;
             }
@@ -104,7 +105,7 @@ namespace CoursesWebApp.Services.Impl
             return count;
         }
 
-        // Запит 9: Позначити студентів великих груп (=20) знижкою
+        // Знижка для великих груп (=20) - тільки після кліку
         public async Task<int> ApplyLargeGroupDiscountAsync(decimal discountPercentage = 5)
         {
             var largeGroups = await GetLargeGroupsAsync();
@@ -118,7 +119,8 @@ namespace CoursesWebApp.Services.Impl
 
                 foreach (var student in students)
                 {
-                    student.PaymentStatus = "ЗНИЖКА";
+                    student.PaymentStatus = "Знижка";
+                    student.DiscountPercentage = 5; // 5% знижка
                 }
                 count += students.Count;
             }
