@@ -1,33 +1,148 @@
-<script>
-function applySmallGroupSurcharge() {
-    fetch('/Finance/ApplySmallGroupSurcharge', {
-        method: 'POST'
-    }).then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert(data.message);
-          loadPaymentStatus();
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Помилка при застосуванні надбавки');
-      });
+@{
+    ViewData["Title"] = "Оплати та фінанси";
 }
 
-function applyLargeGroupDiscount() {
-    fetch('/Finance/ApplyLargeGroupDiscount', {
-        method: 'POST'
-    }).then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert(data.message);
-          loadPaymentStatus();
+<h1>Фінанси та оплати</h1>
+
+<!-- Фільтр по групі, студенту, статусу та періоду -->
+<form class="row gy-2 mb-4" id="financeFilterForm">
+    <div class="col-auto">
+        <select class="form-select" id="studentSelect" name="studentId">
+            <option value="">Всі студенти</option>
+            @if (ViewBag.Students != null)
+            {
+                foreach (var student in ViewBag.Students)
+                {
+                    <option value="@student.StudentId">@student.FullName</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <select class="form-select" id="groupSelect" name="groupId">
+            <option value="">Всі групи</option>
+            @if (ViewBag.Groups != null)
+            {
+                foreach (var group in ViewBag.Groups)
+                {
+                    <option value="@group.GroupId">@group.GroupName</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <select class="form-select" id="statusSelect" name="statusType">
+            <option value="">Всі статуси</option>
+            <option value="fullyPaid">Повністью сплатили</option>
+            <option value="notFullyPaid">Є заборгованість</option>
+            <option value="debtLess50">Борг &lt; 50%</option>
+            <option value="withDeferrals">Відтермінування</option>
+            <option value="withDiscounts">Пільги</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="month" class="form-control" id="monthFilter" name="month">
+    </div>
+    <div class="col-auto">
+        <button type="button" class="btn btn-primary" onclick="loadPaymentStatus()">Фільтрувати</button>
+    </div>
+</form>
+
+<div class="table-responsive mb-4">
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Дата</th>
+                <th>Студент</th>
+                <th>Група</th>
+                <th>Статус</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody id="financeTableBody">
+            <tr>
+                <td colspan="5" class="text-center text-muted">Оберіть фільтр для відображення фінансових даних</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>Операції зі знижками та надбавками</h4>
+<div class="row mb-3">
+    <div class="col-auto">
+        <button class="btn btn-info" onclick="applyDiscount()">Надати знижку</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-warning" onclick="applySmallGroupSurcharge()">Надбавка для малих груп</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-success" onclick="applyLargeGroupDiscount()">Знижка для великих груп</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadPaymentStatus() {
+            const statusType = document.getElementById('statusSelect').value;
+            const groupId = document.getElementById('groupSelect').value;
+            if (!statusType) {
+                alert('Будь ласка, оберіть статус');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('statusType', statusType);
+            if (groupId) {
+                formData.append('groupId', groupId);
+            }
+            fetch('/Finance/PaymentStatus', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('financeTableBody').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка при завантаженні даних');
+            });
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Помилка при застосуванні знижки');
-      });
+        function applySmallGroupSurcharge() {
+            if (!confirm('Застосувати надбавку для малих груп?')) return;
+            fetch('/Finance/ApplySmallGroupSurcharge', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    loadPaymentStatus();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка при застосуванні надбавки');
+            });
+        }
+        function applyLargeGroupDiscount() {
+            if (!confirm('Застосувати знижку для великих груп?')) return;
+            fetch('/Finance/ApplyLargeGroupDiscount', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    loadPaymentStatus();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка при застосуванні знижки');
+            });
+        }
+        function applyDiscount() {
+            alert('Функціонал надання знижки буде реалізовано пізніше');
+        }
+    </script>
 }
-</script>
