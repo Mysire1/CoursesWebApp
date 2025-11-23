@@ -81,6 +81,7 @@ namespace CoursesWebApp.Services.Impl
                 .ToListAsync();
         }
 
+        // Запит 8: Позначити студентів малих груп (<5) надбавкою
         public async Task<int> ApplySmallGroupSurchargeAsync(decimal surchargePercentage = 20)
         {
             var smallGroups = await GetSmallGroupsAsync();
@@ -88,21 +89,22 @@ namespace CoursesWebApp.Services.Impl
 
             foreach (var group in smallGroups)
             {
-                var enrollments = await _context.Enrollments
-                    .Where(e => e.GroupId == group.GroupId)
+                var students = await _context.Students
+                    .Where(s => s.GroupId == group.GroupId)
                     .ToListAsync();
 
-                foreach (var enrollment in enrollments)
+                foreach (var student in students)
                 {
-                    enrollment.Cost *= (1 + surchargePercentage / 100);
+                    student.PaymentStatus = "НАДБАВКА";
                 }
-                count += enrollments.Count;
+                count += students.Count;
             }
 
             await _context.SaveChangesAsync();
             return count;
         }
 
+        // Запит 9: Позначити студентів великих груп (=20) знижкою
         public async Task<int> ApplyLargeGroupDiscountAsync(decimal discountPercentage = 5)
         {
             var largeGroups = await GetLargeGroupsAsync();
@@ -110,15 +112,15 @@ namespace CoursesWebApp.Services.Impl
 
             foreach (var group in largeGroups)
             {
-                var enrollments = await _context.Enrollments
-                    .Where(e => e.GroupId == group.GroupId)
+                var students = await _context.Students
+                    .Where(s => s.GroupId == group.GroupId)
                     .ToListAsync();
 
-                foreach (var enrollment in enrollments)
+                foreach (var student in students)
                 {
-                    enrollment.Cost *= (1 - discountPercentage / 100);
+                    student.PaymentStatus = "ЗНИЖКА";
                 }
-                count += enrollments.Count;
+                count += students.Count;
             }
 
             await _context.SaveChangesAsync();
