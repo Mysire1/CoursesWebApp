@@ -44,7 +44,7 @@
                             <option value="">Оберіть мову і рівень</option>
                             @foreach (var level in levels)
                             {
-                                <option value="@level.LevelId">@level.Language.Name - @level.LevelName</option>
+                                <option value="@level.LevelId">@level.Language.Name - @level.Name</option>
                             }
                         </select>
                         <span asp-validation-for="LevelId" class="text-danger"></span>
