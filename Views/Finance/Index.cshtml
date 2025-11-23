@@ -1,35 +1,35 @@
-<script>
-function applySmallGroupSurcharge() {
-    fetch('/Finance/ApplySmallGroupSurcharge', {
-        method: 'POST'
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                loadPaymentStatus();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Помилка при застосуванні надбавки');
-        });
-}
+        function applySmallGroupSurcharge() {
+            // confirm видалено
+            fetch('/Finance/ApplySmallGroupSurcharge', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    loadPaymentStatus();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка при застосуванні надбавки');
+            });
+        }
 
-function applyLargeGroupDiscount() {
-    fetch('/Finance/ApplyLargeGroupDiscount', {
-        method: 'POST'
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                loadPaymentStatus();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Помилка при застосуванні знижки');
-        });
-}
-</script>
+        function applyLargeGroupDiscount() {
+            // confirm видалено
+            fetch('/Finance/ApplyLargeGroupDiscount', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    loadPaymentStatus();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка при застосуванні знижки');
+            });
+        }
