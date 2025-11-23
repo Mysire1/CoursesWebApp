@@ -153,7 +153,69 @@ namespace CoursesWebApp.Controllers
             return View(exam);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Exams/EditGrade/5
+        public async Task<IActionResult> EditGrade(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var examResult = await _context.ExamResults
+                .Include(er => er.Student)
+                .Include(er => er.Exam)
+                .FirstOrDefaultAsync(er => er.ExamResultId == id);
+
+            if (examResult == null)
+            {
+                return NotFound();
+            }
+
+            return View(examResult);
+        }
+
+        // POST: Exams/EditGrade/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditGrade(int id, [Bind("ExamResultId,ExamId,StudentId,Grade,ExamDate")] ExamResult examResult)
+        {
+            if (id != examResult.ExamResultId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(examResult);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Оцінку успішно оновлено!";
+                    return RedirectToAction(nameof(Details), new { id = examResult.ExamId });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.ExamResults.Any(e => e.ExamResultId == id))
+                    {
+                        return NotFound();
+                    }
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.ToString());
+                }
+            }
+
+            examResult = await _context.ExamResults
+                .Include(er => er.Student)
+                .Include(er => er.Exam)
+                .FirstOrDefaultAsync(er => er.ExamResultId == id);
+
+            return View(examResult);
+        }
+
+        public async Task<IActionTask> Delete(int? id)
         {
             if (id == null)
             {
