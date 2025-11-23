@@ -32,7 +32,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Студенти, які складають екзамен</label>
-        <select name="SelectedStudentIds" class="form-select" multiple size="7" required>
+        <select asp-for="ExamResults" name="SelectedStudentIds" class="form-select" multiple size="7" required>
             @if (ViewBag.Students != null)
             {
                 foreach (var student in ViewBag.Students)
