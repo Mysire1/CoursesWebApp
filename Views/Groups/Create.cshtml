@@ -1,10 +1,8 @@
 @model CoursesWebApp.Models.ViewModels.GroupCreateViewModel
 @{
 ViewData["Title"] = "Створити групу";
-// Перевірки на null, щоб уникнути помилок, якщо ViewBag порожній
 var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
 var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
-var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new List<CoursesWebApp.Models.Level>();
 }
 
 <h1>Створити нову групу</h1>
@@ -26,7 +24,7 @@ var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new Li
 
     <div class="col-md-6">
         <label asp-for="LanguageId" class="form-label">Мова</label>
-        <select asp-for="LanguageId" class="form-select" id="LanguageSelect" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
+        <select asp-for="LanguageId" class="form-select" asp-items="@(new SelectList(languages, "LanguageId", "Name"))">
             <option value="">Оберіть мову</option>
         </select>
         <span asp-validation-for="LanguageId" class="text-danger"></span>
@@ -34,8 +32,20 @@ var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new Li
 
     <div class="col-md-6">
         <label asp-for="LevelName" class="form-label">Рівень</label>
-        <select asp-for="LevelName" class="form-select" id="LevelNameSelect">
+        <select asp-for="LevelName" class="form-select">
             <option value="">Оберіть рівень</option>
+            <option value="Beginner (A1)">Beginner (A1)</option>
+            <option value="Elementary (A2)">Elementary (A2)</option>
+            <option value="Intermediate (B1)">Intermediate (B1)</option>
+            <option value="Upper-Intermediate (B2)">Upper-Intermediate (B2)</option>
+            <option value="Advanced (C1)">Advanced (C1)</option>
+            <option value="Anfänger (A1)">Anfänger (A1)</option>
+            <option value="Grundstufe (A2)">Grundstufe (A2)</option>
+            <option value="Mittelstufe (B1)">Mittelstufe (B1)</option>
+            <option value="Débutant (A1)">Débutant (A1)</option>
+            <option value="Élémentaire (A2)">Élémentaire (A2)</option>
+            <option value="Principiante (A1)">Principiante (A1)</option>
+            <option value="Elemental (A2)">Elemental (A2)</option>
         </select>
         <span asp-validation-for="LevelName" class="text-danger"></span>
     </div>
@@ -51,51 +61,3 @@ var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new Li
         <a asp-action="Index" class="btn btn-secondary ms-2">Скасувати</a>
     </div>
 </form>
-
-@section Scripts {
-    <script>
-        // 1. !!! ВАЖЛИВО: Ми робимо .Select(), щоб взяти тільки прості дані
-        // Це обрізає всі "важкі" зв'язки (Language, Groups), які ламають JSON
-        @{
-            var safeLevelsData = levels.Select(l => new { 
-                LanguageId = l.LanguageId, 
-                Name = l.Name 
-            }).ToList();
-        }
-
-        // Тепер серіалізуємо безпечний список
-        const levelsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(safeLevelsData));
-
-        const LEVELS_BY_LANG_ID = {};
-
-        // Заповнюємо мапу
-        if (levelsData) {
-            levelsData.forEach(lvl => {
-                // Тут властивості будуть точно як у C# (PascalCase)
-                if (!LEVELS_BY_LANG_ID[lvl.LanguageId]) {
-                    LEVELS_BY_LANG_ID[lvl.LanguageId] = [];
-                }
-                LEVELS_BY_LANG_ID[lvl.LanguageId].push(lvl.Name);
-            });
-        }
-
-        function updateLevels() {
-            const langId = $('#LanguageSelect').val();
-            const $levelSelect = $('#LevelNameSelect');
-            
-            $levelSelect.empty();
-            $levelSelect.append('<option value="">Оберіть рівень</option>');
-
-            const availableLevels = LEVELS_BY_LANG_ID[langId] || [];
-            
-            availableLevels.forEach(lvlName => {
-                $levelSelect.append('<option value="' + lvlName + '">' + lvlName + '</option>');
-            });
-        }
-
-        $(function () {
-            $('#LanguageSelect').change(updateLevels);
-            updateLevels();
-        });
-    </script>
-}
