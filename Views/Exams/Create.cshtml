@@ -1,7 +1,7 @@
 @model CoursesWebApp.Models.Exam
 @{
     ViewData["Title"] = "Створити екзамен";
-    var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new List<CoursesWebApp.Models.Level>();
+    var levels = ViewBag.Levels as List<string> ?? new List<string>();
     var students = ViewBag.Students as IEnumerable<CoursesWebApp.Models.Student> ?? new List<CoursesWebApp.Models.Student>();
 }
 
@@ -39,15 +39,15 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Мова/Рівень</label>
-                        <select asp-for="LevelId" class="form-select" required>
-                            <option value="">Оберіть мову і рівень</option>
+                        <label asp-for="Level" class="form-label">Рівень</label>
+                        <select asp-for="Level" class="form-select" required>
+                            <option value="">Оберіть рівень</option>
                             @foreach (var level in levels)
                             {
-                                <option value="@level.LevelId">@level.Language.Name - @level.Name</option>
+                                <option value="@level">@level</option>
                             }
                         </select>
-                        <span asp-validation-for="LevelId" class="text-danger"></span>
+                        <span asp-validation-for="Level" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
