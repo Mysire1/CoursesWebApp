@@ -82,7 +82,8 @@ namespace CoursesWebApp.Services.Impl
                     PasswordHash = HashPassword(model.Password),
                     Phone = model.Phone,
                     HireDate = DateTime.UtcNow,
-                    IsActive = true
+                    IsActive = true,
+                    LastLoginAt = DateTime.UtcNow
                 };
 
                 _context.Teachers.Add(teacher);

@@ -47,7 +47,7 @@
 @section Scripts {
   <script>
     // Мапа рівнів з ViewBag.Levels
-    const levelsData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(levels));
+    const levelsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(levels));
     const LEVELS_BY_LANG_ID = {};
     levelsData.forEach(lvl => {
         if(!LEVELS_BY_LANG_ID[lvl.LanguageId]) LEVELS_BY_LANG_ID[lvl.LanguageId] = [];
