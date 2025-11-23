@@ -58,10 +58,18 @@ namespace CoursesWebApp.Controllers
 
             try
             {
-                // Перевірка чи email вже зайнятий
                 if (!await _authService.IsEmailAvailableAsync(model.Email))
                 {
                     ModelState.AddModelError("Email", "Цей email вже зареєстровано");
+                    ViewBag.Groups = await _groupService.GetAllGroupsAsync();
+                    return View(model);
+                }
+
+                // Мінімальний вік
+                var minBirthDate = DateTime.UtcNow.AddYears(-10);
+                if (model.DateOfBirth > minBirthDate)
+                {
+                    ModelState.AddModelError("DateOfBirth", "Студент має бути старше 10 років.");
                     ViewBag.Groups = await _groupService.GetAllGroupsAsync();
                     return View(model);
                 }
@@ -71,13 +79,13 @@ namespace CoursesWebApp.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc),
-                    Phone = model.Phone,
+                    Phone = model.Phone ?? "",
                     Email = model.Email,
-                    PasswordHash = _authService.HashPassword(model.Password ?? "password123"), // Пароль за замовчуванням
+                    PasswordHash = _authService.HashPassword(model.Password ?? "password123"),
                     GroupId = model.GroupId,
                     HasDiscount = model.HasDiscount,
                     DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0,
-                    PaymentStatus = model.PaymentStatus ?? "Paid",
+                    PaymentStatus = string.IsNullOrEmpty(model.PaymentStatus) ? "Paid" : model.PaymentStatus,
                     RegistrationDate = DateTime.UtcNow,
                     CreatedAt = DateTime.UtcNow,
                     IsActive = true
@@ -133,11 +141,11 @@ namespace CoursesWebApp.Controllers
                     dbStudent.FirstName = model.FirstName;
                     dbStudent.LastName = model.LastName;
                     dbStudent.Email = model.Email;
-                    dbStudent.Phone = model.Phone;
+                    dbStudent.Phone = model.Phone ?? "";
                     dbStudent.HasDiscount = model.HasDiscount;
                     dbStudent.DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0;
                     dbStudent.GroupId = model.GroupId;
-                    dbStudent.PaymentStatus = model.PaymentStatus;
+                    dbStudent.PaymentStatus = string.IsNullOrEmpty(model.PaymentStatus) ? "Paid" : model.PaymentStatus;
                     dbStudent.DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc);
                     dbStudent.RegistrationDate = DateTime.SpecifyKind(dbStudent.RegistrationDate, DateTimeKind.Utc);
                     dbStudent.CreatedAt = DateTime.SpecifyKind(dbStudent.CreatedAt, DateTimeKind.Utc);
