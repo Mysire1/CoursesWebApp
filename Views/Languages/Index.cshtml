@@ -1,7 +1,8 @@
+@using CoursesWebApp.Services
 @{
     ViewData["Title"] = "Мови";
     var filter = ViewBag.Filter as string ?? "";
-    var languagesWithCount = ViewBag.LanguagesWithCount as IEnumerable<dynamic> ?? new List<dynamic>();
+    var languagesWithCount = ViewBag.LanguagesWithCount as IEnumerable<LanguageWithGroupCount> ?? new List<LanguageWithGroupCount>();
 }
 
 <h1>Список мов</h1>
