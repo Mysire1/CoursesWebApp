@@ -26,12 +26,8 @@
                     <dl class="row mb-0">
                         <dt class="col-sm-4">ID Екзамену:</dt>
                         <dd class="col-sm-8"><span class="badge bg-primary">@Model.ExamId</span></dd>
-                        <dt class="col-sm-4">Екзамен:</dt>
-                        <dd class="col-sm-8"><strong>@Model.Level.Language.Name @Model.Level.Name EXAM</strong></dd>
                         <dt class="col-sm-4">Рівень:</dt>
-                        <dd class="col-sm-8">@Model.Level.Name</dd>
-                        <dt class="col-sm-4">Мова:</dt>
-                        <dd class="col-sm-8">@Model.Level.Language.Name</dd>
+                        <dd class="col-sm-8"><strong>@Model.Level</strong></dd>
                         <dt class="col-sm-4">Дата проведення:</dt>
                         <dd class="col-sm-8"><i class="fas fa-calendar me-1"></i>@Model.ExamDate.ToString("dd MMMM yyyy")
                             @if (Model.ExamDate > DateTime.Now)
