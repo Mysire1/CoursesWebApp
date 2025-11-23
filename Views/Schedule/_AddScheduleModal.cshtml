@@ -1,0 +1,56 @@
+@model CoursesWebApp.Models.ViewModels.AddScheduleViewModel
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addScheduleModalLabel">Додати розклад</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="addScheduleForm" method="post">
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="GroupId" class="form-label">Група</label>
+                <select asp-for="GroupId" class="form-select" required>
+                    <option value="">Оберіть групу</option>
+                    @foreach (var group in ViewBag.Groups) {
+                        <option value="@group.GroupId">@group.GroupName</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="DayOfWeek" class="form-label">День тижня</label>
+                <select asp-for="DayOfWeek" class="form-select" required>
+                    <option value="">Оберіть день</option>
+                    <option value="Понеділок">Понеділок</option>
+                    <option value="Вівторок">Вівторок</option>
+                    <option value="Середа">Середа</option>
+                    <option value="Четвер">Четвер</option>
+                    <option value="П'ятниця">П'ятниця</option>
+                    <option value="Субота">Субота</option>
+                    <option value="Неділя">Неділя</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="ClassroomId" class="form-label">Аудиторія</label>
+                <select asp-for="ClassroomId" class="form-select" required>
+                    <option value="">Оберіть аудиторію</option>
+                    @foreach (var classroom in ViewBag.Classrooms) {
+                        <option value="@classroom.ClassroomId">@classroom.RoomNumber</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="TimeRange" class="form-label">Час (наприклад 17:00 - 18:00)</label>
+                <input asp-for="TimeRange" type="text" class="form-control" placeholder="17:00 - 18:00" required />
+                <small class="text-muted">Укажіть проміжок у форматі 09:00 - 10:30</small>
+                <span asp-validation-for="TimeRange" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+          <button type="submit" class="btn btn-success">Додати</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
