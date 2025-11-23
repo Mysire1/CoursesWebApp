@@ -15,14 +15,16 @@ namespace CoursesWebApp.Controllers
         private readonly ILanguageService _languageService;
         private readonly ITeacherService _teacherService;
         private readonly IStudentService _studentService;
+        private readonly ILevelService _levelService;
         private readonly ApplicationDbContext _context;
 
-        public GroupsController(IGroupService groupService, ILanguageService languageService, ITeacherService teacherService, IStudentService studentService, ApplicationDbContext context)
+        public GroupsController(IGroupService groupService, ILanguageService languageService, ITeacherService teacherService, IStudentService studentService, ILevelService levelService, ApplicationDbContext context)
         {
             _groupService = groupService;
             _languageService = languageService;
             _teacherService = teacherService;
             _studentService = studentService;
+            _levelService = levelService;
             _context = context;
         }
 
@@ -40,6 +42,7 @@ namespace CoursesWebApp.Controllers
         {
             ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
             ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+            ViewBag.Levels = await _levelService.GetAllLevelsAsync();
             return View();
         }
 
@@ -52,6 +55,7 @@ namespace CoursesWebApp.Controllers
             {
                 ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
                 ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                ViewBag.Levels = await _levelService.GetAllLevelsAsync();
                 return View(vm);
             }
 
@@ -93,6 +97,7 @@ namespace CoursesWebApp.Controllers
                 ModelState.AddModelError("", $"Помилка при створенні групи: {ex.Message}");
                 ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
                 ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                ViewBag.Levels = await _levelService.GetAllLevelsAsync();
                 return View(vm);
             }
         }
@@ -106,6 +111,7 @@ namespace CoursesWebApp.Controllers
             
             ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
             ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+            ViewBag.Levels = await _levelService.GetAllLevelsAsync();
             ViewBag.AllStudents = await _studentService.GetAllStudentsAsync();
             ViewBag.GroupId = id;
             
@@ -128,6 +134,7 @@ namespace CoursesWebApp.Controllers
             {
                 ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
                 ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                ViewBag.Levels = await _levelService.GetAllLevelsAsync();
                 ViewBag.AllStudents = await _studentService.GetAllStudentsAsync();
                 ViewBag.GroupId = id;
                 return View(vm);
@@ -170,6 +177,7 @@ namespace CoursesWebApp.Controllers
                 ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message}");
                 ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
                 ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                ViewBag.Levels = await _levelService.GetAllLevelsAsync();
                 ViewBag.AllStudents = await _studentService.GetAllStudentsAsync();
                 ViewBag.GroupId = id;
                 return View(vm);
