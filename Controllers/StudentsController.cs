@@ -12,11 +12,13 @@ namespace CoursesWebApp.Controllers
     {
         private readonly IStudentService _studentService;
         private readonly IGroupService _groupService;
+        private readonly IAuthService _authService;
 
-        public StudentsController(IStudentService studentService, IGroupService groupService)
+        public StudentsController(IStudentService studentService, IGroupService groupService, IAuthService authService)
         {
             _studentService = studentService;
             _groupService = groupService;
+            _authService = authService;
         }
 
         [Authorize(Roles = "Teacher,Student")]
@@ -33,6 +35,64 @@ namespace CoursesWebApp.Controllers
             if (student == null)
                 return NotFound();
             return View(student);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.Groups = await _groupService.GetAllGroupsAsync();
+            return View(new StudentCreateViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Create(StudentCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Groups = await _groupService.GetAllGroupsAsync();
+                return View(model);
+            }
+
+            try
+            {
+                // Перевірка чи email вже зайнятий
+                if (!await _authService.IsEmailAvailableAsync(model.Email))
+                {
+                    ModelState.AddModelError("Email", "Цей email вже зареєстровано");
+                    ViewBag.Groups = await _groupService.GetAllGroupsAsync();
+                    return View(model);
+                }
+
+                var student = new Student
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc),
+                    Phone = model.Phone,
+                    Email = model.Email,
+                    PasswordHash = _authService.HashPassword(model.Password ?? "password123"), // Пароль за замовчуванням
+                    GroupId = model.GroupId,
+                    HasDiscount = model.HasDiscount,
+                    DiscountPercentage = model.HasDiscount ? Math.Clamp(model.DiscountPercentage, 0, 100) : 0,
+                    PaymentStatus = model.PaymentStatus ?? "Paid",
+                    RegistrationDate = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                await _studentService.CreateStudentAsync(student);
+                TempData["SuccessMessage"] = "Студента успішно створено!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Помилка при створенні: {ex.Message}");
+                ViewBag.Groups = await _groupService.GetAllGroupsAsync();
+                return View(model);
+            }
         }
 
         [Authorize(Roles = "Teacher")]
@@ -96,6 +156,31 @@ namespace CoursesWebApp.Controllers
             return View(model);
         }
 
-        // ... збережено
+        [HttpGet]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var student = await _studentService.GetStudentByIdAsync(id);
+            if (student == null)
+                return NotFound();
+            return View(student);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                await _studentService.DeleteStudentAsync(id);
+                TempData["SuccessMessage"] = "Студента видалено!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Помилка при видаленні: {ex.Message}";
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
