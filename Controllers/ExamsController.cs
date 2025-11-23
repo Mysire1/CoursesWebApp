@@ -188,30 +188,23 @@ namespace CoursesWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(examResult);
+                    var dbResult = await _context.ExamResults.FindAsync(id);
+                    if (dbResult == null)
+                        return NotFound();
+                    dbResult.Grade = examResult.Grade;
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Оцінку успішно оновлено!";
-                    return RedirectToAction(nameof(Details), new { id = examResult.ExamId });
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.ExamResults.Any(e => e.ExamResultId == id))
-                    {
-                        return NotFound();
-                    }
-                    throw;
+                    return RedirectToAction(nameof(Details), new { id = dbResult.ExamId });
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", ex.ToString());
                 }
             }
-
             examResult = await _context.ExamResults
                 .Include(er => er.Student)
                 .Include(er => er.Exam)
                 .FirstOrDefaultAsync(er => er.ExamResultId == id);
-
             return View(examResult);
         }
 
