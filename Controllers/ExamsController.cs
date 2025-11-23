@@ -22,31 +22,46 @@ namespace CoursesWebApp.Controllers
                     .ThenInclude(l => l.Language)
                 .OrderByDescending(e => e.ExamDate)
                 .ToListAsync();
-
             return View(exams);
         }
 
-        // GET: Exams/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Exams/Create
+        public async Task<IActionResult> Create()
         {
-            if (id == null)
+            ViewBag.Levels = await _context.Levels.Include(l => l.Language).ToListAsync();
+            ViewBag.Students = await _context.Students.Where(s => s.IsActive).ToListAsync();
+            return View();
+        }
+
+        // POST: Exams/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Description,ExamDate,LevelId")] Exam exam, int[] SelectedStudentIds)
+        {
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                _context.Exams.Add(exam);
+                await _context.SaveChangesAsync();
+                // Create empty ExamResult records for selected students
+                foreach (var studentId in SelectedStudentIds)
+                {
+                    var result = new ExamResult
+                    {
+                        ExamId = exam.ExamId,
+                        StudentId = studentId,
+                        Grade = 0, // will be updated later
+                        ExamDate = exam.ExamDate
+                    };
+                    _context.ExamResults.Add(result);
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            var exam = await _context.Exams
-                .Include(e => e.Level)
-                    .ThenInclude(l => l.Language)
-                .Include(e => e.ExamResults)
-                    .ThenInclude(er => er.Student)
-                .FirstOrDefaultAsync(m => m.ExamId == id);
-
-            if (exam == null)
-            {
-                return NotFound();
-            }
-
+            ViewBag.Levels = await _context.Levels.Include(l => l.Language).ToListAsync();
+            ViewBag.Students = await _context.Students.Where(s => s.IsActive).ToListAsync();
             return View(exam);
         }
+
+        // Other actions...
     }
 }
