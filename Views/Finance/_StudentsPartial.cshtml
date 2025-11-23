@@ -2,7 +2,7 @@
 
 @if (Model != null && Model.Any())
 {
-    @foreach (var student in Model)
+    foreach (var student in Model)
     {
         <tr>
             <td>@student.RegistrationDate.ToString("dd.MM.yyyy")</td>
@@ -22,7 +22,11 @@
                 }
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(student.PaymentStatus))
+                @if (!string.IsNullOrWhiteSpace(student.PaymentStatusFormatted))
+                {
+                    <span class="badge bg-info">@student.PaymentStatusFormatted</span>
+                }
+                else if (!string.IsNullOrEmpty(student.PaymentStatus))
                 {
                     if (student.PaymentStatus == "Сплачено")
                     {
@@ -48,10 +52,6 @@
                 else
                 {
                     <span class="text-muted">Не вказано</span>
-                }
-                @if (student.HasDiscount)
-                {
-                    <span class="badge bg-info ms-1">Знижка @student.DiscountPercentage%</span>
                 }
             </td>
             <td>
