@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoursesWebApp.Data;
 using CoursesWebApp.Models;
+using System.Diagnostics;
 
 namespace CoursesWebApp.Controllers
 {
     public class ExamsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        // Фіксований список рівнів
         private static readonly List<string> ExamLevels = new()
         {
             "Beginner (A1)",
@@ -26,13 +26,22 @@ namespace CoursesWebApp.Controllers
         // GET: Exams
         public async Task<IActionResult> Index()
         {
-            var exams = await _context.Exams
-                .OrderByDescending(e => e.ExamDate)
-                .ToListAsync();
-            return View(exams);
+            try
+            {
+                var exams = await _context.Exams
+                    .Include(e => e.ExamResults)
+                    .OrderByDescending(e => e.ExamDate)
+                    .ToListAsync();
+                return View(exams);
+            }
+            catch (Exception ex)
+            {
+                // Для діагностики: показати exception у ViewBag або як окрему View
+                ViewBag.ExamError = ex.ToString();
+                return View("ErrorInExams");
+            }
         }
 
-        // GET: Exams/Create
         public IActionResult Create()
         {
             ViewBag.Levels = ExamLevels;
@@ -40,7 +49,6 @@ namespace CoursesWebApp.Controllers
             return View();
         }
 
-        // POST: Exams/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Description,ExamDate,Level")] Exam exam, int[] SelectedStudentIds)
@@ -51,7 +59,6 @@ namespace CoursesWebApp.Controllers
                 {
                     _context.Exams.Add(exam);
                     await _context.SaveChangesAsync();
-
                     if (SelectedStudentIds != null && SelectedStudentIds.Length > 0)
                     {
                         foreach (var studentId in SelectedStudentIds)
@@ -73,14 +80,13 @@ namespace CoursesWebApp.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"Помилка при збереженні екзамена: {ex.Message}");
+                ModelState.AddModelError("", ex.ToString());
             }
             ViewBag.Levels = ExamLevels;
             ViewBag.Students = _context.Students.Where(s => s.IsActive).OrderBy(s => s.LastName).ThenBy(s => s.FirstName).ToList();
             return View(exam);
         }
 
-        // GET: Exams/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -96,7 +102,6 @@ namespace CoursesWebApp.Controllers
             return View(exam);
         }
 
-        // POST: Exams/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ExamId,Description,ExamDate,Level")] Exam exam)
@@ -122,7 +127,7 @@ namespace CoursesWebApp.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message}");
+                    ModelState.AddModelError("", ex.ToString());
                 }
             }
             ViewBag.Levels = ExamLevels;
