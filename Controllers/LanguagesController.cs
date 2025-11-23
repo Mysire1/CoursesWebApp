@@ -16,7 +16,7 @@ namespace CoursesWebApp.Controllers
 
         public async Task<IActionResult> Index(string? filter)
         {
-            var allWithCount = await ((dynamic)_languageService).GetAllLanguagesWithGroupCountAsync();
+            var allWithCount = await _languageService.GetAllLanguagesWithGroupCountAsync();
             if (!string.IsNullOrEmpty(filter))
                 allWithCount = allWithCount.Where(l => l.Language.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
             ViewBag.Filter = filter;
