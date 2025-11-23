@@ -1,0 +1,50 @@
+@model CoursesWebApp.Models.Exam
+@{
+    ViewData["Title"] = "Створити екзамен";
+}
+
+<h1 class="display-5 mb-4"><i class="fas fa-plus me-2"></i>Додати екзамен</h1>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Назва (опис)</label>
+        <input asp-for="Description" class="form-control" maxlength="255" required />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ExamDate" class="form-label">Дата проведення</label>
+        <input asp-for="ExamDate" type="date" class="form-control" required />
+        <span asp-validation-for="ExamDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Мова/Рівень</label>
+        <select name="LevelId" class="form-select" required>
+            <option value="">Оберіть мову і рівень</option>
+            @if (ViewBag.Levels != null)
+            {
+                foreach (var level in ViewBag.Levels)
+                {
+                    <option value="@level.LevelId">@level.Language.Name (@level.Name)</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Студенти, які складають екзамен</label>
+        <select name="SelectedStudentIds" class="form-select" multiple size="7" required>
+            @if (ViewBag.Students != null)
+            {
+                foreach (var student in ViewBag.Students)
+                {
+                    <option value="@student.StudentId">@student.LastName @student.FirstName (@student.Email)</option>
+                }
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success"><i class="fas fa-check me-1"></i>Створити</button>
+    <a asp-action="Index" class="btn btn-outline-secondary ms-3">Скасувати</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
