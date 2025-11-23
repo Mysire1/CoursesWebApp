@@ -18,16 +18,49 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="DaysOfWeek" class="form-label">Дні тижня</label>
-                <select asp-for="DaysOfWeek" class="form-select" multiple required>
-                    <option value="Понеділок">Понеділок</option>
-                    <option value="Вівторок">Вівторок</option>
-                    <option value="Середа">Середа</option>
-                    <option value="Четвер">Четвер</option>
-                    <option value="П'ятниця">П'ятниця</option>
-                    <option value="Субота">Субота</option>
-                    <option value="Неділя">Неділя</option>
-                </select>
+                <label class="form-label">Дні тижня</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Понеділок" id="dayMonday">
+                    <label class="form-check-label" for="dayMonday">
+                        Понеділок
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Вівторок" id="dayTuesday">
+                    <label class="form-check-label" for="dayTuesday">
+                        Вівторок
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Середа" id="dayWednesday">
+                    <label class="form-check-label" for="dayWednesday">
+                        Середа
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Четвер" id="dayThursday">
+                    <label class="form-check-label" for="dayThursday">
+                        Четвер
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="П'ятниця" id="dayFriday">
+                    <label class="form-check-label" for="dayFriday">
+                        П'ятниця
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Субота" id="daySaturday">
+                    <label class="form-check-label" for="daySaturday">
+                        Субота
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="DaysOfWeek" value="Неділя" id="daySunday">
+                    <label class="form-check-label" for="daySunday">
+                        Неділя
+                    </label>
+                </div>
                 <small class="text-muted">Можна обрати декілька днів</small>
             </div>
             <div class="mb-3">
