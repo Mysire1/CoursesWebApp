@@ -18,7 +18,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Мова/Рівень</label>
-        <select name="LevelId" class="form-select" required>
+        <select asp-for="LevelId" class="form-select" required>
             <option value="">Оберіть мову і рівень</option>
             @if (ViewBag.Levels != null)
             {
@@ -28,6 +28,7 @@
                 }
             }
         </select>
+        <span asp-validation-for="LevelId" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label class="form-label">Студенти, які складають екзамен</label>
