@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace CoursesWebApp.Models.ViewModels
 {
@@ -8,7 +9,7 @@ namespace CoursesWebApp.Models.ViewModels
         public int GroupId { get; set; }
 
         [Required]
-        public string DayOfWeek { get; set; } = "";
+        public List<string> DaysOfWeek { get; set; } = new List<string>();
 
         [Required]
         public int ClassroomId { get; set; }
