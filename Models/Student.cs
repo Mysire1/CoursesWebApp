@@ -38,7 +38,6 @@ namespace CoursesWebApp.Models
         
         public bool HasDiscount { get; set; } = false;
         
-        [Range(0, 100)]
         public decimal DiscountPercentage { get; set; } = 0;
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -64,5 +63,19 @@ namespace CoursesWebApp.Models
         
         [NotMapped]
         public string Role => "Student";
+
+        [NotMapped]
+        public string PaymentStatusFormatted
+        {
+            get
+            {
+                if (DiscountPercentage < 0)
+                    return $"Надбавка {Math.Abs(DiscountPercentage)}%";
+                else if (DiscountPercentage > 0)
+                    return $"Знижка {DiscountPercentage}%";
+                else
+                    return "";
+            }
+        }
     }
 }
