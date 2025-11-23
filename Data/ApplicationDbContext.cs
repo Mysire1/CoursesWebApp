@@ -98,6 +98,20 @@ namespace CoursesWebApp.Data
                 .HasForeignKey(e => e.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Configure Exam entity - Level is a string column, not a relationship
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.Level)
+                .HasColumnName("Level")
+                .HasMaxLength(50)
+                .IsRequired();
+
+            // Configure ExamResult relationships
+            modelBuilder.Entity<ExamResult>()
+                .HasOne(er => er.Exam)
+                .WithMany(e => e.ExamResults)
+                .HasForeignKey(er => er.ExamId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Configure decimal precision
             modelBuilder.Entity<Level>()
                 .Property(l => l.BaseCost)
