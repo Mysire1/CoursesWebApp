@@ -152,13 +152,7 @@
                                                 <span class="badge bg-secondary">@result.StudentId</span>
                                             </td>
                                             <td>
-                                                <strong>
-                                                    @result.Student.LastName @result.Student.FirstName 
-                                                    @if (!string.IsNullOrEmpty(result.Student.MiddleName))
-                                                    {
-                                                        @result.Student.MiddleName
-                                                    }
-                                                </strong>
+                                                <strong>@result.Student.LastName @result.Student.FirstName</strong>
                                             </td>
                                             <td>
                                                 <i class="fas fa-envelope me-1"></i>
@@ -166,7 +160,7 @@
                                             </td>
                                             <td>
                                                 <i class="fas fa-phone me-1"></i>
-                                                @result.Student.PhoneNumber
+                                                @(result.Student.Phone ?? "Не вказано")
                                             </td>
                                             <td>
                                                 <span class="badge @(result.Grade >= 90 ? "bg-success" : result.Grade >= 75 ? "bg-primary" : result.Grade >= 60 ? "bg-warning text-dark" : "bg-danger") fs-6">
