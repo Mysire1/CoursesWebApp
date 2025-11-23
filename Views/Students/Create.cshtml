@@ -7,51 +7,53 @@
 <h1>Додати нового студента</h1>
 
 <style>
-  form {
+  .student-form-scroll {
     overflow-y: auto;
-    max-height: 90vh;
-    padding-bottom: 30px;
+    max-height: 80vh;
+    padding-bottom: 3rem;
   }
   .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .footer {
+    font-size: 0.85rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  .footer p {
+    margin-bottom: 0.25rem;
   }
 </style>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 student-form-scroll">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label">Ім'я *</label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
-            
             <div class="form-group">
                 <label asp-for="LastName" class="control-label">Прізвище *</label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
-            
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label">Дата народження *</label>
                 <input asp-for="DateOfBirth" class="form-control" type="date" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
-            
             <div class="form-group">
                 <label asp-for="Email" class="control-label">Email</label>
                 <input asp-for="Email" class="form-control" type="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            
             <div class="form-group">
                 <label asp-for="Phone" class="control-label">Телефон</label>
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <label asp-for="GroupId" class="control-label">Група</label>
                 <select asp-for="GroupId" class="form-control" asp-items="@(new SelectList(ViewBag.Groups, "GroupId", "GroupName"))">
@@ -74,9 +76,8 @@
                 <input asp-for="PaymentStatus" class="form-control" />
                 <span asp-validation-for="PaymentStatus" class="text-danger"></span>
             </div>
-            <!-- пароль приховано -->
             <input asp-for="Password" type="hidden" value="password123" />
-            <div class="form-group mt-4">
+            <div class="form-group" style="margin-top:1.5rem;">
                 <input type="submit" value="Додати" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-secondary ms-2">Повернутися</a>
             </div>
