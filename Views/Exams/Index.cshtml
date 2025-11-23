@@ -13,7 +13,18 @@
             <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Додати екзамен</a>
         </div>
     </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Успіх!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <p class="lead text-muted">Список запланованих та проведених екзаменів</p>
+    
     @if (!Model.Any())
     {
         <div class="alert alert-info" role="alert">
@@ -43,7 +54,7 @@
                                     {
                                         <tr>
                                             <td><span class="badge bg-primary">@item.ExamId</span></td>
-                                            <td><strong>@item.Level.Language.Name @item.Level.Name EXAM</strong>
+                                            <td><strong>@item.Level.Language.Name @item.Level.LevelName EXAM</strong>
                                                 @if (!string.IsNullOrEmpty(item.Description))
                                                 {
                                                     <br /><small class="text-muted">@item.Description</small>
@@ -60,8 +71,14 @@
                                                 }
                                             </td>
                                             <td><span class="badge bg-info text-dark"><i class="fas fa-users me-1"></i>@item.ExamResults.Count студентів</span></td>
-                                            <td><a asp-action="Details" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-info-circle me-1"></i>Деталі</a></td>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-info-circle me-1"></i>Деталі
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-warning">
+                                                    <i class="fas fa-edit me-1"></i>Редагувати
+                                                </a>
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
@@ -76,6 +93,13 @@
 
 @section Scripts {
     <script>
-        // Add custom JavaScript here if needed
+        // Auto-dismiss success alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-success');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
     </script>
 }
