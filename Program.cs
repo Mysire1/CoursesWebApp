@@ -52,6 +52,7 @@ builder.Services.AddScoped<IGroupService, GroupServiceImpl>();
 builder.Services.AddScoped<ILanguageService, LanguageServiceImpl>();
 builder.Services.AddScoped<ITeacherService, TeacherServiceImpl>();
 builder.Services.AddScoped<IQueryService, QueryServiceImpl>();
+builder.Services.AddScoped<ILevelService, LevelServiceImpl>();
 
 var app = builder.Build();
 
