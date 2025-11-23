@@ -31,6 +31,6 @@ namespace CoursesWebApp.Models
         public virtual Language Language { get; set; } = null!;
         
         public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
-        public virtual ICollection<Exam> Exams { get; set; } = new List<Exam>();
+        // Removed ICollection<Exam> Exams - no relationship between Level and Exam tables
     }
 }
