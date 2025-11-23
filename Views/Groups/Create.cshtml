@@ -45,13 +45,13 @@
 </form>
 
 @section Scripts {
-  <script>
+    <script>
     // Мапа рівнів з ViewBag.Levels
     const levelsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(levels));
     const LEVELS_BY_LANG_ID = {};
     levelsData.forEach(lvl => {
-        if(!LEVELS_BY_LANG_ID[lvl.LanguageId]) LEVELS_BY_LANG_ID[lvl.LanguageId] = [];
-        LEVELS_BY_LANG_ID[lvl.LanguageId].push(lvl.LevelName);
+        if(!LEVELS_BY_LANG_ID[lvl.languageId]) LEVELS_BY_LANG_ID[lvl.languageId] = [];
+        LEVELS_BY_LANG_ID[lvl.languageId].push(lvl.name);
     });
     function updateLevels() {
       const langId = $('#LanguageSelect').val();
@@ -59,7 +59,7 @@
       const $level = $('#LevelNameSelect');
       $level.empty();
       $level.append('<option value="">Оберіть рівень</option>');
-      levels.forEach(lvl => $level.append('<option value="'+lvl+'">'+lvl+'</option>'));
+      levels.forEach(lvl => $level.append('<option value="'+lvl+'">'+lvl+'</option>'))
     }
     $(function(){
       $('#LanguageSelect').change(updateLevels);
