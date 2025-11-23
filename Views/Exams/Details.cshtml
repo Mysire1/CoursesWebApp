@@ -1,0 +1,35 @@
+@model IEnumerable<CoursesWebApp.Models.ExamResult>
+@{
+    var exam = ViewBag.Exam as CoursesWebApp.Models.Exam;
+    ViewData["Title"] = "Результати екзамену";
+}
+<h2>Результати екзамену: @exam?.Level?.Language?.Name @exam?.Level?.Name EXAM</h2>
+<p><b>Дата проведення:</b> @exam?.ExamDate.ToString("dd.MM.yyyy")</p>
+@if (!string.IsNullOrEmpty(exam?.Description))
+{
+    <p><b>Опис:</b> @exam.Description</p>
+}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID студента</th>
+            <th>Студент</th>
+            <th>Оцінка</th>
+            <th>Статус</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var result in Model)
+    {
+        <tr>
+            <td>@result.StudentId</td>
+            <td>@result.Student.FullName</td>
+            <td>@result.Grade</td>
+            <td>
+                @if (result.IsPassed) { <span class="badge bg-success">Пройшов</span> }
+                else { <span class="badge bg-danger">Не пройшов</span> }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
