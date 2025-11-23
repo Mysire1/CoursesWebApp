@@ -3,6 +3,11 @@
 }
 
 <h1>Розклад занять</h1>
+<div class="mb-3">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+        <i class="fas fa-plus me-1"></i>Додати розклад
+    </button>
+</div>
 
 <!-- Фільтр по групах та викладачах -->
 <form class="row gy-2 mb-4" id="scheduleFilterForm">
@@ -35,6 +40,8 @@
     </div>
 </form>
 
+<partial name="_AddScheduleModal" />
+
 <div class="table-responsive mb-4">
     <table class="table table-bordered table-hover">
         <thead class="table-light">
@@ -60,16 +67,13 @@
         function loadSchedule() {
             const groupId = document.getElementById('groupSelect').value;
             const teacherId = document.getElementById('teacherSelect').value;
-            
             if (!groupId && !teacherId) {
                 alert('Будь ласка, оберіть групу або викладача');
                 return;
             }
-            
             const formData = new FormData();
             if (groupId) formData.append('groupId', groupId);
             if (teacherId) formData.append('teacherId', teacherId);
-            
             fetch('/Schedule/GetSchedule', {
                 method: 'POST',
                 body: formData
