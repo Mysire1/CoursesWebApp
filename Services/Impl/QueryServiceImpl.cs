@@ -16,11 +16,10 @@ namespace CoursesWebApp.Services.Impl
 
         public async Task<IEnumerable<ExamResult>> GetFailedExamResultsAsync()
         {
+            // Прибираємо .ThenInclude(e => e.Level).ThenInclude(l => l.Language)
             return await _context.ExamResults
                 .Include(er => er.Student)
                 .Include(er => er.Exam)
-                .ThenInclude(e => e.Level)
-                .ThenInclude(l => l.Language)
                 .Where(er => er.Grade < 60)
                 .OrderBy(er => er.Student.LastName)
                 .ThenBy(er => er.Student.FirstName)
