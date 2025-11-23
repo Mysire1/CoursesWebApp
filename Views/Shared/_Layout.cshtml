@@ -36,7 +36,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-user-circle me-1"></i>
-                                    @User.FindFirst("FullName")?.Value ?? User.Identity.Name
+                                    <span>Вітаємо, @(@User.FindFirst("FullName")?.Value ?? User.Identity.Name)</span>
                                     @if (User.IsInRole("Teacher"))
                                     {
                                         <span class="badge bg-primary ms-1">Вчитель</span>
