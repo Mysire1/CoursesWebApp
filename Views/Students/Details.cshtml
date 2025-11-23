@@ -44,6 +44,10 @@
                             {
                                 <span class="badge bg-danger">Борг</span>
                             }
+                            else if (Model.PaymentStatus == "Пільги")
+                            {
+                                <span class="badge bg-info">Пільги</span>
+                            }
                             else
                             {
                                 <span class="badge bg-secondary">@Model.PaymentStatus</span>
