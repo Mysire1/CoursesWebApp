@@ -1,0 +1,29 @@
+@model IEnumerable<CoursesWebApp.Models.Exam>
+@{
+    ViewData["Title"] = "Екзамени";
+}
+
+<h2>Екзамени</h2>
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Що за екзамен</th>
+            <th>Дата проведення</th>
+            <th>Деталі</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var exam in Model)
+    {
+        <tr>
+            <td>@exam.ExamId</td>
+            <td>@exam.Level.Language.Name @exam.Level.Name EXAM</td>
+            <td>@exam.ExamDate.ToString("dd.MM.yyyy")</td>
+            <td>
+                <a class="btn btn-sm btn-info" href="/Exams/Details/@exam.ExamId">Деталі</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
