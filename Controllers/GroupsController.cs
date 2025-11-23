@@ -3,6 +3,8 @@ using CoursesWebApp.Models.ViewModels;
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CoursesWebApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoursesWebApp.Controllers
 {
@@ -13,13 +15,15 @@ namespace CoursesWebApp.Controllers
         private readonly ILanguageService _languageService;
         private readonly ITeacherService _teacherService;
         private readonly IStudentService _studentService;
+        private readonly ApplicationDbContext _context;
 
-        public GroupsController(IGroupService groupService, ILanguageService languageService, ITeacherService teacherService, IStudentService studentService)
+        public GroupsController(IGroupService groupService, ILanguageService languageService, ITeacherService teacherService, IStudentService studentService, ApplicationDbContext context)
         {
             _groupService = groupService;
             _languageService = languageService;
             _teacherService = teacherService;
             _studentService = studentService;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -50,15 +54,47 @@ namespace CoursesWebApp.Controllers
                 ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
                 return View(vm);
             }
-            var group = new Group {
-                GroupName = vm.GroupName,
-                TeacherId = vm.TeacherId,
-                LanguageId = vm.LanguageId,
-                StartDate = DateTime.SpecifyKind(vm.StartDate, DateTimeKind.Utc),
-                LevelName = vm.LevelName
-            };
-            await _groupService.CreateGroupAsync(group);
-            return RedirectToAction("Index");
+
+            try
+            {
+                // Знайти або створити Level
+                var level = await _context.Levels
+                    .FirstOrDefaultAsync(l => l.LevelName == vm.LevelName && l.LanguageId == vm.LanguageId);
+
+                if (level == null)
+                {
+                    // Створити новий Level якщо не існує
+                    level = new Level
+                    {
+                        LevelName = vm.LevelName,
+                        LanguageId = vm.LanguageId,
+                        BaseCost = 1000m // Базова ціна за замовчуванням
+                    };
+                    _context.Levels.Add(level);
+                    await _context.SaveChangesAsync();
+                }
+
+                var group = new Group
+                {
+                    GroupName = vm.GroupName,
+                    TeacherId = vm.TeacherId,
+                    LanguageId = vm.LanguageId,
+                    LevelId = level.LevelId,
+                    StartDate = DateTime.SpecifyKind(vm.StartDate, DateTimeKind.Utc),
+                    LevelName = vm.LevelName
+                };
+
+                await _groupService.CreateGroupAsync(group);
+                TempData["SuccessMessage"] = "Групу успішно створено!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Помилка при створенні групи: {ex.Message}");
+                ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
+                ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                return View(vm);
+            }
         }
 
         [HttpGet]
@@ -96,15 +132,48 @@ namespace CoursesWebApp.Controllers
                 ViewBag.GroupId = id;
                 return View(vm);
             }
-            var group = await _groupService.GetGroupByIdAsync(id);
-            if (group == null) return NotFound();
-            group.GroupName = vm.GroupName;
-            group.TeacherId = vm.TeacherId;
-            group.LanguageId = vm.LanguageId;
-            group.StartDate = DateTime.SpecifyKind(vm.StartDate, DateTimeKind.Utc);
-            group.LevelName = vm.LevelName;
-            await _groupService.UpdateGroupAsync(group);
-            return RedirectToAction("Index");
+
+            try
+            {
+                var group = await _groupService.GetGroupByIdAsync(id);
+                if (group == null) return NotFound();
+
+                // Знайти або створити Level
+                var level = await _context.Levels
+                    .FirstOrDefaultAsync(l => l.LevelName == vm.LevelName && l.LanguageId == vm.LanguageId);
+
+                if (level == null)
+                {
+                    level = new Level
+                    {
+                        LevelName = vm.LevelName,
+                        LanguageId = vm.LanguageId,
+                        BaseCost = 1000m
+                    };
+                    _context.Levels.Add(level);
+                    await _context.SaveChangesAsync();
+                }
+
+                group.GroupName = vm.GroupName;
+                group.TeacherId = vm.TeacherId;
+                group.LanguageId = vm.LanguageId;
+                group.LevelId = level.LevelId;
+                group.StartDate = DateTime.SpecifyKind(vm.StartDate, DateTimeKind.Utc);
+                group.LevelName = vm.LevelName;
+
+                await _groupService.UpdateGroupAsync(group);
+                TempData["SuccessMessage"] = "Групу успішно оновлено!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message}");
+                ViewBag.Languages = await _languageService.GetAllLanguagesAsync();
+                ViewBag.Teachers = await _teacherService.GetAllTeachersAsync();
+                ViewBag.AllStudents = await _studentService.GetAllStudentsAsync();
+                ViewBag.GroupId = id;
+                return View(vm);
+            }
         }
 
         [HttpGet]
@@ -121,7 +190,15 @@ namespace CoursesWebApp.Controllers
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _groupService.DeleteGroupAsync(id);
+            try
+            {
+                await _groupService.DeleteGroupAsync(id);
+                TempData["SuccessMessage"] = "Групу успішно видалено!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Помилка при видаленні: {ex.Message}";
+            }
             return RedirectToAction("Index");
         }
 
