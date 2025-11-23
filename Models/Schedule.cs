@@ -24,11 +24,19 @@ namespace CoursesWebApp.Models
         
         [Required]
         public TimeSpan EndTime { get; set; }
+
+        [Required]
+        public int TeacherId { get; set; }
         
+        [Column(TypeName = "date")]
+        public DateTime Date { get; set; }
+        
+        [StringLength(50)]
+        public string Room { get; set; } = string.Empty;
+
         // Navigation properties
         [ForeignKey("GroupId")]
         public virtual Group Group { get; set; } = null!;
-        
         [ForeignKey("ClassroomId")]
         public virtual Classroom Classroom { get; set; } = null!;
     }
