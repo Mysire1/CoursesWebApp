@@ -28,9 +28,17 @@ namespace CoursesWebApp.Services.Impl
 
         public async Task<IEnumerable<Level>> GetLevelsWithFailuresAsync()
         {
+            // Виправлено: замість l.Exams використовуємо прямий запит до Exams
+            var levelIds = await _context.Exams
+                .Include(e => e.ExamResults)
+                .Where(e => e.ExamResults.Any(er => er.Grade < 60))
+                .Select(e => e.LevelId)
+                .Distinct()
+                .ToListAsync();
+
             return await _context.Levels
                 .Include(l => l.Language)
-                .Where(l => l.Exams.Any(e => e.ExamResults.Any(er => er.Grade < 60)))
+                .Where(l => levelIds.Contains(l.LevelId))
                 .OrderBy(l => l.Language.Name)
                 .ThenBy(l => l.Name)
                 .ToListAsync();
