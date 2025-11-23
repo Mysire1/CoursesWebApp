@@ -25,25 +25,15 @@
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-4">ID Екзамену:</dt>
-                        <dd class="col-sm-8">
-                            <span class="badge bg-primary">@Model.ExamId</span>
-                        </dd>
-
+                        <dd class="col-sm-8"><span class="badge bg-primary">@Model.ExamId</span></dd>
                         <dt class="col-sm-4">Екзамен:</dt>
-                        <dd class="col-sm-8">
-                            <strong>@Model.Level.Language.Name @Model.Level.Name EXAM</strong>
-                        </dd>
-
+                        <dd class="col-sm-8"><strong>@Model.Level.Language.Name @Model.Level.Name EXAM</strong></dd>
                         <dt class="col-sm-4">Рівень:</dt>
                         <dd class="col-sm-8">@Model.Level.Name</dd>
-
                         <dt class="col-sm-4">Мова:</dt>
                         <dd class="col-sm-8">@Model.Level.Language.Name</dd>
-
                         <dt class="col-sm-4">Дата проведення:</dt>
-                        <dd class="col-sm-8">
-                            <i class="fas fa-calendar me-1"></i>
-                            @Model.ExamDate.ToString("dd MMMM yyyy")
+                        <dd class="col-sm-8"><i class="fas fa-calendar me-1"></i>@Model.ExamDate.ToString("dd MMMM yyyy")
                             @if (Model.ExamDate > DateTime.Now)
                             {
                                 <span class="badge bg-success ms-2">Заплановано</span>
@@ -53,19 +43,13 @@
                                 <span class="badge bg-secondary ms-2">Проведено</span>
                             }
                         </dd>
-
                         @if (!string.IsNullOrEmpty(Model.Description))
                         {
                             <dt class="col-sm-4">Опис:</dt>
                             <dd class="col-sm-8">@Model.Description</dd>
                         }
-
                         <dt class="col-sm-4">Студентів:</dt>
-                        <dd class="col-sm-8">
-                            <span class="badge bg-info text-dark">
-                                <i class="fas fa-users me-1"></i>@Model.ExamResults.Count
-                            </span>
-                        </dd>
+                        <dd class="col-sm-8"><span class="badge bg-info text-dark"><i class="fas fa-users me-1"></i>@Model.ExamResults.Count</span></dd>
                     </dl>
                 </div>
             </div>
@@ -83,31 +67,18 @@
                         var failedCount = Model.ExamResults.Count - passedCount;
                         var averageGrade = Model.ExamResults.Average(er => er.Grade);
                         var passRate = Model.ExamResults.Count > 0 ? (passedCount * 100.0 / Model.ExamResults.Count) : 0;
-
                         <dl class="row mb-0">
                             <dt class="col-sm-6">Середній бал:</dt>
-                            <dd class="col-sm-6">
-                                <span class="badge bg-primary fs-6">@averageGrade.ToString("F1")</span>
-                            </dd>
-
+                            <dd class="col-sm-6"><span class="badge bg-primary fs-6">@averageGrade.ToString("F1")</span></dd>
                             <dt class="col-sm-6">Здали:</dt>
-                            <dd class="col-sm-6">
-                                <span class="badge bg-success fs-6">@passedCount студентів</span>
-                            </dd>
-
+                            <dd class="col-sm-6"><span class="badge bg-success fs-6">@passedCount студентів</span></dd>
                             <dt class="col-sm-6">Не здали:</dt>
-                            <dd class="col-sm-6">
-                                <span class="badge bg-danger fs-6">@failedCount студентів</span>
-                            </dd>
-
+                            <dd class="col-sm-6"><span class="badge bg-danger fs-6">@failedCount студентів</span></dd>
                             <dt class="col-sm-6">Відсоток здачі:</dt>
-                            <dd class="col-sm-6">
-                                <span class="badge bg-info text-dark fs-6">@passRate.ToString("F1")%</span>
-                            </dd>
+                            <dd class="col-sm-6"><span class="badge bg-info text-dark fs-6">@passRate.ToString("F1")%</span></dd>
                         </dl>
                     }
-                    else
-                    {
+                    else {
                         <p class="text-muted mb-0">Немає результатів для відображення статистики</p>
                     }
                 </div>
@@ -118,8 +89,9 @@
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-list me-2"></i>Результати зареєстрованих студентів</h5>
+                    <a asp-action="AddResult" asp-route-examId="@Model.ExamId" class="btn btn-sm btn-success"><i class="fas fa-plus me-1"></i>Додати результат</a>
                 </div>
                 <div class="card-body">
                     @if (!Model.ExamResults.Any())
@@ -148,43 +120,21 @@
                                     @foreach (var result in Model.ExamResults.OrderByDescending(r => r.Grade))
                                     {
                                         <tr class="@(result.IsPassed ? "table-success" : "table-danger")">
-                                            <td>
-                                                <span class="badge bg-secondary">@result.StudentId</span>
-                                            </td>
-                                            <td>
-                                                <strong>@result.Student.LastName @result.Student.FirstName</strong>
-                                            </td>
-                                            <td>
-                                                <i class="fas fa-envelope me-1"></i>
-                                                <a href="mailto:@result.Student.Email">@result.Student.Email</a>
-                                            </td>
-                                            <td>
-                                                <i class="fas fa-phone me-1"></i>
-                                                @(result.Student.Phone ?? "Не вказано")
-                                            </td>
-                                            <td>
-                                                <span class="badge @(result.Grade >= 90 ? "bg-success" : result.Grade >= 75 ? "bg-primary" : result.Grade >= 60 ? "bg-warning text-dark" : "bg-danger") fs-6">
-                                                    @result.Grade
-                                                </span>
-                                            </td>
-                                            <td>
-                                                @if (result.IsPassed)
+                                            <td><span class="badge bg-secondary">@result.StudentId</span></td>
+                                            <td><strong>@result.Student.LastName @result.Student.FirstName</strong></td>
+                                            <td><i class="fas fa-envelope me-1"></i><a href="mailto:@result.Student.Email">@result.Student.Email</a></td>
+                                            <td><i class="fas fa-phone me-1"></i>@(result.Student.Phone ?? "Не вказано")</td>
+                                            <td><span class="badge @(result.Grade >= 90 ? "bg-success" : result.Grade >= 75 ? "bg-primary" : result.Grade >= 60 ? "bg-warning text-dark" : "bg-danger") fs-6">@result.Grade</span></td>
+                                            <td>@if (result.IsPassed)
                                                 {
-                                                    <span class="badge bg-success">
-                                                        <i class="fas fa-check me-1"></i>Здав
-                                                    </span>
+                                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i>Здав</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-danger">
-                                                        <i class="fas fa-times me-1"></i>Не здав
-                                                    </span>
+                                                    <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Не здав</span>
                                                 }
                                             </td>
-                                            <td>
-                                                <i class="fas fa-calendar me-1"></i>
-                                                @result.ExamDate.ToString("dd.MM.yyyy")
-                                            </td>
+                                            <td><i class="fas fa-calendar me-1"></i>@result.ExamDate.ToString("dd.MM.yyyy")</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -199,6 +149,6 @@
 
 @section Scripts {
     <script>
-        // Add any custom JavaScript here if needed
+        // JS for results
     </script>
 }

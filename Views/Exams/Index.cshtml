@@ -6,14 +6,14 @@
 
 <div class="container-fluid">
     <div class="row mb-4">
-        <div class="col-12">
+        <div class="col-12 d-flex justify-content-between align-items-center">
             <h1 class="display-4">
                 <i class="fas fa-file-alt me-3"></i>Екзамени
             </h1>
-            <p class="lead text-muted">Список запланованих та проведених екзаменів</p>
+            <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Додати екзамен</a>
         </div>
     </div>
-
+    <p class="lead text-muted">Список запланованих та проведених екзаменів</p>
     @if (!Model.Any())
     {
         <div class="alert alert-info" role="alert">
@@ -42,20 +42,14 @@
                                     @foreach (var item in Model)
                                     {
                                         <tr>
-                                            <td>
-                                                <span class="badge bg-primary">@item.ExamId</span>
-                                            </td>
-                                            <td>
-                                                <strong>@item.Level.Language.Name @item.Level.Name EXAM</strong>
+                                            <td><span class="badge bg-primary">@item.ExamId</span></td>
+                                            <td><strong>@item.Level.Language.Name @item.Level.Name EXAM</strong>
                                                 @if (!string.IsNullOrEmpty(item.Description))
                                                 {
-                                                    <br />
-                                                    <small class="text-muted">@item.Description</small>
+                                                    <br /><small class="text-muted">@item.Description</small>
                                                 }
                                             </td>
-                                            <td>
-                                                <i class="fas fa-calendar me-1"></i>
-                                                @item.ExamDate.ToString("dd MMMM yyyy")
+                                            <td><i class="fas fa-calendar me-1"></i>@item.ExamDate.ToString("dd MMMM yyyy")
                                                 @if (item.ExamDate > DateTime.Now)
                                                 {
                                                     <span class="badge bg-success ms-2">Заплановано</span>
@@ -65,17 +59,9 @@
                                                     <span class="badge bg-secondary ms-2">Проведено</span>
                                                 }
                                             </td>
-                                            <td>
-                                                <span class="badge bg-info text-dark">
-                                                    <i class="fas fa-users me-1"></i>
-                                                    @item.ExamResults.Count студентів
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <a asp-action="Details" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-info-circle me-1"></i>Деталі
-                                                </a>
-                                            </td>
+                                            <td><span class="badge bg-info text-dark"><i class="fas fa-users me-1"></i>@item.ExamResults.Count студентів</span></td>
+                                            <td><a asp-action="Details" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-info-circle me-1"></i>Деталі</a></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -90,6 +76,6 @@
 
 @section Scripts {
     <script>
-        // Add any custom JavaScript here if needed
+        // Add custom JavaScript here if needed
     </script>
 }
