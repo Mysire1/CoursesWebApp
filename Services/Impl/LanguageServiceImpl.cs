@@ -83,10 +83,4 @@ namespace CoursesWebApp.Services.Impl
             return totalMonths > 0 ? totalCost / totalMonths : 0;
         }
     }
-
-    public class LanguageWithGroupCount
-    {
-        public Language Language { get; set; } = null!;
-        public int GroupCount { get; set; }
-    }
 }
