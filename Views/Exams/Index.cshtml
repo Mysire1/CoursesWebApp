@@ -1,0 +1,95 @@
+@model IEnumerable<CoursesWebApp.Models.Exam>
+
+@{
+    ViewData["Title"] = "Екзамени";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="fas fa-file-alt me-3"></i>Екзамени
+            </h1>
+            <p class="lead text-muted">Список запланованих та проведених екзаменів</p>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Немає екзаменів</strong> - Екзамени ще не додані до системи.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">ID Екзамену</th>
+                                        <th scope="col">Екзамен</th>
+                                        <th scope="col">Дата проведення</th>
+                                        <th scope="col">Кількість результатів</th>
+                                        <th scope="col">Дії</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-primary">@item.ExamId</span>
+                                            </td>
+                                            <td>
+                                                <strong>@item.Level.Language.Name @item.Level.Name EXAM</strong>
+                                                @if (!string.IsNullOrEmpty(item.Description))
+                                                {
+                                                    <br />
+                                                    <small class="text-muted">@item.Description</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-calendar me-1"></i>
+                                                @item.ExamDate.ToString("dd MMMM yyyy")
+                                                @if (item.ExamDate > DateTime.Now)
+                                                {
+                                                    <span class="badge bg-success ms-2">Заплановано</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary ms-2">Проведено</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info text-dark">
+                                                    <i class="fas fa-users me-1"></i>
+                                                    @item.ExamResults.Count студентів
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-info-circle me-1"></i>Деталі
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Add any custom JavaScript here if needed
+    </script>
+}
