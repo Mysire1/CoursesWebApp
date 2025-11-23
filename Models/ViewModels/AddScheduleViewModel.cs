@@ -14,7 +14,7 @@ namespace CoursesWebApp.Models.ViewModels
         public int ClassroomId { get; set; }
 
         [Required]
-        [RegularExpression("^\d{2}:\d{2} ?- ?\d{2}:\d{2}$", ErrorMessage = "Введіть час у форматі 17:00 - 18:00")]
+        [RegularExpression(@"^\d{2}:\d{2} ?- ?\d{2}:\d{2}$", ErrorMessage = "Введіть час у форматі 17:00 - 18:00")]
         public string TimeRange { get; set; } = "";
     }
 }
