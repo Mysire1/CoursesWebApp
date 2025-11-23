@@ -47,20 +47,30 @@ namespace CoursesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddSchedule(AddScheduleViewModel model)
         {
+            // 1. Перевірка: чи вибрані дні тижня?
+            if (model.DaysOfWeek == null || !model.DaysOfWeek.Any())
+            {
+                ModelState.AddModelError("DaysOfWeek", "Виберіть хоча б один день тижня!");
+            }
+
+            // 2. Перевірка валідації моделі
             if (!ModelState.IsValid)
             {
-                // Rotate modal with errors (keep selects)
+                // Виводимо помилки в консоль (для дебагу)
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Validation Error: {error.ErrorMessage}");
+                }
+
                 ViewBag.Groups = await _groupService.GetAllGroupsAsync();
                 ViewBag.Classrooms = await _db.Classrooms.OrderBy(c => c.RoomNumber).ToListAsync();
                 return PartialView("_AddScheduleModal", model);
             }
 
-            // Завантажуємо групу з усіма потрібними даними
             var group = await _db.Groups
                 .Include(g => g.Teacher)
                 .FirstOrDefaultAsync(g => g.GroupId == model.GroupId);
             
-            // Завантажуємо аудиторію
             var classroom = await _db.Classrooms.FindAsync(model.ClassroomId);
             
             if (group == null || classroom == null)
@@ -68,13 +78,11 @@ namespace CoursesWebApp.Controllers
                 return BadRequest("Не знайдено групу або аудиторію.");
             }
 
-            // Перевіряємо, чи є TeacherId у групи
-            if (group.TeacherId == 0)
+            if (group.TeacherId == 0) // Переконайтеся, що TeacherId nullable int? або перевіряйте на null
             {
                 return BadRequest("У групи не призначено викладача.");
             }
 
-            // Парсимо час
             var times = model.TimeRange.Split('-');
             if (times.Length != 2 || !TimeSpan.TryParse(times[0].Trim(), out var start) || !TimeSpan.TryParse(times[1].Trim(), out var end))
             {
@@ -84,29 +92,44 @@ namespace CoursesWebApp.Controllers
                 return PartialView("_AddScheduleModal", model);
             }
 
-            // Зберігаємо в базу даних
-            // Створюємо запис окремо для кожного вибраного дня
-            foreach (var day in model.DaysOfWeek)
+            try 
             {
-                var sched = new Schedule
+                // Лічильник для перевірки
+                int addedCount = 0;
+
+                foreach (var day in model.DaysOfWeek)
                 {
-                    GroupId = group.GroupId,
-                    ClassroomId = classroom.ClassroomId,
-                    DayOfWeek = day,
-                    StartTime = start,
-                    EndTime = end,
-                    // TeacherId беремо з групи
-                    TeacherId = group.TeacherId,
-                    // Date беремо з StartDate групи
-                    Date = group.StartDate.Date,
-                    // Room беремо з RoomNumber аудиторії
-                    Room = classroom.RoomNumber
-                };
+                    var sched = new Schedule
+                    {
+                        GroupId = group.GroupId,
+                        ClassroomId = classroom.ClassroomId,
+                        DayOfWeek = day,
+                        StartTime = start,
+                        EndTime = end,
+                        TeacherId = group.TeacherId,
+                        // УВАГА: Тут логічна пастка (див. пункт Логічна помилка нижче)
+                        Date = group.StartDate.Date, 
+                        Room = classroom.RoomNumber
+                    };
 
-                _db.Schedules.Add(sched);
+                    _db.Schedules.Add(sched);
+                    addedCount++;
+                }
+
+                if (addedCount > 0)
+                {
+                    await _db.SaveChangesAsync();
+                }
             }
-
-            await _db.SaveChangesAsync();
+            catch (Exception ex)
+            {
+                // Якщо база даних викине помилку (наприклад, конфлікт ключів)
+                // Поставте тут breakpoint, щоб побачити ex.Message
+                ModelState.AddModelError("", $"Помилка збереження в БД: {ex.Message}");
+                ViewBag.Groups = await _groupService.GetAllGroupsAsync();
+                ViewBag.Classrooms = await _db.Classrooms.OrderBy(c => c.RoomNumber).ToListAsync();
+                return PartialView("_AddScheduleModal", model);
+            }
 
             return RedirectToAction("Index");
         }
