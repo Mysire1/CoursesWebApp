@@ -43,7 +43,7 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th scope="col">ID Екзамену</th>
-                                        <th scope="col">Екзамен</th>
+                                        <th scope="col">Рівень</th>
                                         <th scope="col">Дата проведення</th>
                                         <th scope="col">Кількість результатів</th>
                                         <th scope="col">Дії</th>
@@ -54,7 +54,7 @@
                                     {
                                         <tr>
                                             <td><span class="badge bg-primary">@item.ExamId</span></td>
-                                            <td><strong>@item.Level.Language.Name @item.Level.Name EXAM</strong>
+                                            <td><strong>@item.Level</strong>
                                                 @if (!string.IsNullOrEmpty(item.Description))
                                                 {
                                                     <br /><small class="text-muted">@item.Description</small>
@@ -93,7 +93,6 @@
 
 @section Scripts {
     <script>
-        // Auto-dismiss success alerts after 5 seconds
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert-success');
             alerts.forEach(alert => {
