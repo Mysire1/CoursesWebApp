@@ -8,6 +8,15 @@ namespace CoursesWebApp.Controllers
     public class ExamsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        // Фіксований список рівнів
+        private static readonly List<string> ExamLevels = new()
+        {
+            "Beginner (A1)",
+            "Elementary (A2)",
+            "Intermediate (B1)",
+            "Upper-Intermediate (B2)",
+            "Advanced (C1)"
+        };
 
         public ExamsController(ApplicationDbContext context)
         {
@@ -18,45 +27,31 @@ namespace CoursesWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var exams = await _context.Exams
-                .Include(e => e.Level)
-                    .ThenInclude(l => l.Language)
                 .OrderByDescending(e => e.ExamDate)
                 .ToListAsync();
             return View(exams);
         }
 
         // GET: Exams/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            ViewBag.Levels = await _context.Levels
-                .Include(l => l.Language)
-                .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.Name)
-                .ToListAsync();
-            
-            ViewBag.Students = await _context.Students
-                .Where(s => s.IsActive)
-                .OrderBy(s => s.LastName)
-                .ThenBy(s => s.FirstName)
-                .ToListAsync();
-            
+            ViewBag.Levels = ExamLevels;
+            ViewBag.Students = _context.Students.Where(s => s.IsActive).OrderBy(s => s.LastName).ThenBy(s => s.FirstName).ToList();
             return View();
         }
 
         // POST: Exams/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Description,ExamDate,LevelId")] Exam exam, int[] SelectedStudentIds)
+        public async Task<IActionResult> Create([Bind("Description,ExamDate,Level")] Exam exam, int[] SelectedStudentIds)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    // Додаємо екзамен до контексту
                     _context.Exams.Add(exam);
                     await _context.SaveChangesAsync();
 
-                    // Створюємо записи результатів екзамену для вибраних студентів
                     if (SelectedStudentIds != null && SelectedStudentIds.Length > 0)
                     {
                         foreach (var studentId in SelectedStudentIds)
@@ -65,14 +60,13 @@ namespace CoursesWebApp.Controllers
                             {
                                 ExamId = exam.ExamId,
                                 StudentId = studentId,
-                                Grade = 0, // Оцінка буде додана пізніше
+                                Grade = 0,
                                 ExamDate = exam.ExamDate
                             };
                             _context.ExamResults.Add(examResult);
                         }
                         await _context.SaveChangesAsync();
                     }
-
                     TempData["SuccessMessage"] = "Екзамен успішно створено!";
                     return RedirectToAction(nameof(Index));
                 }
@@ -81,43 +75,8 @@ namespace CoursesWebApp.Controllers
             {
                 ModelState.AddModelError("", $"Помилка при збереженні екзамена: {ex.Message}");
             }
-
-            // Якщо виникла помилка, повертаємо форму з даними
-            ViewBag.Levels = await _context.Levels
-                .Include(l => l.Language)
-                .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.Name)
-                .ToListAsync();
-            
-            ViewBag.Students = await _context.Students
-                .Where(s => s.IsActive)
-                .OrderBy(s => s.LastName)
-                .ThenBy(s => s.FirstName)
-                .ToListAsync();
-            
-            return View(exam);
-        }
-
-        // GET: Exams/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var exam = await _context.Exams
-                .Include(e => e.Level)
-                    .ThenInclude(l => l.Language)
-                .Include(e => e.ExamResults)
-                    .ThenInclude(er => er.Student)
-                .FirstOrDefaultAsync(m => m.ExamId == id);
-            
-            if (exam == null)
-            {
-                return NotFound();
-            }
-
+            ViewBag.Levels = ExamLevels;
+            ViewBag.Students = _context.Students.Where(s => s.IsActive).OrderBy(s => s.LastName).ThenBy(s => s.FirstName).ToList();
             return View(exam);
         }
 
@@ -128,32 +87,24 @@ namespace CoursesWebApp.Controllers
             {
                 return NotFound();
             }
-
             var exam = await _context.Exams.FindAsync(id);
             if (exam == null)
             {
                 return NotFound();
             }
-
-            ViewBag.Levels = await _context.Levels
-                .Include(l => l.Language)
-                .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.Name)
-                .ToListAsync();
-
+            ViewBag.Levels = ExamLevels;
             return View(exam);
         }
 
         // POST: Exams/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ExamId,Description,ExamDate,LevelId")] Exam exam)
+        public async Task<IActionResult> Edit(int id, [Bind("ExamId,Description,ExamDate,Level")] Exam exam)
         {
             if (id != exam.ExamId)
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
@@ -165,81 +116,17 @@ namespace CoursesWebApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExamExists(exam.ExamId))
-                    {
+                    if (!_context.Exams.Any(e => e.ExamId == id))
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", $"Помилка при оновленні: {ex.Message}");
                 }
             }
-
-            ViewBag.Levels = await _context.Levels
-                .Include(l => l.Language)
-                .OrderBy(l => l.Language.Name)
-                .ThenBy(l => l.Name)
-                .ToListAsync();
-
+            ViewBag.Levels = ExamLevels;
             return View(exam);
-        }
-
-        // POST: Exams/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var exam = await _context.Exams.FindAsync(id);
-                if (exam == null)
-                {
-                    return Json(new { success = false, message = "Екзамен не знайдено" });
-                }
-
-                _context.Exams.Remove(exam);
-                await _context.SaveChangesAsync();
-                
-                return Json(new { success = true, message = "Екзамен успішно видалено" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"Помилка: {ex.Message}" });
-            }
-        }
-
-        // POST: Exams/UpdateGrade
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateGrade(int examResultId, int grade)
-        {
-            try
-            {
-                var examResult = await _context.ExamResults.FindAsync(examResultId);
-                if (examResult == null)
-                {
-                    return Json(new { success = false, message = "Результат екзамену не знайдено" });
-                }
-
-                examResult.Grade = grade;
-                await _context.SaveChangesAsync();
-                
-                return Json(new { success = true, message = "Оцінку оновлено" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"Помилка: {ex.Message}" });
-            }
-        }
-
-        private bool ExamExists(int id)
-        {
-            return _context.Exams.Any(e => e.ExamId == id);
         }
     }
 }
