@@ -3,6 +3,7 @@
     ViewData["Title"] = "Створити групу";
     var teachers = ViewBag.Teachers as IEnumerable<CoursesWebApp.Models.Teacher> ?? new List<CoursesWebApp.Models.Teacher>();
     var languages = ViewBag.Languages as IEnumerable<CoursesWebApp.Models.Language> ?? new List<CoursesWebApp.Models.Language>();
+    var levels = ViewBag.Levels as IEnumerable<CoursesWebApp.Models.Level> ?? new List<CoursesWebApp.Models.Level>();
 }
 <h1>Створити нову групу</h1>
 <form asp-action="Create" method="post" class="row g-3">
@@ -45,41 +46,21 @@
 
 @section Scripts {
   <script>
-    // Мапа валідних рівнів для кожної мови
-    const LEVELS_BY_LANG = {
-      'English': [
-        'Beginner (A1)','Elementary (A2)','Intermediate (B1)','Upper-Intermediate (B2)','Advanced (C1)'
-      ],
-      'German': [
-        'Anfänger (A1)','Grundstufe (A2)','Mittelstufe (B1)'
-      ],
-      'French': [
-        'Débutant (A1)','Élémentaire (A2)'
-      ],
-      'Spanish': [
-        'Principiante (A1)','Elemental (A2)'
-      ],
-      'Italian': [
-        'Principiante (A1)'
-      ]
-    };
-
-    // Витягуємо співставлення id->назва мови
-    const langIdToName = {};
-    $('#LanguageSelect option').each(function(){
-        if(this.value) langIdToName[this.value] = $(this).text();
+    // Мапа рівнів з ViewBag.Levels
+    const levelsData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(levels));
+    const LEVELS_BY_LANG_ID = {};
+    levelsData.forEach(lvl => {
+        if(!LEVELS_BY_LANG_ID[lvl.LanguageId]) LEVELS_BY_LANG_ID[lvl.LanguageId] = [];
+        LEVELS_BY_LANG_ID[lvl.LanguageId].push(lvl.LevelName);
     });
-
     function updateLevels() {
       const langId = $('#LanguageSelect').val();
-      const langName = langIdToName[langId] || '';
-      const levels = LEVELS_BY_LANG[langName] || [];
+      const levels = LEVELS_BY_LANG_ID[langId] || [];
       const $level = $('#LevelNameSelect');
       $level.empty();
       $level.append('<option value="">Оберіть рівень</option>');
       levels.forEach(lvl => $level.append('<option value="'+lvl+'">'+lvl+'</option>'));
     }
-
     $(function(){
       $('#LanguageSelect').change(updateLevels);
       updateLevels();
