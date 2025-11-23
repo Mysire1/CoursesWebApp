@@ -59,12 +59,13 @@ namespace CoursesWebApp.Services.Impl
                     Email = model.Email,
                     PasswordHash = HashPassword(model.Password),
                     Phone = model.Phone,
-                    DateOfBirth = DateTime.SpecifyKind(DateTime.Now.AddYears(-20), DateTimeKind.Utc),
+                    DateOfBirth = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc), // Задаємо валідну дату
                     RegistrationDate = DateTime.UtcNow,
                     HasDiscount = false,
                     DiscountPercentage = 0,
                     CreatedAt = DateTime.UtcNow,
-                    IsActive = true
+                    IsActive = true,
+                    PaymentStatus = "Paid" // Статус за замовчуванням
                 };
 
                 _context.Students.Add(student);
