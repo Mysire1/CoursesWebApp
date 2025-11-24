@@ -120,6 +120,7 @@
             padding: 16px;
             max-height: 400px;
             overflow: auto;
+            border: 1px solid #dee2e6;
         }
 
         .results-header {
@@ -154,23 +155,23 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
-            overflow-x: auto;
-            display: block;
+            /* display: block; */
+            /* overflow-x: auto; */
         }
 
-        .results-table thead,
+        /*.results-table thead,
         .results-table tbody {
             display: table;
             width: 100%;
             table-layout: fixed;
-        }
+        }*/
 
         .results-table th,
         .results-table td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
-            word-wrap: break-word;
+            /* word-wrap: break-word;  */
         }
 
         .results-table th {
@@ -179,6 +180,7 @@
             color: #13343b;
             position: sticky;
             top: 0;
+            z-index: 1;
         }
 
         .results-table tr:hover {
@@ -272,9 +274,9 @@
                 <button class="template-btn" data-query='SELECT t."FirstName" || &apos; &apos; || t."LastName" AS Teacher, COUNT(DISTINCT tl."LanguageId") AS LanguageCount FROM "Teachers" t JOIN "TeacherLanguages" tl ON t."TeacherId" = tl."TeacherId" GROUP BY t."TeacherId", t."FirstName", t."LastName" ORDER BY LanguageCount;'>Викладачі по мовам</button>
                 <button class="template-btn" data-query='SELECT s."FirstName", s."LastName", s."Email", s."PaymentStatus", s."HasDiscount", s."DiscountPercentage" FROM "Students" s WHERE s."PaymentStatus" IS NOT NULL ORDER BY s."PaymentStatus";'>Статус оплати</button>
                 <button class="template-btn" data-query='SELECT s."FirstName", s."LastName", COUNT(DISTINCT e2."EnrollmentId") AS LevelsCompleted FROM "Students" s JOIN "Enrollments" e2 ON s."StudentId" = e2."StudentId" WHERE e2."IsCompleted" = TRUE GROUP BY s."StudentId", s."FirstName", s."LastName" HAVING COUNT(DISTINCT e2."EnrollmentId") > 3;'>Слухачі з >3 рівнями</button>
-                <button class="template-btn" data-query='SELECT DISTINCT s."FirstName", s."LastName", s."Email" FROM "Students" s JOIN "Enrollments" e ON s."StudentId" = e."StudentId" JOIN "Groups" g ON e."GroupId" = g."GroupId" WHERE g."LanguageId" = (SELECT "LanguageId" FROM "Languages" WHERE "Name" = &apos;Німецька&apos;);'>Слухачі німецької</button>
+                <button class="template-btn" data-query='SELECT DISTINCT s."FirstName", s."LastName", s."Email" FROM "Students" s JOIN "Groups" g ON s."GroupId" = g."GroupId" JOIN "Languages" l ON g."LanguageId" = l."LanguageId" WHERE l."Name" = &apos;Німецька&apos;;'>Слухачі німецької</button>
                 <button class="template-btn" data-query='SELECT s."StudentId", s."FirstName", s."LastName", COUNT(DISTINCT e."GroupId") AS LanguageCount FROM "Students" s JOIN "Enrollments" e ON s."StudentId" = e."StudentId" JOIN "Groups" g ON e."GroupId" = g."GroupId" GROUP BY s."StudentId", s."FirstName", s."LastName" HAVING COUNT(DISTINCT g."LanguageId") > 1;'>Слухачі з >1 мовою</button>
-                <button class="template-btn" data-query='SELECT g."GroupName", COUNT(e."StudentId") AS Students FROM "Groups" g LEFT JOIN "Enrollments" e ON g."GroupId" = e."GroupId" GROUP BY g."GroupId", g."GroupName" HAVING COUNT(e."StudentId") < 5;'>Малі групи (менше 5)</button>
+                <button class="template-btn" data-query='SELECT g."GroupName", COUNT(s."StudentId") AS Students FROM "Groups" g LEFT JOIN "Students" s ON g."GroupId" = s."GroupId" GROUP BY g."GroupId", g."GroupName" HAVING COUNT(s."StudentId") < 5;'>Малі групи (<5)</button>
                 <button class="template-btn" data-query='SELECT g."GroupName", COUNT(e."StudentId") AS Students FROM "Groups" g LEFT JOIN "Enrollments" e ON g."GroupId" = e."GroupId" GROUP BY g."GroupId", g."GroupName" HAVING COUNT(e."StudentId") = 20;'>Великі групи (=20)</button>
             </div>
 
