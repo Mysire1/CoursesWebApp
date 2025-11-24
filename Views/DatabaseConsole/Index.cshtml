@@ -220,7 +220,7 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @@keyframes spin {
+        @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
@@ -232,7 +232,7 @@
             display: none;
         }
 
-        @@media (max-width: 768px) {
+        @media (max-width: 768px) {
             .console-wrapper {
                 margin-left: -15px;
                 margin-right: -15px;
@@ -273,6 +273,15 @@
                     <button class="template-btn" data-query='SELECT * FROM "Groups" JOIN "Teachers" ON "Groups"."TeacherId" = "Teachers"."TeacherId";'>Групи з викладачами</button>
                     <button class="template-btn" data-query='SELECT l."Name" as Language, COUNT(s."StudentId") as StudentCount FROM "Languages" l LEFT JOIN "Levels" lv ON l."LanguageId" = lv."LanguageId" LEFT JOIN "Groups" g ON lv."LevelId" = g."LevelId" LEFT JOIN "Students" s ON g."GroupId" = s."GroupId" GROUP BY l."LanguageId", l."Name";'>Статистика по мовам</button>
                     <button class="template-btn" data-query='SELECT COUNT(*) as TotalStudents, SUM(CASE WHEN "HasDiscount" = true THEN 1 ELSE 0 END) as WithDiscount FROM "Students";'>Знижки студентів</button>
+                    <button class="template-btn" data-query='SELECT g."GroupName", lang."Name" as Language, t."FullName" as Teacher FROM "Groups" g JOIN "Levels" lv ON g."LevelId" = lv."LevelId" JOIN "Languages" lang ON lv."LanguageId" = lang."LanguageId" JOIN "Teachers" t ON g."TeacherId" = t."TeacherId" WHERE lang."Name" = ''Англійська'';'>Запит 1: Групи по мові</button>
+                    <button class="template-btn" data-query='SELECT s."FirstName", s."LastName", s."Email", er."Grade", e."ExamName", lv."Name" as Level FROM "Students" s JOIN "ExamResults" er ON s."StudentId" = er."StudentId" JOIN "Exams" e ON er."ExamId" = e."ExamId" JOIN "Groups" g ON e."GroupId" = g."GroupId" JOIN "Levels" lv ON g."LevelId" = lv."LevelId" WHERE er."Grade" < 60;'>Запит 3: Не здані іспити</button>
+                    <button class="template-btn" data-query='SELECT t."FullName", COUNT(DISTINCT tl."LanguageId") as LanguageCount FROM "Teachers" t JOIN "TeacherLanguages" tl ON t."TeacherId" = tl."TeacherId" GROUP BY t."TeacherId", t."FullName" ORDER BY LanguageCount;'>Запит 4: Викладачі по мовам</button>
+                    <button class="template-btn" data-query='SELECT s."FirstName", s."LastName", s."Email", s."PaymentStatus", s."HasDiscount", s."DiscountPercentage" FROM "Students" s WHERE s."PaymentStatus" IS NOT NULL ORDER BY s."PaymentStatus";'>Запит 5: Статус оплати</button>
+                    <button class="template-btn" data-query='SELECT s."FirstName", s."LastName", COUNT(DISTINCT e."EnrollmentId") as LevelsCompleted FROM "Students" s JOIN "Enrollments" e ON s."StudentId" = e."StudentId" GROUP BY s."StudentId", s."FirstName", s."LastName" HAVING COUNT(DISTINCT e."EnrollmentId") > 3;'>Запит 6: Слухачі з 3+ рівнями</button>
+                    <button class="template-btn" data-query='SELECT s."FirstName", s."LastName", s."Email", lang."Name" as Language FROM "Students" s JOIN "Groups" g ON s."GroupId" = g."GroupId" JOIN "Levels" lv ON g."LevelId" = lv."LevelId" JOIN "Languages" lang ON lv."LanguageId" = lang."LanguageId" WHERE lang."Name" = ''Німецька'';'>Запит 7: Німецька мова</button>
+                    <button class="template-btn" data-query='SELECT g."GroupName", COUNT(s."StudentId") as StudentCount FROM "Groups" g LEFT JOIN "Students" s ON g."GroupId" = s."GroupId" GROUP BY g."GroupId", g."GroupName" HAVING COUNT(s."StudentId") < 5;'>Запит 8: Малі групи (&lt;5)</button>
+                    <button class="template-btn" data-query='SELECT g."GroupName", COUNT(s."StudentId") as StudentCount FROM "Groups" g LEFT JOIN "Students" s ON g."GroupId" = s."GroupId" GROUP BY g."GroupId", g."GroupName" HAVING COUNT(s."StudentId") = 20;'>Запит 9: Великі групи (=20)</button>
+                    <button class="template-btn" data-query='SELECT sch."DayOfWeek", sch."StartTime", sch."EndTime", g."GroupName", c."RoomNumber", t."FullName" as Teacher FROM "Schedules" sch JOIN "Groups" g ON sch."GroupId" = g."GroupId" JOIN "Classrooms" c ON sch."ClassroomId" = c."ClassroomId" JOIN "Teachers" t ON g."TeacherId" = t."TeacherId" WHERE g."GroupName" = ''A1-1'';'>Запит 10: Розклад групи</button>
                 </div>
             </div>
 
