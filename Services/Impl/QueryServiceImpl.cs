@@ -16,11 +16,10 @@ namespace CoursesWebApp.Services.Impl
 
         public async Task<IEnumerable<ExamResult>> GetFailedExamResultsAsync()
         {
+            // Прибираємо .ThenInclude(e => e.Level).ThenInclude(l => l.Language)
             return await _context.ExamResults
                 .Include(er => er.Student)
                 .Include(er => er.Exam)
-                .ThenInclude(e => e.Level)
-                .ThenInclude(l => l.Language)
                 .Where(er => er.Grade < 60)
                 .OrderBy(er => er.Student.LastName)
                 .ThenBy(er => er.Student.FirstName)
@@ -29,9 +28,21 @@ namespace CoursesWebApp.Services.Impl
 
         public async Task<IEnumerable<Level>> GetLevelsWithFailuresAsync()
         {
+            // КРОК 1: Отримуємо список НАЗВ рівнів (рядків), де були провалені іспити.
+            // Ми беремо дані з ExamResults -> Exam -> Level (це рядок, згідно з вашим скріншотом)
+            var failedLevelNames = await _context.ExamResults
+                .Include(er => er.Exam)
+                .Where(er => er.Grade < 60)
+                .Select(er => er.Exam.Level) // Беремо поле Level (string), а не LevelId
+                .Distinct()
+                .ToListAsync();
+
+            // КРОК 2: Шукаємо у таблиці Levels записи, у яких Name співпадає зі знайденими рядками.
             return await _context.Levels
                 .Include(l => l.Language)
-                .Where(l => l.Exams.Any(e => e.ExamResults.Any(er => er.Grade < 60)))
+                // Припускаємо, що у моделі Level є властивість Name. 
+                // Якщо вона називається інакше (напр. Title), замініть l.Name на правильну назву.
+                .Where(l => failedLevelNames.Contains(l.Name)) 
                 .OrderBy(l => l.Language.Name)
                 .ThenBy(l => l.Name)
                 .ToListAsync();

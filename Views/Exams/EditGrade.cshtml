@@ -1,0 +1,72 @@
+@model CoursesWebApp.Models.ExamResult
+
+@{
+    ViewData["Title"] = "Редагування оцінки";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a asp-action="Details" asp-route-id="@Model.ExamId" class="btn btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left me-2"></i>Назад до деталей екзамену
+            </a>
+            <h1 class="display-5">
+                <i class="fas fa-edit me-3"></i>Редагування оцінки
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Інформація про студента</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-3">
+                        <dt class="col-sm-4">Студент:</dt>
+                        <dd class="col-sm-8"><strong>@Model.Student.LastName @Model.Student.FirstName</strong></dd>
+                        <dt class="col-sm-4">Екзамен:</dt>
+                        <dd class="col-sm-8">@Model.Exam.Level - @Model.Exam.ExamDate.ToString("dd.MM.yyyy")</dd>
+                        <dt class="col-sm-4">Поточна оцінка:</dt>
+                        <dd class="col-sm-8"><span class="badge @(Model.Grade >= 60 ? "bg-success" : "bg-danger") fs-6">@Model.Grade</span></dd>
+                    </dl>
+
+                    <hr />
+
+                    <form asp-action="EditGrade" method="post">
+                        <input type="hidden" asp-for="ExamResultId" />
+                        <input type="hidden" asp-for="ExamId" />
+                        <input type="hidden" asp-for="StudentId" />
+                        <input type="hidden" asp-for="ExamDate" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Grade" class="form-label">
+                                <i class="fas fa-star me-2"></i>Оцінка (0-100)
+                            </label>
+                            <input asp-for="Grade" class="form-control form-control-lg" type="number" min="0" max="100" />
+                            <span asp-validation-for="Grade" class="text-danger"></span>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>Введіть оцінку від 0 до 100. Мінімальна оцінка для здачі: 60
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Зберегти оцінку
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.ExamId" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Скасувати
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

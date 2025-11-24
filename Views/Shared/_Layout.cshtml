@@ -27,6 +27,7 @@
                         <li class="nav-item"><a class="nav-link" asp-controller="Groups" asp-action="Index"><i class="fas fa-object-group me-1"></i>Групи</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Finance" asp-action="Index"><i class="fas fa-wallet me-1"></i>Фінанси</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Schedule" asp-action="Index"><i class="fas fa-calendar-alt me-1"></i>Розклад</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Exams" asp-action="Index"><i class="fas fa-file-alt me-1"></i>Екзамени</a></li>
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="DatabaseConsole" asp-action="Index">SQL Console</a></li>
                     </ul>
                     <ul class="navbar-nav">
@@ -35,7 +36,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-user-circle me-1"></i>
-                                    @User.FindFirst("FullName")?.Value ?? User.Identity.Name
+                                    <span>Вітаємо, @(@User.FindFirst("FullName")?.Value ?? User.Identity.Name)</span>
                                     @if (User.IsInRole("Teacher"))
                                     {
                                         <span class="badge bg-primary ms-1">Вчитель</span>

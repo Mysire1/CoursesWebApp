@@ -1,0 +1,15 @@
+@{
+    ViewBag.Title = "Помилка у списку екзаменів (debug)";
+}
+
+<h1 class="text-danger">Помилка (діагностика)</h1>
+<p>Сталася критична помилка при отриманні списку екзаменів.</p>
+
+<pre style="color:red; background:#f8f8f8; padding:20px; border:1px solid #ddd; border-radius:6px; font-size:90%">
+@ViewBag.ExamError
+</pre>
+
+<p>
+    Поверніться <a href="@Url.Action("Index", "Home")">на головну</a> або <a href="javascript:location.reload()">оновіть сторінку</a>.<br>
+    Ця діагноcтика допоможе знайти причину для виправлення коду/БД!
+</p>

@@ -1,0 +1,104 @@
+@model IEnumerable<CoursesWebApp.Models.Exam>
+
+@{
+    ViewData["Title"] = "Екзамени";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h1 class="display-4">
+                <i class="fas fa-file-alt me-3"></i>Екзамени
+            </h1>
+            <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Додати екзамен</a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Успіх!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <p class="lead text-muted">Список запланованих та проведених екзаменів</p>
+    
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Немає екзаменів</strong> - Екзамени ще не додані до системи.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">ID Екзамену</th>
+                                        <th scope="col">Рівень</th>
+                                        <th scope="col">Дата проведення</th>
+                                        <th scope="col">Кількість результатів</th>
+                                        <th scope="col">Дії</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-primary">@item.ExamId</span></td>
+                                            <td><strong>@item.Level</strong>
+                                                @if (!string.IsNullOrEmpty(item.Description))
+                                                {
+                                                    <br /><small class="text-muted">@item.Description</small>
+                                                }
+                                            </td>
+                                            <td><i class="fas fa-calendar me-1"></i>@item.ExamDate.ToString("dd MMMM yyyy")
+                                                @if (item.ExamDate > DateTime.Now)
+                                                {
+                                                    <span class="badge bg-success ms-2">Заплановано</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary ms-2">Проведено</span>
+                                                }
+                                            </td>
+                                            <td><span class="badge bg-info text-dark"><i class="fas fa-users me-1"></i>@item.ExamResults.Count студентів</span></td>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-info-circle me-1"></i>Деталі
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.ExamId" class="btn btn-sm btn-outline-warning">
+                                                    <i class="fas fa-edit me-1"></i>Редагувати
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-success');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}

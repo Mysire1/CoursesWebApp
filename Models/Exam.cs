@@ -8,10 +8,11 @@ namespace CoursesWebApp.Models
     {
         [Key]
         public int ExamId { get; set; }
-        
+
         [Required]
-        public int LevelId { get; set; }
-        
+        [StringLength(50)]
+        public string Level { get; set; } = string.Empty; // Статичний рівень
+
         [Required]
         [DataType(DataType.Date)]
         public DateTime ExamDate { get; set; }
@@ -19,10 +20,7 @@ namespace CoursesWebApp.Models
         [StringLength(255)]
         public string? Description { get; set; }
         
-        // Navigation properties
-        [ForeignKey("LevelId")]
-        public virtual Level Level { get; set; } = null!;
-        
+        // Видалено навігацію на Level
         public virtual ICollection<ExamResult> ExamResults { get; set; } = new List<ExamResult>();
     }
 }

@@ -1,0 +1,80 @@
+@model CoursesWebApp.Models.Exam
+@{
+    ViewData["Title"] = "Створити екзамен";
+    var levels = ViewBag.Levels as List<string> ?? new List<string>();
+    var students = ViewBag.Students as IEnumerable<CoursesWebApp.Models.Student> ?? new List<CoursesWebApp.Models.Student>();
+}
+
+<h1 class="display-5 mb-4"><i class="fas fa-plus me-2"></i>Додати екзамен</h1>
+
+@if (ViewData.ModelState.ErrorCount > 0)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Помилка!</strong>
+        <ul class="mb-0">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Назва (опис)</label>
+                        <input asp-for="Description" class="form-control" maxlength="255" placeholder="Напр.: Фінальний екзамен з англійської" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ExamDate" class="form-label">Дата проведення</label>
+                        <input asp-for="ExamDate" type="date" class="form-control" required />
+                        <span asp-validation-for="ExamDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Level" class="form-label">Рівень</label>
+                        <select asp-for="Level" class="form-select" required>
+                            <option value="">Оберіть рівень</option>
+                            @foreach (var level in levels)
+                            {
+                                <option value="@level">@level</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Level" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Студенти, які складають екзамен</label>
+                        <select name="SelectedStudentIds" class="form-select" multiple size="8">
+                            @foreach (var student in students)
+                            {
+                                <option value="@student.StudentId">@student.LastName @student.FirstName (@student.Email)</option>
+                            }
+                        </select>
+                        <small class="text-muted">Утримуйте Ctrl (або Cmd на Mac), щоб обрати кількох студентів</small>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-1"></i>Створити
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Скасувати
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
