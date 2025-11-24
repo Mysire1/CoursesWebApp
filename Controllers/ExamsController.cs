@@ -27,7 +27,6 @@ namespace CoursesWebApp.Controllers
         {
             try
             {
-                // Видаляємо всі звернення до e.LevelId.
                 var exams = await _context.Exams
                     .Include(e => e.ExamResults)
                     .OrderByDescending(e => e.ExamDate)
@@ -41,6 +40,22 @@ namespace CoursesWebApp.Controllers
             }
         }
 
+        // GET: Exams/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var exam = await _context.Exams
+                .Include(e => e.ExamResults)
+                    .ThenInclude(er => er.Student)
+                .FirstOrDefaultAsync(m => m.ExamId == id);
+
+            if (exam == null) return NotFound();
+
+            return View(exam);
+        }
+
+        // GET: Create
         public IActionResult Create()
         {
             ViewBag.Levels = ExamLevels;
@@ -48,6 +63,7 @@ namespace CoursesWebApp.Controllers
             return View();
         }
 
+        // POST: Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Description,ExamDate,Level")] Exam exam, int[] SelectedStudentIds)
@@ -56,8 +72,13 @@ namespace CoursesWebApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // --- ВИПРАВЛЕННЯ 1: Конвертація в UTC для PostgreSQL ---
+                    exam.ExamDate = DateTime.SpecifyKind(exam.ExamDate, DateTimeKind.Utc);
+                    // -------------------------------------------------------
+
                     _context.Exams.Add(exam);
                     await _context.SaveChangesAsync();
+
                     if (SelectedStudentIds != null && SelectedStudentIds.Length > 0)
                     {
                         foreach (var studentId in SelectedStudentIds)
@@ -67,7 +88,7 @@ namespace CoursesWebApp.Controllers
                                 ExamId = exam.ExamId,
                                 StudentId = studentId,
                                 Grade = 0,
-                                ExamDate = exam.ExamDate
+                                ExamDate = exam.ExamDate // Вже в UTC
                             };
                             _context.ExamResults.Add(examResult);
                         }
@@ -79,40 +100,38 @@ namespace CoursesWebApp.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.ToString());
+                ModelState.AddModelError("", ex.Message);
             }
             ViewBag.Levels = ExamLevels;
             ViewBag.Students = _context.Students.Where(s => s.IsActive).OrderBy(s => s.LastName).ThenBy(s => s.FirstName).ToList();
             return View(exam);
         }
 
+        // GET: Edit
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
             var exam = await _context.Exams.FindAsync(id);
-            if (exam == null)
-            {
-                return NotFound();
-            }
+            if (exam == null) return NotFound();
             ViewBag.Levels = ExamLevels;
             return View(exam);
         }
 
+        // POST: Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ExamId,Description,ExamDate,Level")] Exam exam)
         {
-            if (id != exam.ExamId)
-            {
-                return NotFound();
-            }
+            if (id != exam.ExamId) return NotFound();
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // --- ВИПРАВЛЕННЯ 2: Конвертація в UTC при редагуванні ---
+                    exam.ExamDate = DateTime.SpecifyKind(exam.ExamDate, DateTimeKind.Utc);
+                    // --------------------------------------------------------
+
                     _context.Update(exam);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Екзамен успішно оновлено!";
@@ -131,6 +150,88 @@ namespace CoursesWebApp.Controllers
             }
             ViewBag.Levels = ExamLevels;
             return View(exam);
+        }
+
+        // GET: Exams/EditGrade/5
+        public async Task<IActionResult> EditGrade(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var examResult = await _context.ExamResults
+                .Include(er => er.Student)
+                .Include(er => er.Exam)
+                .FirstOrDefaultAsync(er => er.ExamResultId == id);
+
+            if (examResult == null) return NotFound();
+
+            return View(examResult);
+        }
+
+        // POST: Exams/EditGrade/5
+        // --- ВИПРАВЛЕННЯ 3: Спрощений метод для уникнення помилок валідації ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditGrade(int id, int grade)
+        {
+            // Знаходимо запис у БД
+            var dbResult = await _context.ExamResults.FindAsync(id);
+            
+            if (dbResult == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                // Оновлюємо лише оцінку
+                dbResult.Grade = grade;
+                
+                // Зберігаємо (EF Core сам відстежує зміни)
+                await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Оцінку успішно оновлено!";
+                
+                // Повертаємося до деталей екзамену
+                return RedirectToAction(nameof(Details), new { id = dbResult.ExamId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Помилка збереження: " + ex.Message);
+                
+                // Якщо помилка, треба перезавантажити дані для View
+                var fullResult = await _context.ExamResults
+                   .Include(er => er.Student)
+                   .Include(er => er.Exam)
+                   .FirstOrDefaultAsync(er => er.ExamResultId == id);
+                return View(fullResult);
+            }
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var exam = await _context.Exams
+                .Include(e => e.ExamResults)
+                .FirstOrDefaultAsync(m => m.ExamId == id);
+
+            if (exam == null) return NotFound();
+
+            return View(exam);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var exam = await _context.Exams.FindAsync(id);
+            if (exam != null)
+            {
+                _context.Exams.Remove(exam);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Екзамен успішно видалено!";
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }
