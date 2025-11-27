@@ -10,10 +10,12 @@ namespace CoursesWebApp.Controllers
     public class TeachersController : Controller
     {
         private readonly ITeacherService _teacherService;
+        private readonly ILanguageService _languageService;
         
-        public TeachersController(ITeacherService teacherService)
+        public TeachersController(ITeacherService teacherService, ILanguageService languageService)
         {
             _teacherService = teacherService;
+            _languageService = languageService;
         }
 
         public async Task<IActionResult> Index(string? filter)
@@ -37,6 +39,14 @@ namespace CoursesWebApp.Controllers
                     TempData["ErrorMessage"] = "Викладача не знайдено";
                     return RedirectToAction(nameof(Index));
                 }
+                
+                // Завантажуємо всі мови для вибору
+                var allLanguages = await _languageService.GetAllLanguagesAsync();
+                ViewBag.AllLanguages = allLanguages;
+                
+                // ID мов, які викладач вже викладає
+                ViewBag.SelectedLanguageIds = teacher.TeacherLanguages?.Select(tl => tl.LanguageId).ToList() ?? new List<int>();
+                
                 return View(teacher);
             }
             catch (Exception ex)
@@ -48,7 +58,7 @@ namespace CoursesWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Teacher model)
+        public async Task<IActionResult> Edit(int id, Teacher model, List<int> selectedLanguageIds)
         {
             if (id != model.TeacherId)
             {
@@ -80,6 +90,10 @@ namespace CoursesWebApp.Controllers
                     existingTeacher.LastLoginAt = DateTime.SpecifyKind(existingTeacher.LastLoginAt.Value, DateTimeKind.Utc);
 
                 await _teacherService.UpdateTeacherAsync(existingTeacher);
+                
+                // Оновлюємо мови викладача
+                await _teacherService.UpdateTeacherLanguagesAsync(id, selectedLanguageIds ?? new List<int>());
+                
                 TempData["SuccessMessage"] = "Викладача успішно оновлено!";
                 return RedirectToAction(nameof(Index));
             }
@@ -91,6 +105,12 @@ namespace CoursesWebApp.Controllers
                     errorMessage += $" | Деталі: {ex.InnerException.Message}";
                 }
                 TempData["ErrorMessage"] = errorMessage;
+                
+                // Перезавантажуємо дані для повторного відображення
+                var allLanguages = await _languageService.GetAllLanguagesAsync();
+                ViewBag.AllLanguages = allLanguages;
+                ViewBag.SelectedLanguageIds = selectedLanguageIds ?? new List<int>();
+                
                 return View(model);
             }
         }
