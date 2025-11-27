@@ -40,11 +40,9 @@ namespace CoursesWebApp.Controllers
                     return RedirectToAction(nameof(Index));
                 }
                 
-                // Завантажуємо всі мови для вибору
                 var allLanguages = await _languageService.GetAllLanguagesAsync();
                 ViewBag.AllLanguages = allLanguages;
                 
-                // ID мов, які викладач вже викладає
                 ViewBag.SelectedLanguageIds = teacher.TeacherLanguages?.Select(tl => tl.LanguageId).ToList() ?? new List<int>();
                 
                 return View(teacher);
@@ -74,15 +72,13 @@ namespace CoursesWebApp.Controllers
                     TempData["ErrorMessage"] = "Викладача не знайдено";
                     return RedirectToAction(nameof(Index));
                 }
-
-                // Оновлюємо тільки необхідні поля
+                
                 existingTeacher.FirstName = model.FirstName;
                 existingTeacher.LastName = model.LastName;
                 existingTeacher.Email = model.Email;
                 existingTeacher.Phone = model.Phone;
                 existingTeacher.IsActive = model.IsActive;
                 
-                // Забезпечуємо UTC для дат
                 if (existingTeacher.HireDate.Kind != DateTimeKind.Utc)
                     existingTeacher.HireDate = DateTime.SpecifyKind(existingTeacher.HireDate, DateTimeKind.Utc);
                 
@@ -91,7 +87,6 @@ namespace CoursesWebApp.Controllers
 
                 await _teacherService.UpdateTeacherAsync(existingTeacher);
                 
-                // Оновлюємо мови викладача
                 await _teacherService.UpdateTeacherLanguagesAsync(id, selectedLanguageIds ?? new List<int>());
                 
                 TempData["SuccessMessage"] = "Викладача успішно оновлено!";
@@ -106,7 +101,6 @@ namespace CoursesWebApp.Controllers
                 }
                 TempData["ErrorMessage"] = errorMessage;
                 
-                // Перезавантажуємо дані для повторного відображення
                 var allLanguages = await _languageService.GetAllLanguagesAsync();
                 ViewBag.AllLanguages = allLanguages;
                 ViewBag.SelectedLanguageIds = selectedLanguageIds ?? new List<int>();

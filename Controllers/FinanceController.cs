@@ -10,6 +10,7 @@ namespace CoursesWebApp.Controllers
         private readonly IQueryService _queryService;
         private readonly IStudentService _studentService;
         private readonly IGroupService _groupService;
+
         public FinanceController(IQueryService queryService, IStudentService studentService, IGroupService groupService)
         {
             _queryService = queryService;
@@ -34,9 +35,9 @@ namespace CoursesWebApp.Controllers
                 "debtLess50" => await _queryService.GetStudentsWithDebtLessThan50Async(),
                 "withDeferrals" => await _queryService.GetStudentsWithDeferralsAsync(),
                 "withDiscounts" => await _studentService.GetStudentsWithDiscountAsync(),
-                _ => new List<CoursesWebApp.Models.Student>()
+                _ => await _studentService.GetAllStudentsAsync()
             };
-
+            
             if (groupId.HasValue)
             {
                 students = students.Where(s => s.GroupId == groupId.Value).ToList();
@@ -50,7 +51,10 @@ namespace CoursesWebApp.Controllers
         {
             var smallGroups = await _groupService.GetSmallGroupsAsync();
             var affectedStudents = await _groupService.ApplySmallGroupSurchargeAsync();
-            return Json(new { success = true, message = $"Надбавку застосовано до {affectedStudents} студентів", groups = smallGroups });
+            
+            var groupNames = smallGroups.Select(g => g.GroupName).ToList();
+
+            return Json(new { success = true, message = $"Надбавку застосовано до {affectedStudents} студентів", groups = groupNames });
         }
 
         [HttpPost]
@@ -58,7 +62,10 @@ namespace CoursesWebApp.Controllers
         {
             var largeGroups = await _groupService.GetLargeGroupsAsync();
             var affectedStudents = await _groupService.ApplyLargeGroupDiscountAsync();
-            return Json(new { success = true, message = $"Знижку застосовано до {affectedStudents} студентів", groups = largeGroups });
+            
+            var groupNames = largeGroups.Select(g => g.GroupName).ToList();
+
+            return Json(new { success = true, message = $"Знижку застосовано до {affectedStudents} студентів", groups = groupNames });
         }
     }
 }

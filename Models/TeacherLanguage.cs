@@ -7,6 +7,7 @@ namespace CoursesWebApp.Models
     public class TeacherLanguage
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TeacherLanguageId { get; set; }
         
         [Required]

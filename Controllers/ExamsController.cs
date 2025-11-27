@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoursesWebApp.Data;
 using CoursesWebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoursesWebApp.Controllers
 {
+    [Authorize(Roles = "Teacher,Student")]
     public class ExamsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -53,6 +55,7 @@ namespace CoursesWebApp.Controllers
             return View(exam);
         }
         
+        [Authorize(Roles = "Teacher")]
         public IActionResult Create()
         {
             ViewBag.Levels = ExamLevels;
@@ -63,6 +66,7 @@ namespace CoursesWebApp.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create([Bind("Description,ExamDate,Level")] Exam exam, int[] SelectedStudentIds)
         {
             try
@@ -102,6 +106,7 @@ namespace CoursesWebApp.Controllers
             return View(exam);
         }
         
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -113,6 +118,7 @@ namespace CoursesWebApp.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, [Bind("ExamId,Description,ExamDate,Level")] Exam exam)
         {
             if (id != exam.ExamId) return NotFound();
@@ -122,7 +128,7 @@ namespace CoursesWebApp.Controllers
                 try
                 {
                     exam.ExamDate = DateTime.SpecifyKind(exam.ExamDate, DateTimeKind.Utc);
-                    
+
                     _context.Update(exam);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Екзамен успішно оновлено!";
@@ -143,6 +149,7 @@ namespace CoursesWebApp.Controllers
             return View(exam);
         }
         
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> EditGrade(int? id)
         {
             if (id == null) return NotFound();
@@ -156,13 +163,14 @@ namespace CoursesWebApp.Controllers
 
             return View(examResult);
         }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> EditGrade(int id, int grade)
         {
             var dbResult = await _context.ExamResults.FindAsync(id);
-            
+
             if (dbResult == null)
             {
                 return NotFound();
@@ -171,11 +179,11 @@ namespace CoursesWebApp.Controllers
             try
             {
                 dbResult.Grade = grade;
-                
+
                 await _context.SaveChangesAsync();
-                
+
                 TempData["SuccessMessage"] = "Оцінку успішно оновлено!";
-                
+
                 return RedirectToAction(nameof(Details), new { id = dbResult.ExamId });
             }
             catch (Exception ex)
@@ -188,7 +196,8 @@ namespace CoursesWebApp.Controllers
                 return View(fullResult);
             }
         }
-
+        
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -201,9 +210,10 @@ namespace CoursesWebApp.Controllers
 
             return View(exam);
         }
-
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var exam = await _context.Exams.FindAsync(id);

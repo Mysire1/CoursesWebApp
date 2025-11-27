@@ -64,8 +64,7 @@ namespace CoursesWebApp.Controllers
                     ViewBag.Groups = await _groupService.GetAllGroupsAsync();
                     return View(model);
                 }
-
-                // Мінімальний вік
+                
                 var minBirthDate = DateTime.UtcNow.AddYears(-10);
                 if (model.DateOfBirth > minBirthDate)
                 {
@@ -88,6 +87,7 @@ namespace CoursesWebApp.Controllers
                     PaymentStatus = string.IsNullOrEmpty(model.PaymentStatus) ? "Paid" : model.PaymentStatus,
                     RegistrationDate = DateTime.UtcNow,
                     CreatedAt = DateTime.UtcNow,
+                    LastLoginAt = DateTime.UtcNow,
                     IsActive = true
                 };
 

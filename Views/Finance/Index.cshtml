@@ -40,9 +40,6 @@
         </select>
     </div>
     <div class="col-auto">
-        <input type="month" class="form-control" id="monthFilter" name="month">
-    </div>
-    <div class="col-auto">
         <button type="button" class="btn btn-primary" onclick="loadPaymentStatus()">Фільтрувати</button>
     </div>
 </form>
@@ -60,13 +57,16 @@
         </thead>
         <tbody id="financeTableBody">
             <tr>
-                <td colspan="5" class="text-center text-muted">Оберіть фільтр для відображення фінансових даних</td>
+                <td colspan="5" class="text-center text-muted">Оберіть фільтр та натисніть "Фільтрувати"</td>
             </tr>
         </tbody>
     </table>
 </div>
 
 <h4>Операції зі знижками та надбавками</h4>
+
+<div id="operationMessage" class="alert d-none mb-3" role="alert"></div>
+
 <div class="row mb-3">
     <div class="col-auto">
         <button class="btn btn-warning" onclick="applySmallGroupSurcharge()">Надбавка для малих груп</button>
@@ -78,67 +78,83 @@
 
 @section Scripts {
     <script>
+        function showMessage(message, isError = false) {
+            const msgBox = document.getElementById('operationMessage');
+            msgBox.className = isError ? 'alert alert-danger mb-3' : 'alert alert-success mb-3';
+            msgBox.innerText = message;
+            msgBox.classList.remove('d-none');
+            
+            setTimeout(() => {
+                msgBox.classList.add('d-none');
+            }, 3000);
+        }
+
         function loadPaymentStatus() {
-            const statusType = document.getElementById('statusSelect').value;
-            const groupId = document.getElementById('groupSelect').value;
-            if (!statusType) {
-                alert('Будь ласка, оберіть статус');
-                return;
-            }
-            const formData = new FormData();
-            formData.append('statusType', statusType);
-            if (groupId) {
-                formData.append('groupId', groupId);
-            }
+            const form = document.getElementById('financeFilterForm');
+            const formData = new FormData(form);
+
             fetch('/Finance/PaymentStatus', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) throw new Error('Помилка завантаження');
+                return response.text();
+            })
             .then(html => {
                 document.getElementById('financeTableBody').innerHTML = html;
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Помилка при завантаженні даних');
+                document.getElementById('financeTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="text-center text-danger">Не вдалося завантажити дані</td></tr>';
             });
         }
+
         function applySmallGroupSurcharge() {
-            if (!confirm('Застосувати надбавку для малих груп?')) return;
             fetch('/Finance/ApplySmallGroupSurcharge', {
-                method: 'POST'
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Помилка сервера');
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
-                    loadPaymentStatus();
+                    showMessage(data.message, false);
+                    loadPaymentStatus(); 
+                } else {
+                    showMessage('Помилка: ' + data.message, true);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Помилка при застосуванні надбавки');
+                showMessage('Не вдалося виконати операцію.', true);
             });
         }
+
         function applyLargeGroupDiscount() {
-            if (!confirm('Застосувати знижку для великих груп?')) return;
             fetch('/Finance/ApplyLargeGroupDiscount', {
-                method: 'POST'
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
             })
-            .then(response => response.json())
+            .then(response => {
+                 if (!response.ok) throw new Error('Помилка сервера');
+                 return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    showMessage(data.message, false);
                     loadPaymentStatus();
+                } else {
+                    showMessage('Помилка: ' + data.message, true);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Помилка при застосуванні знижки');
+                showMessage('Помилка при застосуванні знижки', true);
             });
-        }
-        function applyDiscount() {
-            alert('Функціонал надання знижки буде реалізовано пізніше');
         }
     </script>
 }

@@ -267,7 +267,7 @@
             </div>
 
             <div class="template-buttons">
-                <button class="template-btn" data-query='SELECT l."Name" AS Language, COUNT(s."StudentId") AS StudentCount FROM "Languages" l LEFT JOIN "Groups" g ON l."LanguageId" = g."LanguageId" LEFT JOIN "Enrollments" e ON g."GroupId" = e."GroupId" LEFT JOIN "Students" s ON e."StudentId" = s."StudentId" GROUP BY l."LanguageId", l."Name";'>Статистика по мовах</button>
+                <button class="template-btn" data-query='SELECT l."Name" AS "Language", COUNT(s."StudentId") AS "StudentCount" FROM "Students" s JOIN "Groups" g ON s."GroupId" = g."GroupId" JOIN "Languages" l ON g."LanguageId" = l."LanguageId" GROUP BY l."Name" ORDER BY "StudentCount" DESC;'>Статистика по мовам</button>
                 <button class="template-btn" data-query='SELECT COUNT(*) AS TotalStudents, SUM(CASE WHEN "HasDiscount" = true THEN 1 ELSE 0 END) AS WithDiscount FROM "Students";'>Знижки студентів</button>
                 <button class="template-btn" data-query='SELECT g."GroupName", l."Name" AS Language, t."FirstName" || &apos; &apos; || t."LastName" AS Teacher FROM "Groups" g JOIN "Languages" l ON g."LanguageId" = l."LanguageId" JOIN "Teachers" t ON g."TeacherId" = t."TeacherId" WHERE l."Name" = &apos;Англійська&apos;;'>Групи по мові (Англійська)</button>
                 <button class="template-btn" data-query='SELECT s."FirstName", s."LastName", s."Email", er."Grade", ex."Description" AS Exam, g."GroupName" FROM "ExamResults" er JOIN "Students" s ON er."StudentId" = s."StudentId" JOIN "Exams" ex ON er."ExamId" = ex."ExamId" LEFT JOIN "Enrollments" e ON s."StudentId" = e."StudentId" LEFT JOIN "Groups" g ON e."GroupId" = g."GroupId" WHERE er."Grade" < 60;'>Не здані іспити</button>

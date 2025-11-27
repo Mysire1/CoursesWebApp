@@ -7,10 +7,8 @@ using Microsoft.EntityFrameworkCore;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Database Context
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))
 {
@@ -27,7 +25,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
-// Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -45,8 +42,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("TeacherOnly", policy => policy.RequireRole("Teacher"));
     options.AddPolicy("StudentOnly", policy => policy.RequireRole("Student"));
 });
-
-// Services
 builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 builder.Services.AddScoped<IStudentService, StudentServiceImpl>();
 builder.Services.AddScoped<IGroupService, GroupServiceImpl>();
@@ -57,7 +52,6 @@ builder.Services.AddScoped<ILevelService, LevelServiceImpl>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -67,8 +61,6 @@ else
     app.UseExceptionHandler("/Home/Error");
     //app.UseHsts();
 }
-
-//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -79,13 +71,12 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Explicit redirect from root to Home/Index to avoid 404 at '/'
 app.MapGet("/", async context =>
 {
     context.Response.Redirect("/Home/Index");
 });
 
-// Ensure database is created and reachable
+
 try 
 {
     using var scope = app.Services.CreateScope();

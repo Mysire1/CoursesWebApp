@@ -31,13 +31,11 @@ CREATE TABLE "Teachers" (
                             "LastLoginAt" TIMESTAMP DEFAULT NOW(),
                             "IsActive" BOOLEAN DEFAULT TRUE
 );
-
 CREATE TABLE "TeacherLanguages" (
                                     "TeacherLanguageId" SERIAL PRIMARY KEY,
                                     "TeacherId" INTEGER NOT NULL REFERENCES "Teachers"("TeacherId") ON DELETE CASCADE,
                                     "LanguageId" INTEGER NOT NULL REFERENCES "Languages"("LanguageId") ON DELETE CASCADE
 );
-
 CREATE TABLE "Groups" (
                           "GroupId" SERIAL PRIMARY KEY,
                           "GroupName" VARCHAR(100) NOT NULL,
@@ -49,7 +47,6 @@ CREATE TABLE "Groups" (
                           "LanguageId" INTEGER DEFAULT 1 REFERENCES "Languages"("LanguageId"),
                           "LevelName" VARCHAR(100) DEFAULT 'Beginner'
 );
-
 CREATE TABLE "Students" (
                             "StudentId" SERIAL PRIMARY KEY,
                             "FirstName" VARCHAR(100) NOT NULL,
@@ -67,7 +64,6 @@ CREATE TABLE "Students" (
                             "LastLoginAt" TIMESTAMP DEFAULT NOW(),
                             "IsActive" BOOLEAN DEFAULT TRUE
 );
-
 CREATE TABLE "Exams" (
                          "ExamId" SERIAL PRIMARY KEY,
                          "ExamDate" DATE,

@@ -63,6 +63,7 @@ namespace CoursesWebApp.Services.Impl
                     DiscountPercentage = 0,
                     CreatedAt = DateTime.UtcNow,
                     IsActive = true,
+                    LastLoginAt = DateTime.UtcNow,
                     PaymentStatus = "Paid"
                 };
 
