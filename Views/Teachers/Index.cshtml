@@ -27,6 +27,7 @@
                 <th>Телефон</th>
                 <th>Мов (Count)</th>
                 <th>Дата найму</th>
+                <th>Дії</th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +40,9 @@
                     <td>@t.Phone</td>
                     <td>@(t.TeacherLanguages?.Count() ?? 0)</td>
                     <td>@t.HireDate.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@t.TeacherId" class="btn btn-warning btn-sm">Редагувати</a>
+                    </td>
                 </tr>
             }
         </tbody>
