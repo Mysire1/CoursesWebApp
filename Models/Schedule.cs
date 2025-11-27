@@ -33,8 +33,7 @@ namespace CoursesWebApp.Models
         
         [StringLength(50)]
         public string Room { get; set; } = string.Empty;
-
-        // Navigation properties
+        
         [ForeignKey("GroupId")]
         public virtual Group Group { get; set; } = null!;
         [ForeignKey("ClassroomId")]

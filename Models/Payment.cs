@@ -23,7 +23,6 @@ namespace CoursesWebApp.Models
         [StringLength(500)]
         public string? Description { get; set; }
         
-        // Navigation properties
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; } = null!;
     }

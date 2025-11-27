@@ -37,7 +37,6 @@ namespace CoursesWebApp.Models
         
         public bool IsActive { get; set; } = true;
         
-        // Navigation properties
         public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
         public virtual ICollection<TeacherLanguage> TeacherLanguages { get; set; } = new List<TeacherLanguage>();
         

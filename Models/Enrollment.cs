@@ -28,7 +28,6 @@ namespace CoursesWebApp.Models
         
         public bool IsCompleted { get; set; } = false;
         
-        // Navigation properties
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; } = null!;
         

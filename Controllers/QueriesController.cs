@@ -35,15 +35,13 @@ namespace CoursesWebApp.Controllers
             return View();
         }
 
-        // Запит 1: Пошук груп
         [HttpPost]
         public async Task<IActionResult> SearchGroups(int? languageId, int? teacherId)
         {
             var groups = await _groupService.SearchGroupsAsync(languageId, teacherId);
             return PartialView("_GroupsPartial", groups);
         }
-
-        // Запит 2: Розрахунок вартості
+        
         [HttpPost]
         public async Task<IActionResult> CalculateCost(string calculationType, int? languageId)
         {
@@ -66,7 +64,6 @@ namespace CoursesWebApp.Controllers
             }
         }
 
-        // Запит 3: Нездані іспити
         [HttpPost]
         public async Task<IActionResult> GetFailedExams()
         {
@@ -83,16 +80,14 @@ namespace CoursesWebApp.Controllers
 
             return Json(new { success = true, data = result });
         }
-
-        // Запит 4: Викладачі за кількістю мов
+        
         [HttpPost]
         public async Task<IActionResult> GetTeachersByLanguageCount()
         {
             var teachersByCount = await _teacherService.GetTeachersByLanguageCountAsync();
             return Json(new { success = true, data = teachersByCount });
         }
-
-        // Запит 5: Статус оплати
+        
         [HttpPost]
         public async Task<IActionResult> GetPaymentStatus(string statusType)
         {
@@ -108,8 +103,7 @@ namespace CoursesWebApp.Controllers
 
             return PartialView("_StudentsPartial", students);
         }
-
-        // Запит 7: Студенти за мовами
+        
         [HttpPost]
         public async Task<IActionResult> GetStudentsByLanguage()
         {
@@ -124,8 +118,7 @@ namespace CoursesWebApp.Controllers
 
             return Json(new { success = true, data = result });
         }
-
-        // Запит 8: Надбавка для малих груп
+        
         [HttpPost]
         public async Task<IActionResult> ApplySmallGroupSurcharge()
         {
@@ -145,8 +138,7 @@ namespace CoursesWebApp.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
-
-        // Запит 9: Знижка для великих груп
+        
         [HttpPost]
         public async Task<IActionResult> ApplyLargeGroupDiscount()
         {
@@ -166,8 +158,7 @@ namespace CoursesWebApp.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
-
-        // Запит 10: Розклад
+        
         [HttpPost]
         public async Task<IActionResult> GetSchedule(int? groupId, int? teacherId)
         {

@@ -16,7 +16,6 @@ namespace CoursesWebApp.Models
         [StringLength(10)]
         public string Code { get; set; } = string.Empty;
         
-        // Navigation properties
         public virtual ICollection<Level> Levels { get; set; } = new List<Level>();
         public virtual ICollection<TeacherLanguage> TeacherLanguages { get; set; } = new List<TeacherLanguage>();
     }

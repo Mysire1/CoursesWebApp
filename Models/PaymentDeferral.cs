@@ -29,7 +29,6 @@ namespace CoursesWebApp.Models
         
         public bool IsPaid { get; set; } = false;
         
-        // Navigation properties
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; } = null!;
     }

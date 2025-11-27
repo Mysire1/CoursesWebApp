@@ -80,8 +80,7 @@ namespace CoursesWebApp.Services.Impl
                 .OrderBy(g => g.GroupName)
                 .ToListAsync();
         }
-
-        // Надбавка для малих груп (<5) - тільки після кліку
+        
         public async Task<int> ApplySmallGroupSurchargeAsync(decimal surchargePercentage = 20)
         {
             var smallGroups = await GetSmallGroupsAsync();
@@ -96,7 +95,7 @@ namespace CoursesWebApp.Services.Impl
                 foreach (var student in students)
                 {
                     student.PaymentStatus = "Надбавка";
-                    student.DiscountPercentage = -20; // +20% надбавка
+                    student.DiscountPercentage = -20;
                 }
                 count += students.Count;
             }
@@ -104,8 +103,7 @@ namespace CoursesWebApp.Services.Impl
             await _context.SaveChangesAsync();
             return count;
         }
-
-        // Знижка для великих груп (=20) - тільки після кліку
+        
         public async Task<int> ApplyLargeGroupDiscountAsync(decimal discountPercentage = 5)
         {
             var largeGroups = await GetLargeGroupsAsync();
@@ -120,7 +118,7 @@ namespace CoursesWebApp.Services.Impl
                 foreach (var student in students)
                 {
                     student.PaymentStatus = "Знижка";
-                    student.DiscountPercentage = 5; // 5% знижка
+                    student.DiscountPercentage = 5;
                 }
                 count += students.Count;
             }

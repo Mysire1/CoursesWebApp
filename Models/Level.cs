@@ -26,11 +26,9 @@ namespace CoursesWebApp.Models
         [Range(1, 24)]
         public int DurationMonths { get; set; } = 3;
         
-        // Navigation properties
         [ForeignKey("LanguageId")]
         public virtual Language Language { get; set; } = null!;
         
         public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
-        // Removed ICollection<Exam> Exams - no relationship between Level and Exam tables
     }
 }

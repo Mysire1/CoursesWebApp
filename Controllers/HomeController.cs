@@ -76,7 +76,6 @@ namespace CoursesWebApp.Controllers
             {
                 _logger.LogError(ex, "Error loading home page data: {Message}", ex.Message);
                 
-                // Set default values for display
                 ViewBag.StudentsCount = 0;
                 ViewBag.LanguagesCount = 0;
                 ViewBag.TeachersCount = 0;

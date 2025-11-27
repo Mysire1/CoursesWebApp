@@ -27,8 +27,7 @@ namespace CoursesWebApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Configure unique indexes for authentication
+            
             modelBuilder.Entity<Student>()
                 .HasIndex(s => s.Email)
                 .IsUnique();
@@ -36,8 +35,7 @@ namespace CoursesWebApp.Data
             modelBuilder.Entity<Teacher>()
                 .HasIndex(t => t.Email)
                 .IsUnique();
-
-            // Configure relationships
+            
             modelBuilder.Entity<TeacherLanguage>()
                 .HasKey(tl => new { tl.TeacherId, tl.LanguageId });
 
@@ -52,8 +50,7 @@ namespace CoursesWebApp.Data
                 .WithMany(l => l.TeacherLanguages)
                 .HasForeignKey(tl => tl.LanguageId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // Configure other relationships
+            
             modelBuilder.Entity<Level>()
                 .HasOne(l => l.Language)
                 .WithMany(la => la.Levels)
@@ -71,15 +68,13 @@ namespace CoursesWebApp.Data
                 .WithMany(t => t.Groups)
                 .HasForeignKey(g => g.TeacherId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // Add Language relationship for Group
+            
             modelBuilder.Entity<Group>()
                 .HasOne(g => g.Language)
                 .WithMany()
                 .HasForeignKey(g => g.LanguageId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // Configure Student -> Group relationship
+            
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Group)
                 .WithMany(g => g.Students)
@@ -97,22 +92,19 @@ namespace CoursesWebApp.Data
                 .WithMany(g => g.Enrollments)
                 .HasForeignKey(e => e.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // Configure Exam entity - Level is a string column, not a relationship
+            
             modelBuilder.Entity<Exam>()
                 .Property(e => e.Level)
                 .HasColumnName("Level")
                 .HasMaxLength(50)
                 .IsRequired();
-
-            // Configure ExamResult relationships
+            
             modelBuilder.Entity<ExamResult>()
                 .HasOne(er => er.Exam)
                 .WithMany(e => e.ExamResults)
                 .HasForeignKey(er => er.ExamId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // Configure decimal precision
+            
             modelBuilder.Entity<Level>()
                 .Property(l => l.BaseCost)
                 .HasColumnType("decimal(18,2)");
@@ -132,8 +124,7 @@ namespace CoursesWebApp.Data
             modelBuilder.Entity<Student>()
                 .Property(s => s.DiscountPercentage)
                 .HasColumnType("decimal(5,2)");
-
-            // Configure table names explicitly
+            
             modelBuilder.Entity<Language>().ToTable("Languages");
             modelBuilder.Entity<Teacher>().ToTable("Teachers");
             modelBuilder.Entity<Student>().ToTable("Students");
