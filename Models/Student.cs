@@ -46,7 +46,7 @@ namespace CoursesWebApp.Models
         
         public bool IsActive { get; set; } = true;
 
-        public string? PaymentStatus { get; set; } // status оплати повернуто
+        public string? PaymentStatus { get; set; }
         
         public int? GroupId { get; set; }
         

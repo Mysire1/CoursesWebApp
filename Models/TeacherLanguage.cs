@@ -15,7 +15,6 @@ namespace CoursesWebApp.Models
         [Required]
         public int LanguageId { get; set; }
         
-        // Navigation properties
         [ForeignKey("TeacherId")]
         public virtual Teacher Teacher { get; set; } = null!;
         

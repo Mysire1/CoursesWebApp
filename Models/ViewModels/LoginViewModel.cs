@@ -7,7 +7,7 @@ namespace CoursesWebApp.Models.ViewModels
         [Required(ErrorMessage = "Введіть email")]
         [EmailAddress(ErrorMessage = "Некоректний email")]
         [Display(Name = "Email")]
-        public string Username { get; set; } = string.Empty; // Залишаємо Username для сумісності з контролером
+        public string Username { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Введіть пароль")]
         [DataType(DataType.Password)]

@@ -11,7 +11,7 @@ namespace CoursesWebApp.Models
 
         [Required]
         [StringLength(50)]
-        public string Level { get; set; } = string.Empty; // Статичний рівень
+        public string Level { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Date)]
@@ -20,7 +20,6 @@ namespace CoursesWebApp.Models
         [StringLength(255)]
         public string? Description { get; set; }
         
-        // Видалено навігацію на Level
         public virtual ICollection<ExamResult> ExamResults { get; set; } = new List<ExamResult>();
     }
 }

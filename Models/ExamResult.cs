@@ -25,7 +25,6 @@ namespace CoursesWebApp.Models
         
         public bool IsPassed => Grade >= 60;
         
-        // Navigation properties
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; } = null!;
         

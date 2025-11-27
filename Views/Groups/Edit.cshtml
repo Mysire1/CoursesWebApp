@@ -10,7 +10,6 @@
 <h1>Редагувати групу</h1>
 
 <div class="row">
-    <!-- Ліва колонка - форма редагування -->
     <div class="col-md-6">
         <div class="card">
             <div class="card-body">
@@ -53,10 +52,8 @@
             </div>
         </div>
     </div>
-
-    <!-- Права колонка - управління студентами -->
+    
     <div class="col-md-6">
-        <!-- Студенти в групі -->
         <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">Студенти в групі</h5>
@@ -70,8 +67,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Додати студента -->
+        
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Додати студента</h5>
@@ -97,8 +93,7 @@
 @section Scripts {
     <script>
         const groupId = @groupId;
-
-        // Завантажити студентів групи
+        
         async function loadGroupStudents() {
             try {
                 const response = await fetch(`/Groups/GetGroupStudents?groupId=${groupId}`);
@@ -134,8 +129,7 @@
                     '<p class="text-danger text-center py-3">❌ Помилка завантаження</p>';
             }
         }
-
-        // Додати студента
+        
         document.getElementById('addStudentBtn').addEventListener('click', async () => {
             const studentId = document.getElementById('studentSelect').value;
             
@@ -165,8 +159,7 @@
                 alert('❌ Помилка додавання студента');
             }
         });
-
-        // Видалити студента (БЕЗ ПІДТВЕРДЖЕННЯ)
+        
         async function removeStudent(studentId) {
             try {
                 const response = await fetch('/Groups/RemoveStudentFromGroup', {
@@ -189,8 +182,7 @@
                 alert('❌ Помилка видалення студента');
             }
         }
-
-        // Завантажити студентів при завантаженні сторінки
+        
         document.addEventListener('DOMContentLoaded', loadGroupStudents);
     </script>
 }

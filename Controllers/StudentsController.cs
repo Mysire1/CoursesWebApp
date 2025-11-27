@@ -97,7 +97,16 @@ namespace CoursesWebApp.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"Помилка при створенні: {ex.Message}");
+                var errorMessage = $"Помилка при створенні: {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $" | Деталі: {ex.InnerException.Message}";
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        errorMessage += $" | Додаткові деталі: {ex.InnerException.InnerException.Message}";
+                    }
+                }
+                ModelState.AddModelError("", errorMessage);
                 ViewBag.Groups = await _groupService.GetAllGroupsAsync();
                 return View(model);
             }

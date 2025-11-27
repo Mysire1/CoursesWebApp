@@ -61,18 +61,16 @@ namespace CoursesWebApp.Controllers
 
             try
             {
-                // Знайти або створити Level - ВИПРАВЛЕНО: Name замість LevelName
                 var level = await _context.Levels
                     .FirstOrDefaultAsync(l => l.Name == vm.LevelName && l.LanguageId == vm.LanguageId);
 
                 if (level == null)
                 {
-                    // Створити новий Level якщо не існує - ВИПРАВЛЕНО: Name замість LevelName
                     level = new Level
                     {
                         Name = vm.LevelName,
                         LanguageId = vm.LanguageId,
-                        BaseCost = 1000m // Базова ціна за замовчуванням
+                        BaseCost = 1000m
                     };
                     _context.Levels.Add(level);
                     await _context.SaveChangesAsync();
@@ -145,7 +143,6 @@ namespace CoursesWebApp.Controllers
                 var group = await _groupService.GetGroupByIdAsync(id);
                 if (group == null) return NotFound();
 
-                // Знайти або створити Level - ВИПРАВЛЕНО: Name замість LevelName
                 var level = await _context.Levels
                     .FirstOrDefaultAsync(l => l.Name == vm.LevelName && l.LanguageId == vm.LanguageId);
 

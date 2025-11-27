@@ -20,11 +20,11 @@ namespace CoursesWebApp.Models
         public int TeacherId { get; set; }
         
         [Required]
-        public int LanguageId { get; set; } // Додано поле для мови
+        public int LanguageId { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string LevelName { get; set; } = string.Empty; // Додане поле для рівня як назви
+        public string LevelName { get; set; } = string.Empty;
         
         [Required]
         [DataType(DataType.Date)]
@@ -36,7 +36,6 @@ namespace CoursesWebApp.Models
         [Range(1, 50)]
         public int MaxStudents { get; set; } = 20;
         
-        // Navigation properties
         [ForeignKey("LevelId")]
         public virtual Level Level { get; set; } = null!;
         
@@ -44,15 +43,13 @@ namespace CoursesWebApp.Models
         public virtual Teacher Teacher { get; set; } = null!;
 
         [ForeignKey("LanguageId")]
-        public virtual Language Language { get; set; } = null!; // Language навігація
+        public virtual Language Language { get; set; } = null!;
         
-        // Зв'язок з студентами через GroupId в таблиці Students
         public virtual ICollection<Student> Students { get; set; } = new List<Student>();
         
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
         
-        // Computed property for student count - рахуємо через Students, а не Enrollments
         [NotMapped]
         public int StudentCount => Students?.Count ?? 0;
     }

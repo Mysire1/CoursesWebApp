@@ -10,5 +10,7 @@ namespace CoursesWebApp.Services
         Task<IEnumerable<Teacher>> GetTeachersWithTwoLanguagesAsync();
         Task<IEnumerable<Teacher>> GetTeachersWithThreeLanguagesAsync();
         Task<Dictionary<int, List<Teacher>>> GetTeachersByLanguageCountAsync();
+        Task UpdateTeacherAsync(Teacher teacher);
+        Task UpdateTeacherLanguagesAsync(int teacherId, List<int> languageIds);
     }
 }

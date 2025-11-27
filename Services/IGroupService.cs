@@ -12,7 +12,7 @@ namespace CoursesWebApp.Services
         Task<int> ApplySmallGroupSurchargeAsync(decimal surchargePercentage = 20);
         Task<int> ApplyLargeGroupDiscountAsync(decimal discountPercentage = 5);
         Task CreateGroupAsync(Group group);
-        Task UpdateGroupAsync(Group group); // новий метод
-        Task DeleteGroupAsync(int id);     // новий метод
+        Task UpdateGroupAsync(Group group);
+        Task DeleteGroupAsync(int id);
     }
 }

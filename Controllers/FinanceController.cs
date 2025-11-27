@@ -37,7 +37,6 @@ namespace CoursesWebApp.Controllers
                 _ => new List<CoursesWebApp.Models.Student>()
             };
 
-            // Фільтрація по groupId, якщо він є
             if (groupId.HasValue)
             {
                 students = students.Where(s => s.GroupId == groupId.Value).ToList();

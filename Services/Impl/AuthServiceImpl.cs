@@ -18,7 +18,6 @@ namespace CoursesWebApp.Services.Impl
 
         public async Task<(object user, string role)?> ValidateUserAsync(string email, string password)
         {
-            // Спочатку шукаємо в Students
             var student = await _context.Students
                 .FirstOrDefaultAsync(s => s.Email == email && s.IsActive);
 
@@ -28,8 +27,7 @@ namespace CoursesWebApp.Services.Impl
                 await _context.SaveChangesAsync();
                 return (student, "Student");
             }
-
-            // Якщо не знайшли студента, шукаємо в Teachers
+            
             var teacher = await _context.Teachers
                 .FirstOrDefaultAsync(t => t.Email == email && t.IsActive);
 
@@ -59,13 +57,13 @@ namespace CoursesWebApp.Services.Impl
                     Email = model.Email,
                     PasswordHash = HashPassword(model.Password),
                     Phone = model.Phone,
-                    DateOfBirth = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc), // Задаємо валідну дату
+                    DateOfBirth = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc),
                     RegistrationDate = DateTime.UtcNow,
                     HasDiscount = false,
                     DiscountPercentage = 0,
                     CreatedAt = DateTime.UtcNow,
                     IsActive = true,
-                    PaymentStatus = "Paid" // Статус за замовчуванням
+                    PaymentStatus = "Paid"
                 };
 
                 _context.Students.Add(student);
@@ -116,7 +114,6 @@ namespace CoursesWebApp.Services.Impl
 
         public async Task<object?> GetUserByEmailAsync(string email)
         {
-            // Спочатку шукаємо в Students
             var student = await _context.Students
                 .FirstOrDefaultAsync(s => s.Email == email && s.IsActive);
 
@@ -124,8 +121,7 @@ namespace CoursesWebApp.Services.Impl
             {
                 return student;
             }
-
-            // Якщо не знайшли, шукаємо в Teachers
+            
             var teacher = await _context.Teachers
                 .FirstOrDefaultAsync(t => t.Email == email && t.IsActive);
 

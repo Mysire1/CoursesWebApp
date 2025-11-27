@@ -14,7 +14,7 @@ namespace CoursesWebApp.Services
         Task<IEnumerable<Student>> GetStudentsWithoutDiscountAsync();
         Task<IEnumerable<Student>> GetStudentsLearningLanguageAsync(string languageName);
         Task<IEnumerable<Student>> GetStudentsLearningMultipleLanguagesAsync();
-        Task<int> ApplyLoyaltyDiscountAsync(); // Returns count of students who got discount
-        Task UpdateStudentGroupAsync(int studentId, int? groupId); // Update student's group without tracking issues
+        Task<int> ApplyLoyaltyDiscountAsync();
+        Task UpdateStudentGroupAsync(int studentId, int? groupId);
     }
 }

@@ -25,7 +25,6 @@ namespace CoursesWebApp.Controllers
                 result.Add($"Current Time: {DateTime.Now}");
                 result.Add($"Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
                 
-                // Test database connection
                 result.Add("\nTesting database connection...");
                 
                 var canConnect = await _context.Database.CanConnectAsync();
@@ -33,7 +32,6 @@ namespace CoursesWebApp.Controllers
                 
                 if (canConnect)
                 {
-                    // Try to query tables
                     result.Add("\nQuerying tables...");
                     
                     try
