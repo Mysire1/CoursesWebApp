@@ -1,3 +1,4 @@
+using CoursesWebApp.Models;
 using CoursesWebApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ namespace CoursesWebApp.Controllers
     public class TeachersController : Controller
     {
         private readonly ITeacherService _teacherService;
+        
         public TeachersController(ITeacherService teacherService)
         {
             _teacherService = teacherService;
@@ -22,6 +24,75 @@ namespace CoursesWebApp.Controllers
             ViewBag.Filter = filter;
             ViewBag.Teachers = teachers;
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            try
+            {
+                var teacher = await _teacherService.GetTeacherByIdAsync(id);
+                if (teacher == null)
+                {
+                    TempData["ErrorMessage"] = "Викладача не знайдено";
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(teacher);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Помилка: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Teacher model)
+        {
+            if (id != model.TeacherId)
+            {
+                TempData["ErrorMessage"] = "Невірний ID викладача";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var existingTeacher = await _teacherService.GetTeacherByIdAsync(id);
+                if (existingTeacher == null)
+                {
+                    TempData["ErrorMessage"] = "Викладача не знайдено";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Оновлюємо тільки необхідні поля
+                existingTeacher.FirstName = model.FirstName;
+                existingTeacher.LastName = model.LastName;
+                existingTeacher.Email = model.Email;
+                existingTeacher.Phone = model.Phone;
+                existingTeacher.IsActive = model.IsActive;
+                
+                // Забезпечуємо UTC для дат
+                if (existingTeacher.HireDate.Kind != DateTimeKind.Utc)
+                    existingTeacher.HireDate = DateTime.SpecifyKind(existingTeacher.HireDate, DateTimeKind.Utc);
+                
+                if (existingTeacher.LastLoginAt.HasValue && existingTeacher.LastLoginAt.Value.Kind != DateTimeKind.Utc)
+                    existingTeacher.LastLoginAt = DateTime.SpecifyKind(existingTeacher.LastLoginAt.Value, DateTimeKind.Utc);
+
+                await _teacherService.UpdateTeacherAsync(existingTeacher);
+                TempData["SuccessMessage"] = "Викладача успішно оновлено!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"Помилка при оновленні: {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $" | Деталі: {ex.InnerException.Message}";
+                }
+                TempData["ErrorMessage"] = errorMessage;
+                return View(model);
+            }
         }
     }
 }
