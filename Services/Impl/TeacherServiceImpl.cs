@@ -88,5 +88,33 @@ namespace CoursesWebApp.Services.Impl
 
             return result;
         }
+
+        public async Task UpdateTeacherAsync(Teacher teacher)
+        {
+            _context.Teachers.Update(teacher);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateTeacherLanguagesAsync(int teacherId, List<int> languageIds)
+        {
+            // Видаляємо всі старі зв’язки
+            var existingLanguages = await _context.TeacherLanguages
+                .Where(tl => tl.TeacherId == teacherId)
+                .ToListAsync();
+            
+            _context.TeacherLanguages.RemoveRange(existingLanguages);
+            
+            // Додаємо нові зв’язки
+            foreach (var languageId in languageIds)
+            {
+                _context.TeacherLanguages.Add(new TeacherLanguage
+                {
+                    TeacherId = teacherId,
+                    LanguageId = languageId
+                });
+            }
+            
+            await _context.SaveChangesAsync();
+        }
     }
 }
